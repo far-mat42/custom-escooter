@@ -1,0 +1,5 @@
+Record=TopLevelDocument|FileName=Top.SchDoc|SheetNumber=1
+Record=SheetSymbol|SourceDocument=Top.SchDoc|Designator=3V3 Power|SchDesignator=3V3 Power|FileName=NCV1117STAT3G.SchDoc|SheetNumber=4|SymbolType=Normal|RawFileName=NCV1117STAT3G.SchDoc|DesignItemId= |SourceLibraryName= |ObjectKind=Sheet Symbol|RevisionGUID= |ItemGUID= |VaultGUID= 
+Record=SheetSymbol|SourceDocument=Top.SchDoc|Designator=5V Power|SchDesignator=5V Power|FileName=NCV1117STAT3G.SchDoc|SheetNumber=4|SymbolType=Normal|RawFileName=NCV1117STAT3G.SchDoc|DesignItemId= |SourceLibraryName= |ObjectKind=Sheet Symbol|RevisionGUID= |ItemGUID= |VaultGUID= 
+Record=SheetSymbol|SourceDocument=Top.SchDoc|Designator=Bridge|SchDesignator=Bridge|FileName=Bridge.SchDoc|SheetNumber=2|SymbolType=Normal|RawFileName=Bridge.SchDoc|DesignItemId= |SourceLibraryName= |ObjectKind=Sheet Symbol|RevisionGUID= |ItemGUID= |VaultGUID= 
+Record=SheetSymbol|SourceDocument=Bridge.SchDoc|Designator=Phase A CS|SchDesignator=Phase A CS|FileName=INA190.SchDoc|SheetNumber=3|SymbolType=Normal|RawFileName=INA190.SchDoc|DesignItemId= |SourceLibraryName= |ObjectKind=Sheet Symbol|RevisionGUID= |ItemGUID= |VaultGUID= 
