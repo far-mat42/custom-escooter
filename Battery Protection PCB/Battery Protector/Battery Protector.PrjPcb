@@ -116,6 +116,23 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=QGBYIVXZ
 
+[Document5]
+DocumentPath=Battery Protector.BomDoc
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=1
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=
+
 [ProjectVariant1]
 UniqueID=291E6541-ABC0-4F75-B42A-5212D2E148AF
 Description=BUILD
