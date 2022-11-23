@@ -134,6 +134,23 @@ GenerateClassCluster=0
 DocumentUniqueId=
 
 [Document6]
+DocumentPath=MAX9020.SchDoc
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=1
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=HFZTTGTJ
+
+[Document7]
 DocumentPath=Battery_Interface.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -150,7 +167,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=ROMQLGMI
 
-[Document7]
+[Document8]
 DocumentPath=Battery Protector.PcbDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -167,6 +184,23 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=EROCQQGY
 
+[Document9]
+DocumentPath=Power_3V3.SchDoc
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=1
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=YTWABLYV
+
 [ProjectVariant1]
 UniqueID=291E6541-ABC0-4F75-B42A-5212D2E148AF
 Description=BUILD
@@ -174,6 +208,14 @@ AllowFabrication=0
 ParameterCount=0
 VariationCount=0
 ParamVariationCount=0
+
+[Parameter1]
+Name=Revision
+Value=1.0
+
+[Parameter2]
+Name=Engineer
+Value=Farris Matar
 
 [Configuration1]
 Name=Sources
