@@ -201,6 +201,23 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=YTWABLYV
 
+[Document10]
+DocumentPath=Current_Comparator.SchDoc
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=1
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=
+
 [ProjectVariant1]
 UniqueID=291E6541-ABC0-4F75-B42A-5212D2E148AF
 Description=BUILD
@@ -210,12 +227,12 @@ VariationCount=0
 ParamVariationCount=0
 
 [Parameter1]
-Name=Revision
-Value=1.0
-
-[Parameter2]
 Name=Engineer
 Value=Farris Matar
+
+[Parameter2]
+Name=Revision
+Value=1.0
 
 [Configuration1]
 Name=Sources
@@ -1217,6 +1234,9 @@ SelectedOnly=0
 UpdateVariants=1
 UpdateToLatestRevision=1
 PartTypes=0
+
+[NetInfos]
+Net1=NetName=3V3|NetColor=$00E8864A
 
 [Comparison Options]
 ComparisonOptions0=Kind=Net|MinPercent=75|MinMatch=3|ShowMatch=0|UseName=-1|InclAllRules=0
