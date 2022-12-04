@@ -43,6 +43,7 @@ CrossRefPorts=3
 CrossRefCrossSheets=1
 CrossRefSheetEntries=0
 CrossRefFollowFromMainSettings=1
+CurrentVariant=BUILD
 
 [Preferences]
 PrefsVaultGUID=
@@ -216,15 +217,172 @@ ClassGenCCAutoRoomEnabled=1
 ClassGenNCAutoScope=None
 DItemRevisionGUID=
 GenerateClassCluster=0
-DocumentUniqueId=
+DocumentUniqueId=CVFRAPGW
+
+[Document11]
+DocumentPath=Discharge_Load_Switch.SchDoc
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=1
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=IXBVMAVH
 
 [ProjectVariant1]
 UniqueID=291E6541-ABC0-4F75-B42A-5212D2E148AF
 Description=BUILD
 AllowFabrication=0
 ParameterCount=0
-VariationCount=0
-ParamVariationCount=0
+VariationCount=4
+Variation1=Designator=C2P|UniqueId=\16UQCSVTPG\ETZNIHXM|Kind=2|AlternatePart=CAP_0.1uF_100V_0805|AltLibLink_LibIdentifierKind=Library Full Path|AltLibLink_LibraryIdentifier=C:\Farris' Files\School\Side Projects\Electric Scooter\custom-escooter\Altium Files\Libraries\Personal_Schematic_Library_2022.SchLib|AltLibLink_SymbolReference= |AltLibLink_DesignItemID=CAP_0.1uF_100V_0805|AltLibLink_UseLibraryName=True|AltLibLink_SourceLibraryName=Personal_Schematic_Library_2022.SchLib|AltLibLink_UseDBTableName=False|AltLibLink_DatabaseTableName= |AltLibLink_VaultGUID= |AltLibLink_ItemGUID= |AltLibLink_RevisionGUID= |AltLibLink_Footprint=CAP0805|AltLibLink_IsSameFootprint=False
+ParamVariation1=ParameterName=Comment|VariantValue=CAP_0.1uF_100V_0805
+ParamDesignator1=C2P
+ParamVariation2=ParameterName=Component Kind|VariantValue=Standard
+ParamDesignator2=C2P
+ParamVariation3=ParameterName=Description|VariantValue=CAP CER 0.1UF 100V X7R 0805
+ParamDesignator3=C2P
+ParamVariation4=ParameterName=Footprint|VariantValue=CAP0805
+ParamDesignator4=C2P
+ParamVariation5=ParameterName=Ibis Model|VariantValue= 
+ParamDesignator5=C2P
+ParamVariation6=ParameterName=Library Reference|VariantValue=CAP_0.1uF_100V_0805
+ParamDesignator6=C2P
+ParamVariation7=ParameterName=Manufacturer 1|VariantValue=TDK Corporation
+ParamDesignator7=C2P
+ParamVariation8=ParameterName=Manufacturer Part Number 1|VariantValue=C2012X7R2A104K125AA
+ParamDesignator8=C2P
+ParamVariation9=ParameterName=Package|VariantValue=0805
+ParamDesignator9=C2P
+ParamVariation10=ParameterName=PCB3D|VariantValue= 
+ParamDesignator10=C2P
+ParamVariation11=ParameterName=Pin Info|VariantValue= 
+ParamDesignator11=C2P
+ParamVariation12=ParameterName=Signal Integrity|VariantValue= 
+ParamDesignator12=C2P
+ParamVariation13=ParameterName=Simulation|VariantValue= 
+ParamDesignator13=C2P
+ParamVariation14=ParameterName=Supplier 1|VariantValue=Digi-Key
+ParamDesignator14=C2P
+ParamVariation15=ParameterName=Supplier Part Number 1|VariantValue=445-1418-1-ND
+ParamDesignator15=C2P
+ParamVariation16=ParameterName=Value|VariantValue=0.1µF
+ParamDesignator16=C2P
+ParamVariation17=ParameterName=Voltage Rating|VariantValue=100V
+ParamDesignator17=C2P
+Variation2=Designator=C2M|UniqueId=\13UQCSVTPG\ETZNIHXM|Kind=2|AlternatePart=CAP_0.1uF_100V_0805|AltLibLink_LibIdentifierKind=Library Full Path|AltLibLink_LibraryIdentifier=C:\Farris' Files\School\Side Projects\Electric Scooter\custom-escooter\Altium Files\Libraries\Personal_Schematic_Library_2022.SchLib|AltLibLink_SymbolReference= |AltLibLink_DesignItemID=CAP_0.1uF_100V_0805|AltLibLink_UseLibraryName=True|AltLibLink_SourceLibraryName=Personal_Schematic_Library_2022.SchLib|AltLibLink_UseDBTableName=False|AltLibLink_DatabaseTableName= |AltLibLink_VaultGUID= |AltLibLink_ItemGUID= |AltLibLink_RevisionGUID= |AltLibLink_Footprint=CAP0805|AltLibLink_IsSameFootprint=False
+ParamVariation18=ParameterName=Comment|VariantValue=CAP_0.1uF_100V_0805
+ParamDesignator18=C2M
+ParamVariation19=ParameterName=Component Kind|VariantValue=Standard
+ParamDesignator19=C2M
+ParamVariation20=ParameterName=Description|VariantValue=CAP CER 0.1UF 100V X7R 0805
+ParamDesignator20=C2M
+ParamVariation21=ParameterName=Footprint|VariantValue=CAP0805
+ParamDesignator21=C2M
+ParamVariation22=ParameterName=Ibis Model|VariantValue= 
+ParamDesignator22=C2M
+ParamVariation23=ParameterName=Library Reference|VariantValue=CAP_0.1uF_100V_0805
+ParamDesignator23=C2M
+ParamVariation24=ParameterName=Manufacturer 1|VariantValue=TDK Corporation
+ParamDesignator24=C2M
+ParamVariation25=ParameterName=Manufacturer Part Number 1|VariantValue=C2012X7R2A104K125AA
+ParamDesignator25=C2M
+ParamVariation26=ParameterName=Package|VariantValue=0805
+ParamDesignator26=C2M
+ParamVariation27=ParameterName=PCB3D|VariantValue= 
+ParamDesignator27=C2M
+ParamVariation28=ParameterName=Pin Info|VariantValue= 
+ParamDesignator28=C2M
+ParamVariation29=ParameterName=Signal Integrity|VariantValue= 
+ParamDesignator29=C2M
+ParamVariation30=ParameterName=Simulation|VariantValue= 
+ParamDesignator30=C2M
+ParamVariation31=ParameterName=Supplier 1|VariantValue=Digi-Key
+ParamDesignator31=C2M
+ParamVariation32=ParameterName=Supplier Part Number 1|VariantValue=445-1418-1-ND
+ParamDesignator32=C2M
+ParamVariation33=ParameterName=Value|VariantValue=0.1µF
+ParamDesignator33=C2M
+ParamVariation34=ParameterName=Voltage Rating|VariantValue=100V
+ParamDesignator34=C2M
+Variation3=Designator=C2N|UniqueId=\14UQCSVTPG\ETZNIHXM|Kind=2|AlternatePart=CAP_0.1uF_100V_0805|AltLibLink_LibIdentifierKind=Library Full Path|AltLibLink_LibraryIdentifier=C:\Farris' Files\School\Side Projects\Electric Scooter\custom-escooter\Altium Files\Libraries\Personal_Schematic_Library_2022.SchLib|AltLibLink_SymbolReference= |AltLibLink_DesignItemID=CAP_0.1uF_100V_0805|AltLibLink_UseLibraryName=True|AltLibLink_SourceLibraryName=Personal_Schematic_Library_2022.SchLib|AltLibLink_UseDBTableName=False|AltLibLink_DatabaseTableName= |AltLibLink_VaultGUID= |AltLibLink_ItemGUID= |AltLibLink_RevisionGUID= |AltLibLink_Footprint=CAP0805|AltLibLink_IsSameFootprint=False
+ParamVariation35=ParameterName=Comment|VariantValue=CAP_0.1uF_100V_0805
+ParamDesignator35=C2N
+ParamVariation36=ParameterName=Component Kind|VariantValue=Standard
+ParamDesignator36=C2N
+ParamVariation37=ParameterName=Description|VariantValue=CAP CER 0.1UF 100V X7R 0805
+ParamDesignator37=C2N
+ParamVariation38=ParameterName=Footprint|VariantValue=CAP0805
+ParamDesignator38=C2N
+ParamVariation39=ParameterName=Ibis Model|VariantValue= 
+ParamDesignator39=C2N
+ParamVariation40=ParameterName=Library Reference|VariantValue=CAP_0.1uF_100V_0805
+ParamDesignator40=C2N
+ParamVariation41=ParameterName=Manufacturer 1|VariantValue=TDK Corporation
+ParamDesignator41=C2N
+ParamVariation42=ParameterName=Manufacturer Part Number 1|VariantValue=C2012X7R2A104K125AA
+ParamDesignator42=C2N
+ParamVariation43=ParameterName=Package|VariantValue=0805
+ParamDesignator43=C2N
+ParamVariation44=ParameterName=PCB3D|VariantValue= 
+ParamDesignator44=C2N
+ParamVariation45=ParameterName=Pin Info|VariantValue= 
+ParamDesignator45=C2N
+ParamVariation46=ParameterName=Signal Integrity|VariantValue= 
+ParamDesignator46=C2N
+ParamVariation47=ParameterName=Simulation|VariantValue= 
+ParamDesignator47=C2N
+ParamVariation48=ParameterName=Supplier 1|VariantValue=Digi-Key
+ParamDesignator48=C2N
+ParamVariation49=ParameterName=Supplier Part Number 1|VariantValue=445-1418-1-ND
+ParamDesignator49=C2N
+ParamVariation50=ParameterName=Value|VariantValue=0.1µF
+ParamDesignator50=C2N
+ParamVariation51=ParameterName=Voltage Rating|VariantValue=100V
+ParamDesignator51=C2N
+Variation4=Designator=C2O|UniqueId=\15UQCSVTPG\ETZNIHXM|Kind=2|AlternatePart=CAP_0.1uF_100V_0805|AltLibLink_LibIdentifierKind=Library Full Path|AltLibLink_LibraryIdentifier=C:\Farris' Files\School\Side Projects\Electric Scooter\custom-escooter\Altium Files\Libraries\Personal_Schematic_Library_2022.SchLib|AltLibLink_SymbolReference= |AltLibLink_DesignItemID=CAP_0.1uF_100V_0805|AltLibLink_UseLibraryName=True|AltLibLink_SourceLibraryName=Personal_Schematic_Library_2022.SchLib|AltLibLink_UseDBTableName=False|AltLibLink_DatabaseTableName= |AltLibLink_VaultGUID= |AltLibLink_ItemGUID= |AltLibLink_RevisionGUID= |AltLibLink_Footprint=CAP0805|AltLibLink_IsSameFootprint=False
+ParamVariation52=ParameterName=Comment|VariantValue=CAP_0.1uF_100V_0805
+ParamDesignator52=C2O
+ParamVariation53=ParameterName=Component Kind|VariantValue=Standard
+ParamDesignator53=C2O
+ParamVariation54=ParameterName=Description|VariantValue=CAP CER 0.1UF 100V X7R 0805
+ParamDesignator54=C2O
+ParamVariation55=ParameterName=Footprint|VariantValue=CAP0805
+ParamDesignator55=C2O
+ParamVariation56=ParameterName=Ibis Model|VariantValue= 
+ParamDesignator56=C2O
+ParamVariation57=ParameterName=Library Reference|VariantValue=CAP_0.1uF_100V_0805
+ParamDesignator57=C2O
+ParamVariation58=ParameterName=Manufacturer 1|VariantValue=TDK Corporation
+ParamDesignator58=C2O
+ParamVariation59=ParameterName=Manufacturer Part Number 1|VariantValue=C2012X7R2A104K125AA
+ParamDesignator59=C2O
+ParamVariation60=ParameterName=Package|VariantValue=0805
+ParamDesignator60=C2O
+ParamVariation61=ParameterName=PCB3D|VariantValue= 
+ParamDesignator61=C2O
+ParamVariation62=ParameterName=Pin Info|VariantValue= 
+ParamDesignator62=C2O
+ParamVariation63=ParameterName=Signal Integrity|VariantValue= 
+ParamDesignator63=C2O
+ParamVariation64=ParameterName=Simulation|VariantValue= 
+ParamDesignator64=C2O
+ParamVariation65=ParameterName=Supplier 1|VariantValue=Digi-Key
+ParamDesignator65=C2O
+ParamVariation66=ParameterName=Supplier Part Number 1|VariantValue=445-1418-1-ND
+ParamDesignator66=C2O
+ParamVariation67=ParameterName=Value|VariantValue=0.1µF
+ParamDesignator67=C2O
+ParamVariation68=ParameterName=Voltage Rating|VariantValue=100V
+ParamDesignator68=C2O
+ParamVariationCount=68
 
 [Parameter1]
 Name=Engineer
@@ -1237,6 +1395,7 @@ PartTypes=0
 
 [NetInfos]
 Net1=NetName=3V3|NetColor=$00E8864A
+Net2=NetName=GND|NetColor=$00999999
 
 [Comparison Options]
 ComparisonOptions0=Kind=Net|MinPercent=75|MinMatch=3|ShowMatch=0|UseName=-1|InclAllRules=0
