@@ -186,7 +186,7 @@ GenerateClassCluster=0
 DocumentUniqueId=EROCQQGY
 
 [Document9]
-DocumentPath=Power_3V3.SchDoc
+DocumentPath=AP7387Q.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
@@ -237,7 +237,7 @@ GenerateClassCluster=0
 DocumentUniqueId=IXBVMAVH
 
 [Document12]
-DocumentPath=INA190.SchDoc
+DocumentPath=MAX9919.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
@@ -258,7 +258,7 @@ UniqueID=291E6541-ABC0-4F75-B42A-5212D2E148AF
 Description=BUILD
 AllowFabrication=0
 ParameterCount=0
-VariationCount=4
+VariationCount=5
 Variation1=Designator=C2P|UniqueId=\16UQCSVTPG\ETZNIHXM|Kind=2|AlternatePart=CAP_0.1uF_100V_0805|AltLibLink_LibIdentifierKind=Library Full Path|AltLibLink_LibraryIdentifier=C:\Farris' Files\School\Side Projects\Electric Scooter\custom-escooter\Altium Files\Libraries\Personal_Schematic_Library_2022.SchLib|AltLibLink_SymbolReference= |AltLibLink_DesignItemID=CAP_0.1uF_100V_0805|AltLibLink_UseLibraryName=True|AltLibLink_SourceLibraryName=Personal_Schematic_Library_2022.SchLib|AltLibLink_UseDBTableName=False|AltLibLink_DatabaseTableName= |AltLibLink_VaultGUID= |AltLibLink_ItemGUID= |AltLibLink_RevisionGUID= |AltLibLink_Footprint=CAP0805|AltLibLink_IsSameFootprint=False
 ParamVariation1=ParameterName=Comment|VariantValue=CAP_0.1uF_100V_0805
 ParamDesignator1=C2P
@@ -399,7 +399,38 @@ ParamVariation67=ParameterName=Value|VariantValue=0.1µF
 ParamDesignator67=C2O
 ParamVariation68=ParameterName=Voltage Rating|VariantValue=100V
 ParamDesignator68=C2O
-ParamVariationCount=68
+Variation5=Designator=U5B|UniqueId=\ZGFNOBWC\EUDIRFUU|Kind=2|AlternatePart=LDO_5V_150mA_60VIN|AltLibLink_LibIdentifierKind=Library Full Path|AltLibLink_LibraryIdentifier=C:\Farris' Files\School\Side Projects\Electric Scooter\custom-escooter\Altium Files\Libraries\Personal_Schematic_Library_2022.SchLib|AltLibLink_SymbolReference= |AltLibLink_DesignItemID=LDO_5V_150mA_60VIN|AltLibLink_UseLibraryName=True|AltLibLink_SourceLibraryName=Personal_Schematic_Library_2022.SchLib|AltLibLink_UseDBTableName=False|AltLibLink_DatabaseTableName= |AltLibLink_VaultGUID= |AltLibLink_ItemGUID= |AltLibLink_RevisionGUID= |AltLibLink_Footprint=SOT89|AltLibLink_IsSameFootprint=True
+ParamVariation69=ParameterName=Comment|VariantValue=LDO_5V_150mA_60VIN
+ParamDesignator69=U5B
+ParamVariation70=ParameterName=Component Kind|VariantValue=Standard
+ParamDesignator70=U5B
+ParamVariation71=ParameterName=Current Output|VariantValue=150mA
+ParamDesignator71=U5B
+ParamVariation72=ParameterName=Description|VariantValue=IC REG LINEAR 5V 150MA SOT89-3
+ParamDesignator72=U5B
+ParamVariation73=ParameterName=Footprint|VariantValue=SOT89
+ParamDesignator73=U5B
+ParamVariation74=ParameterName=Ibis Model|VariantValue= 
+ParamDesignator74=U5B
+ParamVariation75=ParameterName=Library Reference|VariantValue=LDO_5V_150mA_60VIN
+ParamDesignator75=U5B
+ParamVariation76=ParameterName=Manufacturer 1|VariantValue=Diodes Incorporated
+ParamDesignator76=U5B
+ParamVariation77=ParameterName=Manufacturer Part Number 1|VariantValue=AP7387Q-50Y-13
+ParamDesignator77=U5B
+ParamVariation78=ParameterName=PCB3D|VariantValue= 
+ParamDesignator78=U5B
+ParamVariation79=ParameterName=Pin Info|VariantValue= 
+ParamDesignator79=U5B
+ParamVariation80=ParameterName=Signal Integrity|VariantValue= 
+ParamDesignator80=U5B
+ParamVariation81=ParameterName=Simulation|VariantValue= 
+ParamDesignator81=U5B
+ParamVariation82=ParameterName=Supplier 1|VariantValue=Digi-Key
+ParamDesignator82=U5B
+ParamVariation83=ParameterName=Supplier Part Number 1|VariantValue=31-AP7387Q-50Y-13CT-ND
+ParamDesignator83=U5B
+ParamVariationCount=83
 
 [Parameter1]
 Name=Engineer
@@ -1820,15 +1851,18 @@ PartTypes=0
 
 [NetInfos]
 Net1=NetName=3V3|NetColor=$00E8864A
-Net2=NetName=CS+|NetColor=$00000098
-Net3=NetName=GND|NetColor=$00999999
-Net4=NetName=NetC4_2|NetColor=$00000098
-Net5=NetName=NetC8_2|NetColor=$00000098
-Net6=NetName=NetQ5_1|NetColor=clRed
-Net7=NetName=NetR17_2|NetColor=$00000098
-Net8=NetName=VBAT-|NetColor=$00999999
-Net9=NetName=VBAT+|NetColor=$00000098
-Net10=NetName=VPACK+|NetColor=clRed
+Net2=NetName=5V0|NetColor=$001D7638
+Net3=NetName=CS+|NetColor=$00000098
+Net4=NetName=GND|NetColor=$00999999
+Net5=NetName=NetC4_2|NetColor=$00000098
+Net6=NetName=NetC5_2|NetColor=$001D7638
+Net7=NetName=NetC5B_2|NetColor=$001D7638
+Net8=NetName=NetC8_2|NetColor=$00000098
+Net9=NetName=NetQ5_1|NetColor=clRed
+Net10=NetName=NetR17_2|NetColor=$00000098
+Net11=NetName=VBAT-|NetColor=$00999999
+Net12=NetName=VBAT+|NetColor=$00000098
+Net13=NetName=VPACK+|NetColor=clRed
 
 [Comparison Options]
 ComparisonOptions0=Kind=Net|MinPercent=75|MinMatch=3|ShowMatch=0|UseName=-1|InclAllRules=0
