@@ -432,6 +432,10 @@ ParamVariation83=ParameterName=Supplier Part Number 1|VariantValue=31-AP7387Q-50
 ParamDesignator83=U5B
 ParamVariationCount=83
 
+[GeneratedDocument1]
+DocumentPath=Project Outputs for Battery Protector\Design Rule Check - Battery Protector.html
+DItemRevisionGUID=
+
 [Parameter1]
 Name=Engineer
 Value=Farris Matar
@@ -1851,12 +1855,12 @@ PartTypes=0
 
 [NetInfos]
 Net1=NetName=3V3|NetColor=$00E8864A
-Net2=NetName=5V0|NetColor=$001D7638
+Net2=NetName=5V0|NetColor=$0049885D
 Net3=NetName=CS+|NetColor=$00000098
 Net4=NetName=GND|NetColor=$00999999
 Net5=NetName=NetC4_2|NetColor=$00000098
-Net6=NetName=NetC5_2|NetColor=$001D7638
-Net7=NetName=NetC5B_2|NetColor=$001D7638
+Net6=NetName=NetC5_2|NetColor=$0049885D
+Net7=NetName=NetC5B_2|NetColor=$0049885D
 Net8=NetName=NetC8_2|NetColor=$00000098
 Net9=NetName=NetQ5_1|NetColor=clRed
 Net10=NetName=NetR17_2|NetColor=$00000098
