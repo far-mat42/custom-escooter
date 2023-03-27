@@ -1,14 +1,27 @@
 [OutputJobFile]
 Version=1.0
+Caption=
+Description=
+VaultGUID=
+ItemGUID=
+ItemHRID=
+RevisionGUID=
+RevisionId=
+VaultHRID=
+AutoItemHRID=
+NextRevId=
+FolderGUID=
+LifeCycleDefinitionGUID=
+RevisionNamingSchemeGUID=
 
 [OutputGroup1]
-Name=
+Name=BLDC Motor Controller.OutJob
 Description=
-TargetOutputMedium=PDF
-VariantName=[No Variations]
-VariantScope=0
+TargetOutputMedium=Video
+VariantName=BUILD
+VariantScope=1
 CurrentConfigurationName=
-TargetPrinter=Virtual Printer
+TargetPrinter=Microsoft Print to PDF
 PrinterOptions=Record=PrinterOptions|Copies=1|Duplex=1|TrueTypeOptions=3|Collate=1|PrintJobKind=1|PrintWhat=1
 OutputMedium1=Print Job
 OutputMedium1_Type=Printer
@@ -25,7 +38,7 @@ OutputName1=Schematic Prints
 OutputCategory1=Documentation
 OutputDocumentPath1=[Project Physical Documents]
 OutputVariantName1=BUILD
-OutputEnabled1=1
+OutputEnabled1=0
 OutputEnabled1_OutputMedium1=0
 OutputEnabled1_OutputMedium2=1
 OutputEnabled1_OutputMedium3=0
@@ -34,6 +47,19 @@ OutputDefault1=0
 PageOptions1=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=0|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-3|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=A4|PaperIndex=9
 Configuration1_Name1=OutputConfigurationParameter1
 Configuration1_Item1=Record=SchPrintView|ShowNoERC=True|ShowParamSet=True|ShowProbe=True|ShowBlanket=True|NoERCSymbolsToShow="Thin Cross","Thick Cross","Small Cross",Checkbox,Triangle|ShowNote=True|ShowNoteCollapsed=True|ShowOpenEnds=True|ExpandDesignator=True|ExpandNetLabel=False|ExpandPort=False|ExpandSheetNum=False|ExpandDocNum=False|PrintArea=0|PrintAreaRect.X1=0|PrintAreaRect.Y1=0|PrintAreaRect.X2=0|PrintAreaRect.Y2=0|DocumentPath=
+OutputType2=Pick Place
+OutputName2=Generates pick and place files
+OutputCategory2=Assembly
+OutputDocumentPath2=BLDC Motor Controller.PcbDoc
+OutputVariantName2=
+OutputEnabled2=0
+OutputEnabled2_OutputMedium1=0
+OutputEnabled2_OutputMedium2=0
+OutputEnabled2_OutputMedium3=0
+OutputEnabled2_OutputMedium4=0
+OutputDefault2=0
+Configuration2_Name1=OutputConfigurationParameter1
+Configuration2_Item1=Record=PickPlaceView|Units=Imperial|GenerateCSVFormat=False|GenerateTextFormat=True|ShowUnits=False|Separator=.|ExcludeFilterParam=False|IncludeVariations=False|IncludeStandardNoBOM=True|Filter= |FilterActive=False|YFlip=False|DifferentFootprints=False|Column#1=Name:Designator,Fixed:True,Metric:False,Visible:True,Sort:None,Position:0|Column#2=Name:Comment,Fixed:True,Metric:False,Visible:True,Sort:None,Position:10|Column#3=Name:Layer,Fixed:True,Metric:False,Visible:True,Sort:None,Position:8|Column#4=Name:Footprint,Fixed:True,Metric:False,Visible:True,Sort:None,Position:1|Column#5=Name:Footprint Description,Fixed:True,Metric:False,Visible:False,Sort:None,Position:11|Column#6=Name:Center-X,Fixed:True,Metric:True,Visible:True,Sort:None,Position:2|Column#7=Name:Center-Y,Fixed:True,Metric:True,Visible:True,Sort:None,Position:3|Column#8=Name:Rotation,Fixed:True,Metric:False,Visible:True,Sort:None,Position:9|Column#9=Name:Description,Fixed:True,Metric:False,Visible:False,Sort:None,Position:12|Column#10=Name:ComponentKind,Fixed:True,Metric:False,Visible:False,Sort:None,Position:13|Column#11=Name:Height,Fixed:True,Metric:True,Visible:False,Sort:None,Position:14|Column#12=Name:Ref-X,Fixed:True,Metric:True,Visible:True,Sort:None,Position:4|Column#13=Name:Ref-Y,Fixed:True,Metric:True,Visible:True,Sort:None,Position:5|Column#14=Name:Pad-X,Fixed:True,Metric:True,Visible:True,Sort:None,Position:6|Column#15=Name:Pad-Y,Fixed:True,Metric:True,Visible:True,Sort:None,Position:7|Column#16=Name:Variation,Fixed:True,Metric:False,Visible:False,Sort:None,Position:15|Column#17=Name:Supplier Part Number 1,Fixed:False,Metric:False,Visible:False,Sort:None,Position:35,Type:0|Column#18=Name:Pitch,Fixed:False,Metric:False,Visible:False,Sort:None,Position:32,Type:0|Column#19=Name:Id,Fixed:False,Metric:False,Visible:False,Sort:None,Position:20,Type:0|Column#20=Name:Orientation,Fixed:False,Metric:False,Visible:False,Sort:None,Position:27,Type:0|Column#21=Name:Manufacturer 1,Fixed:False,Metric:False,Visible:False,Sort:None,Position:23,Type:0|Column#22=Name:Package/Footprint,Fixed:False,Metric:False,Visible:False,Sort:None,Position:31,Type:0|Column#23=Name:Current Rating,Fixed:False,Metric:False,Visible:False,Sort:None,Position:16,Type:0|Column#24=Name:Power,Fixed:False,Metric:False,Visible:False,Sort:None,Position:33,Type:0|Column#25=Name:Vgs (Max),Fixed:False,Metric:False,Visible:False,Sort:None,Position:39,Type:0|Column#26=Name:Family,Fixed:False,Metric:False,Visible:False,Sort:None,Position:18,Type:0|Column#27=Name:Output Voltage (Min),Fixed:False,Metric:False,Visible:False,Sort:None,Position:29,Type:0|Column#28=Name:Package,Fixed:False,Metric:False,Visible:False,Sort:None,Position:30,Type:0|Column#29=Name:Value,Fixed:False,Metric:False,Visible:False,Sort:None,Position:37,Type:0|Column#30=Name:Voltage Dropout (Max),Fixed:False,Metric:False,Visible:False,Sort:None,Position:40,Type:0|Column#31=Name:Vdss (Max),Fixed:False,Metric:False,Visible:False,Sort:None,Position:38,Type:0|Column#32=Name:Manufacturer Part Number 1,Fixed:False,Metric:False,Visible:False,Sort:None,Position:24,Type:0|Column#33=Name:Dielectric,Fixed:False,Metric:False,Visible:False,Sort:None,Position:17,Type:0|Column#34=Name:LCSC Part #,Fixed:False,Metric:False,Visible:False,Sort:None,Position:22,Type:0|Column#35=Name:Output Current,Fixed:False,Metric:False,Visible:False,Sort:None,Position:28,Type:0|Column#36=Name:Forward Voltage Drop,Fixed:False,Metric:False,Visible:False,Sort:None,Position:19,Type:0|Column#37=Name:Voltage Rating,Fixed:False,Metric:False,Visible:False,Sort:None,Position:41,Type:0|Column#38=Name:Input Voltage (Max),Fixed:False,Metric:False,Visible:False,Sort:None,Position:21,Type:0|Column#39=Name:Mounting Type,Fixed:False,Metric:False,Visible:False,Sort:None,Position:25,Type:0|Column#40=Name:Supplier 1,Fixed:False,Metric:False,Visible:False,Sort:None,Position:34,Type:0|Column#41=Name:Tolerance,Fixed:False,Metric:False,Visible:False,Sort:None,Position:36,Type:0|Column#42=Name:Operating Temperature,Fixed:False,Metric:False,Visible:False,Sort:None,Position:26,Type:0|DocumentPath=C:\Farris' Files\School\Side Projects\Electric Scooter\custom-escooter\BLDC Controller PCB\BLDC Motor Controller\BLDC Motor Controller.PcbDoc
 
 [PublishSettings]
 OutputFilePath2=C:\Farris' Files\School\Side Projects\Electric Scooter\custom-escooter\BLDC Controller PCB\BLDC Motor Controller\.PDF
@@ -65,7 +91,7 @@ PDFACompliance2=Disabled
 PDFVersion2=Default
 OutputFilePath3=
 ReleaseManaged3=1
-OutputBasePath3=
+OutputBasePath3=Project Outputs for BLDC Motor Controller
 OutputPathMedia3=
 OutputPathMediaValue3=
 OutputPathOutputer3=[Output Type]
@@ -78,7 +104,7 @@ OutputFileNameSpecial3=
 OpenOutput3=1
 OutputFilePath4=
 ReleaseManaged4=1
-OutputBasePath4=
+OutputBasePath4=Project Outputs for BLDC Motor Controller
 OutputPathMedia4=
 OutputPathMediaValue4=
 OutputPathOutputer4=[Output Type]
