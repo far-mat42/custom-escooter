@@ -225,49 +225,141 @@ Description=BUILD
 AllowFabrication=0
 ParameterCount=0
 VariationCount=1
-Variation1=Designator=R7_5V Power|UniqueId=\TZUJKOEV\LELSHPQQ|Kind=2|AlternatePart=RES_1.5kΩ_0805_1%|AltLibLink_LibIdentifierKind=Library Full Path|AltLibLink_LibraryIdentifier=C:\Farris' Files\School\Side Projects\Electric Scooter\Altium Files\Libraries\UWRT_Schematic_Library_2020.SchLib|AltLibLink_SymbolReference= |AltLibLink_DesignItemID=RES_1.5kΩ_0805_1%|AltLibLink_UseLibraryName=True|AltLibLink_SourceLibraryName=UWRT_Schematic_Library_2020.SchLib|AltLibLink_UseDBTableName=False|AltLibLink_DatabaseTableName= |AltLibLink_VaultGUID= |AltLibLink_ItemGUID= |AltLibLink_RevisionGUID= |AltLibLink_Footprint=RES0805|AltLibLink_IsSameFootprint=True
+Variation1=Designator=R7B|UniqueId=\TZUJKOEV\LELSHPQQ|Kind=2|AlternatePart=RES_1.5kΩ_0805_1%|AltLibLink_LibIdentifierKind=Library Full Path|AltLibLink_LibraryIdentifier=C:\Farris' Files\School\Side Projects\Electric Scooter\Altium Files\Libraries\UWRT_Schematic_Library_2020.SchLib|AltLibLink_SymbolReference= |AltLibLink_DesignItemID=RES_1.5kΩ_0805_1%|AltLibLink_UseLibraryName=True|AltLibLink_SourceLibraryName=UWRT_Schematic_Library_2020.SchLib|AltLibLink_UseDBTableName=False|AltLibLink_DatabaseTableName= |AltLibLink_VaultGUID= |AltLibLink_ItemGUID= |AltLibLink_RevisionGUID= |AltLibLink_Footprint=RES0805|AltLibLink_IsSameFootprint=True
 ParamVariation1=ParameterName=Comment|VariantValue=RES_1.5kΩ_0805_1%
-ParamDesignator1=R7_5V Power
+ParamDesignator1=R7B
 ParamVariation2=ParameterName=Component Kind|VariantValue=Standard
-ParamDesignator2=R7_5V Power
+ParamDesignator2=R7B
 ParamVariation3=ParameterName=Description|VariantValue=RES 1.5K OHM 1% 1/4W 0805
-ParamDesignator3=R7_5V Power
+ParamDesignator3=R7B
 ParamVariation4=ParameterName=Footprint|VariantValue=RES0805
-ParamDesignator4=R7_5V Power
+ParamDesignator4=R7B
 ParamVariation5=ParameterName=Ibis Model|VariantValue= 
-ParamDesignator5=R7_5V Power
+ParamDesignator5=R7B
 ParamVariation6=ParameterName=Library Reference|VariantValue=RES_1.5kΩ_0805_1%
-ParamDesignator6=R7_5V Power
+ParamDesignator6=R7B
 ParamVariation7=ParameterName=Manufacturer 1|VariantValue=Stackpole Electronics Inc
-ParamDesignator7=R7_5V Power
+ParamDesignator7=R7B
 ParamVariation8=ParameterName=Manufacturer Part Number 1|VariantValue=RNCP0805FTD1K50
-ParamDesignator8=R7_5V Power
+ParamDesignator8=R7B
 ParamVariation9=ParameterName=Mounting Type|VariantValue=SMD
-ParamDesignator9=R7_5V Power
+ParamDesignator9=R7B
 ParamVariation10=ParameterName=Package|VariantValue=0805
-ParamDesignator10=R7_5V Power
+ParamDesignator10=R7B
 ParamVariation11=ParameterName=PCB3D|VariantValue= 
-ParamDesignator11=R7_5V Power
+ParamDesignator11=R7B
 ParamVariation12=ParameterName=Pin Info|VariantValue= 
-ParamDesignator12=R7_5V Power
+ParamDesignator12=R7B
 ParamVariation13=ParameterName=Power|VariantValue=0.125W, 1/8W
-ParamDesignator13=R7_5V Power
+ParamDesignator13=R7B
 ParamVariation14=ParameterName=Signal Integrity|VariantValue= 
-ParamDesignator14=R7_5V Power
+ParamDesignator14=R7B
 ParamVariation15=ParameterName=Simulation|VariantValue= 
-ParamDesignator15=R7_5V Power
+ParamDesignator15=R7B
 ParamVariation16=ParameterName=Supplier 1|VariantValue=Digi-Key
-ParamDesignator16=R7_5V Power
+ParamDesignator16=R7B
 ParamVariation17=ParameterName=Supplier Part Number 1|VariantValue=311-845CRCT-ND
-ParamDesignator17=R7_5V Power
+ParamDesignator17=R7B
 ParamVariation18=ParameterName=Tolerance|VariantValue=1%
-ParamDesignator18=R7_5V Power
+ParamDesignator18=R7B
 ParamVariation19=ParameterName=Value|VariantValue=1.5kΩ
-ParamDesignator19=R7_5V Power
+ParamDesignator19=R7B
 ParamVariationCount=19
 
 [GeneratedDocument1]
+DocumentPath=Project Outputs for BLDC Motor Controller\BLDC Motor Controller.DRR
+DItemRevisionGUID=
+
+[GeneratedDocument2]
+DocumentPath=Project Outputs for BLDC Motor Controller\BLDC Motor Controller.EXTREP
+DItemRevisionGUID=
+
+[GeneratedDocument3]
+DocumentPath=Project Outputs for BLDC Motor Controller\BLDC Motor Controller.G1
+DItemRevisionGUID=
+
+[GeneratedDocument4]
+DocumentPath=Project Outputs for BLDC Motor Controller\BLDC Motor Controller.G2
+DItemRevisionGUID=
+
+[GeneratedDocument5]
+DocumentPath=Project Outputs for BLDC Motor Controller\BLDC Motor Controller.GBL
+DItemRevisionGUID=
+
+[GeneratedDocument6]
+DocumentPath=Project Outputs for BLDC Motor Controller\BLDC Motor Controller.GBS
+DItemRevisionGUID=
+
+[GeneratedDocument7]
+DocumentPath=Project Outputs for BLDC Motor Controller\BLDC Motor Controller.GD1
+DItemRevisionGUID=
+
+[GeneratedDocument8]
+DocumentPath=Project Outputs for BLDC Motor Controller\BLDC Motor Controller.GG1
+DItemRevisionGUID=
+
+[GeneratedDocument9]
+DocumentPath=Project Outputs for BLDC Motor Controller\BLDC Motor Controller.GM
+DItemRevisionGUID=
+
+[GeneratedDocument10]
+DocumentPath=Project Outputs for BLDC Motor Controller\BLDC Motor Controller.GM1
+DItemRevisionGUID=
+
+[GeneratedDocument11]
+DocumentPath=Project Outputs for BLDC Motor Controller\BLDC Motor Controller.GM2
+DItemRevisionGUID=
+
+[GeneratedDocument12]
+DocumentPath=Project Outputs for BLDC Motor Controller\BLDC Motor Controller.GM9
+DItemRevisionGUID=
+
+[GeneratedDocument13]
+DocumentPath=Project Outputs for BLDC Motor Controller\BLDC Motor Controller.GPB
+DItemRevisionGUID=
+
+[GeneratedDocument14]
+DocumentPath=Project Outputs for BLDC Motor Controller\BLDC Motor Controller.GPT
+DItemRevisionGUID=
+
+[GeneratedDocument15]
+DocumentPath=Project Outputs for BLDC Motor Controller\BLDC Motor Controller.GTL
+DItemRevisionGUID=
+
+[GeneratedDocument16]
+DocumentPath=Project Outputs for BLDC Motor Controller\BLDC Motor Controller.GTO
+DItemRevisionGUID=
+
+[GeneratedDocument17]
+DocumentPath=Project Outputs for BLDC Motor Controller\BLDC Motor Controller.GTP
+DItemRevisionGUID=
+
+[GeneratedDocument18]
+DocumentPath=Project Outputs for BLDC Motor Controller\BLDC Motor Controller.GTS
+DItemRevisionGUID=
+
+[GeneratedDocument19]
+DocumentPath=Project Outputs for BLDC Motor Controller\BLDC Motor Controller.LDP
+DItemRevisionGUID=
+
+[GeneratedDocument20]
+DocumentPath=Project Outputs for BLDC Motor Controller\BLDC Motor Controller.REP
+DItemRevisionGUID=
+
+[GeneratedDocument21]
+DocumentPath=Project Outputs for BLDC Motor Controller\BLDC Motor Controller.RUL
+DItemRevisionGUID=
+
+[GeneratedDocument22]
+DocumentPath=Project Outputs for BLDC Motor Controller\BLDC Motor Controller.TXT
+DItemRevisionGUID=
+
+[GeneratedDocument23]
 DocumentPath=Project Outputs for BLDC Motor Controller\Design Rule Check - BLDC Motor Controller.html
+DItemRevisionGUID=
+
+[GeneratedDocument24]
+DocumentPath=Project Outputs for BLDC Motor Controller\Pick Place for BLDC Motor Controller(BUILD).csv
 DItemRevisionGUID=
 
 [Configuration1]
@@ -532,44 +624,48 @@ Name=Assembly Outputs
 Description=
 TargetPrinter=Microsoft Print to PDF
 PrinterOptions=Record=PrinterOptions|Copies=1|Duplex=1|TrueTypeOptions=3|Collate=1|PrintJobKind=1|PrintWhat=1
-OutputType1=Assembly
-OutputName1=Assembly Drawings
+OutputType1=Test Points For Assembly
+OutputName1=Test Point Report
 OutputDocumentPath1=
 OutputVariantName1=[No Variations]
 OutputDefault1=0
-PageOptions1=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-3|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=A4|PaperIndex=9
 OutputType2=Pick Place
 OutputName2=Generates pick and place files
 OutputDocumentPath2=
 OutputVariantName2=[No Variations]
 OutputDefault2=0
-OutputType3=Test Points For Assembly
-OutputName3=Test Point Report
+Configuration2_Name1=ForceUpdateSettings
+Configuration2_Item1=False
+Configuration2_Name2=OutputConfigurationParameter1
+Configuration2_Item2=Record=PickPlaceView|Units=Metric|GenerateCSVFormat=True|GenerateTextFormat=False|ShowUnits=True|Separator=.|ExcludeFilterParam=False|IncludeVariations=False|IncludeStandardNoBOM=True|Filter= |FilterActive=False|YFlip=False|DifferentFootprints=False|Column#1=Name:Designator,Fixed:True,Metric:False,Visible:True,Sort:Ascending,SortIndex:0,Position:0|Column#2=Name:Comment,Fixed:True,Metric:False,Visible:False,Sort:None,Position:1|Column#3=Name:Layer,Fixed:True,Metric:False,Visible:True,Sort:None,Position:6|Column#4=Name:Footprint,Fixed:True,Metric:False,Visible:False,Sort:None,Position:2|Column#5=Name:Footprint Description,Fixed:True,Metric:False,Visible:False,Sort:None,Position:3|Column#6=Name:Center-X,Fixed:True,Metric:True,Visible:True,Sort:None,Position:4|Column#7=Name:Center-Y,Fixed:True,Metric:True,Visible:True,Sort:None,Position:5|Column#8=Name:Rotation,Fixed:True,Metric:False,Visible:True,Sort:None,Position:7|Column#9=Name:Description,Fixed:True,Metric:False,Visible:False,Sort:None,Position:8|Column#10=Name:ComponentKind,Fixed:True,Metric:False,Visible:False,Sort:None,Position:9|Column#11=Name:Height,Fixed:True,Metric:True,Visible:False,Sort:None,Position:10|Column#12=Name:Ref-X,Fixed:True,Metric:True,Visible:False,Sort:None,Position:11|Column#13=Name:Ref-Y,Fixed:True,Metric:True,Visible:False,Sort:None,Position:12|Column#14=Name:Pad-X,Fixed:True,Metric:True,Visible:False,Sort:None,Position:13|Column#15=Name:Pad-Y,Fixed:True,Metric:True,Visible:False,Sort:None,Position:14|Column#16=Name:Variation,Fixed:True,Metric:False,Visible:False,Sort:None,Position:15|Column#17=Name:Supplier Part Number 1,Fixed:False,Metric:False,Visible:False,Sort:None,Position:35,Type:0|Column#18=Name:Pitch,Fixed:False,Metric:False,Visible:False,Sort:None,Position:32,Type:0|Column#19=Name:Id,Fixed:False,Metric:False,Visible:False,Sort:None,Position:20,Type:0|Column#20=Name:Orientation,Fixed:False,Metric:False,Visible:False,Sort:None,Position:27,Type:0|Column#21=Name:Manufacturer 1,Fixed:False,Metric:False,Visible:False,Sort:None,Position:23,Type:0|Column#22=Name:Package/Footprint,Fixed:False,Metric:False,Visible:False,Sort:None,Position:31,Type:0|Column#23=Name:Current Rating,Fixed:False,Metric:False,Visible:False,Sort:None,Position:16,Type:0|Column#24=Name:Power,Fixed:False,Metric:False,Visible:False,Sort:None,Position:33,Type:0|Column#25=Name:Vgs (Max),Fixed:False,Metric:False,Visible:False,Sort:None,Position:39,Type:0|Column#26=Name:Family,Fixed:False,Metric:False,Visible:False,Sort:None,Position:18,Type:0|Column#27=Name:Output Voltage (Min),Fixed:False,Metric:False,Visible:False,Sort:None,Position:29,Type:0|Column#28=Name:Package,Fixed:False,Metric:False,Visible:False,Sort:None,Position:30,Type:0|Column#29=Name:Value,Fixed:False,Metric:False,Visible:False,Sort:None,Position:37,Type:0|Column#30=Name:Voltage Dropout (Max),Fixed:False,Metric:False,Visible:False,Sort:None,Position:40,Type:0|Column#31=Name:Vdss (Max),Fixed:False,Metric:False,Visible:False,Sort:None,Position:38,Type:0|Column#32=Name:Manufacturer Part Number 1,Fixed:False,Metric:False,Visible:False,Sort:None,Position:24,Type:0|Column#33=Name:Dielectric,Fixed:False,Metric:False,Visible:False,Sort:None,Position:17,Type:0|Column#34=Name:LCSC Part #,Fixed:False,Metric:False,Visible:False,Sort:None,Position:22,Type:0|Column#35=Name:Output Current,Fixed:False,Metric:False,Visible:False,Sort:None,Position:28,Type:0|Column#36=Name:Forward Voltage Drop,Fixed:False,Metric:False,Visible:False,Sort:None,Position:19,Type:0|Column#37=Name:Voltage Rating,Fixed:False,Metric:False,Visible:False,Sort:None,Position:41,Type:0|Column#38=Name:Input Voltage (Max),Fixed:False,Metric:False,Visible:False,Sort:None,Position:21,Type:0|Column#39=Name:Mounting Type,Fixed:False,Metric:False,Visible:False,Sort:None,Position:25,Type:0|Column#40=Name:Supplier 1,Fixed:False,Metric:False,Visible:False,Sort:None,Position:34,Type:0|Column#41=Name:Tolerance,Fixed:False,Metric:False,Visible:False,Sort:None,Position:36,Type:0|Column#42=Name:Operating Temperature,Fixed:False,Metric:False,Visible:False,Sort:None,Position:26,Type:0|DocumentPath=C:\Farris' Files\School\Side Projects\Electric Scooter\custom-escooter\BLDC Controller PCB\BLDC Motor Controller\BLDC Motor Controller.PcbDoc
+OutputType3=Assembly
+OutputName3=Assembly Drawings
 OutputDocumentPath3=
 OutputVariantName3=[No Variations]
 OutputDefault3=0
+PageOptions3=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-3|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=A4|PaperIndex=9
 
 [OutputGroup5]
 Name=Fabrication Outputs
 Description=
 TargetPrinter=Microsoft Print to PDF
 PrinterOptions=Record=PrinterOptions|Copies=1|Duplex=1|TrueTypeOptions=3|Collate=1|PrintJobKind=1|PrintWhat=1
-OutputType1=Board Stack Report
-OutputName1=Report Board Stack
+OutputType1=CompositeDrill
+OutputName1=Composite Drill Drawing
 OutputDocumentPath1=
-OutputVariantName1=
+OutputVariantName1=[No Variations]
 OutputDefault1=0
 PageOptions1=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-3|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=A4|PaperIndex=9
-OutputType2=CompositeDrill
-OutputName2=Composite Drill Drawing
+OutputType2=Drill
+OutputName2=Drill Drawing/Guides
 OutputDocumentPath2=
 OutputVariantName2=[No Variations]
 OutputDefault2=0
 PageOptions2=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-3|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=A4|PaperIndex=9
-OutputType3=Drill
-OutputName3=Drill Drawing/Guides
+OutputType3=Board Stack Report
+OutputName3=Report Board Stack
 OutputDocumentPath3=
-OutputVariantName3=[No Variations]
+OutputVariantName3=
 OutputDefault3=0
 PageOptions3=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-3|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=A4|PaperIndex=9
 OutputType4=Final
@@ -578,48 +674,56 @@ OutputDocumentPath4=
 OutputVariantName4=[No Variations]
 OutputDefault4=0
 PageOptions4=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-3|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=A4|PaperIndex=9
-OutputType5=Gerber
-OutputName5=Gerber Files
+OutputType5=Gerber X2
+OutputName5=Gerber X2 Files
 OutputDocumentPath5=
 OutputVariantName5=[No Variations]
 OutputDefault5=0
-OutputType6=Gerber X2
-OutputName6=Gerber X2 Files
+OutputType6=ODB
+OutputName6=ODB++ Files
 OutputDocumentPath6=
 OutputVariantName6=[No Variations]
 OutputDefault6=0
-OutputType7=IPC2581
-OutputName7=IPC-2581 Files
+OutputType7=Mask
+OutputName7=Solder/Paste Mask Prints
 OutputDocumentPath7=
 OutputVariantName7=[No Variations]
 OutputDefault7=0
-OutputType8=Mask
-OutputName8=Solder/Paste Mask Prints
+PageOptions7=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-3|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=A4|PaperIndex=9
+OutputType8=NC Drill
+OutputName8=NC Drill Files
 OutputDocumentPath8=
-OutputVariantName8=[No Variations]
+OutputVariantName8=
 OutputDefault8=0
-PageOptions8=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-3|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=A4|PaperIndex=9
-OutputType9=NC Drill
-OutputName9=NC Drill Files
+Configuration8_Name1=ForceUpdateSettings
+Configuration8_Item1=False
+Configuration8_Name2=OutputConfigurationParameter1
+Configuration8_Item2=BoardEdgeRoutToolDia=2000000|GenerateBoardEdgeRout=False|GenerateDrilledSlotsG85=False|GenerateEIADrillFile=False|GenerateSeparatePlatedNonPlatedFiles=False|GenerateSeparateViaTypeFiles=False|GenerateToolsByDrillSymbols=False|NumberOfDecimals=4|NumberOfUnits=2|OptimizeChangeLocationCommands=True|OriginPosition=Relative|Record=DrillView|Units=Imperial|ZeroesMode=SuppressLeadingZeroes|DocumentPath=C:\Farris' Files\School\Side Projects\Electric Scooter\custom-escooter\BLDC Controller PCB\BLDC Motor Controller\BLDC Motor Controller.PcbDoc
+OutputType9=IPC2581
+OutputName9=IPC-2581 Files
 OutputDocumentPath9=
-OutputVariantName9=
+OutputVariantName9=[No Variations]
 OutputDefault9=0
-OutputType10=ODB
-OutputName10=ODB++ Files
+OutputType10=Plane
+OutputName10=Power-Plane Prints
 OutputDocumentPath10=
 OutputVariantName10=[No Variations]
 OutputDefault10=0
-OutputType11=Plane
-OutputName11=Power-Plane Prints
+PageOptions10=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-3|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=A4|PaperIndex=9
+OutputType11=Test Points
+OutputName11=Test Point Report
 OutputDocumentPath11=
-OutputVariantName11=[No Variations]
+OutputVariantName11=
 OutputDefault11=0
-PageOptions11=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-3|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=A4|PaperIndex=9
-OutputType12=Test Points
-OutputName12=Test Point Report
+OutputType12=Gerber
+OutputName12=Gerber Files
 OutputDocumentPath12=
-OutputVariantName12=
+OutputVariantName12=[No Variations]
 OutputDefault12=0
+Configuration12_Name1=ForceUpdateSettings
+Configuration12_Item1=False
+Configuration12_Name2=OutputConfigurationParameter1
+Configuration12_Item2=AddToAllLayerClasses.Set= |AddToAllPlots.Set=SerializeLayerHash.Version~2,ClassName~TPlotLayerStateArray|BoardID=TUGEUROP|CentrePlots=False|DrillDrawingSymbol=GraphicsSymbol|DrillDrawingSymbolSize=500000|EmbeddedApertures=True|FilmBorderSize=10000000|FilmXSize=200000000|FilmYSize=160000000|FlashAllFills=False|FlashPadShapes=True|G54OnApertureChange=False|GenerateDRCRulesFile=True|GenerateDRCRulesFile=True|GenerateReliefShapes=True|GenerateReports=True|GerberUnit=Imperial|GerberUnit=Imperial|IncludeUnconnectedMidLayerPads=True|LayerClassesMirror.Set= |LayerClassesPlot.Set= |LeadingAndTrailingZeroesMode=SuppressLeadingZeroes|MaxApertureSize=2500000|MergePadAndRegion=False|MinusApertureTolerance=50|MinusApertureTolerance=50|Mirror.Set=SerializeLayerHash.Version~2,ClassName~TPlotLayerStateArray|MirrorDrillDrawingPlots=False|MirrorDrillGuidePlots=False|NoRegularPolygons=False|NumberOfDecimals=5|NumberOfDecimals=5|OptimizeChangeLocationCommands=True|OptimizeChangeLocationCommands=True|OriginPosition=Relative|Panelize=False|Plot.Set=SerializeLayerHash.Version~2,ClassName~TPlotLayerStateArray,16777217~1,16777218~1,16777219~1,16842751~1,16973830~1,16973834~1,16973835~1,16973832~1,16908289~1,16908297~1,16973848~1,16973849~1,16908290~1|PlotBoardProfile=True|PlotBoardProfileFileName=BLDC Motor Controller.GM|PlotDrillDrawingLayerPair0_Backdrill=False|PlotDrillDrawingLayerPair0_Checked=True|PlotDrillDrawingLayerPair0_DrillType=Regular|PlotDrillDrawingLayerPair0_FileName=BLDC Motor Controller.GD1|PlotDrillDrawingLayerPair0_HighLayer=Bottom Layer|PlotDrillDrawingLayerPair0_LowLayer=Top Layer|PlotDrillGuideLayerPair0_Backdrill=False|PlotDrillGuideLayerPair0_Checked=True|PlotDrillGuideLayerPair0_DrillType=Regular|PlotDrillGuideLayerPair0_FileName=BLDC Motor Controller.GG1|PlotDrillGuideLayerPair0_HighLayer=Bottom Layer|PlotDrillGuideLayerPair0_LowLayer=Top Layer|PlotPositivePlaneLayers=False|PlotUsedDrillDrawingLayerPairs=False|PlotUsedDrillGuideLayerPairs=False|PlusApertureTolerance=50|PlusApertureTolerance=50|Record=GerberView|SoftwareArcs=True|Sorted=False|Sorted=False|UserLayerName.Caption0=BLDC Motor Controller.GBO|UserLayerName.Caption1=BLDC Motor Controller.GTP|UserLayerName.Caption10=BLDC Motor Controller.G1|UserLayerName.Caption11=BLDC Motor Controller.GM9|UserLayerName.Caption12=BLDC Motor Controller.GM10|UserLayerName.Caption13=BLDC Motor Controller.GBS|UserLayerName.Caption14=BLDC Motor Controller.GM16|UserLayerName.Caption15=BLDC Motor Controller.G2|UserLayerName.Caption16=BLDC Motor Controller.GM6|UserLayerName.Caption17=BLDC Motor Controller.GM1|UserLayerName.Caption18=BLDC Motor Controller.GBL|UserLayerName.Caption19=BLDC Motor Controller.GM15|UserLayerName.Caption2=BLDC Motor Controller.GTO|UserLayerName.Caption20=BLDC Motor Controller.GTL|UserLayerName.Caption21=BLDC Motor Controller.GKO|UserLayerName.Caption3=BLDC Motor Controller.GTS|UserLayerName.Caption4=BLDC Motor Controller.GM4|UserLayerName.Caption5=BLDC Motor Controller.GM2|UserLayerName.Caption6=BLDC Motor Controller.GM13|UserLayerName.Caption7=BLDC Motor Controller.GPT|UserLayerName.Caption8=BLDC Motor Controller.GPB|UserLayerName.Caption9=BLDC Motor Controller.GBP|UserLayerName.Count=22|UserLayerName.Layer0=16973831|UserLayerName.Layer1=16973832|UserLayerName.Layer10=16777218|UserLayerName.Layer11=16908297|UserLayerName.Layer12=16908298|UserLayerName.Layer13=16973835|UserLayerName.Layer14=16908304|UserLayerName.Layer15=16777219|UserLayerName.Layer16=16908294|UserLayerName.Layer17=16908289|UserLayerName.Layer18=16842751|UserLayerName.Layer19=16908303|UserLayerName.Layer2=16973830|UserLayerName.Layer20=16777217|UserLayerName.Layer21=16973837|UserLayerName.Layer3=16973834|UserLayerName.Layer4=16908292|UserLayerName.Layer5=16908290|UserLayerName.Layer6=16908301|UserLayerName.Layer7=16973848|UserLayerName.Layer8=16973849|UserLayerName.Layer9=16973833|DocumentPath=C:\Farris' Files\School\Side Projects\Electric Scooter\custom-escooter\BLDC Controller PCB\BLDC Motor Controller\BLDC Motor Controller.PcbDoc
 
 [OutputGroup6]
 Name=Report Outputs
