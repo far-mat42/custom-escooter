@@ -114,7 +114,7 @@ ClassGenCCAutoRoomEnabled=0
 ClassGenNCAutoScope=None
 DItemRevisionGUID=
 GenerateClassCluster=0
-DocumentUniqueId=
+DocumentUniqueId=DPFTEXWW
 
 [Document5]
 DocumentPath=..\..\Altium Files\Libraries\Personal_Schematic_Library_2022.SchLib
@@ -131,7 +131,7 @@ ClassGenCCAutoRoomEnabled=0
 ClassGenNCAutoScope=None
 DItemRevisionGUID=
 GenerateClassCluster=0
-DocumentUniqueId=
+DocumentUniqueId=DTXTIUXS
 
 [Document6]
 DocumentPath=Cell_Balancing.SchDoc
@@ -151,6 +151,23 @@ GenerateClassCluster=0
 DocumentUniqueId=NBNRFZRN
 
 [Document7]
+DocumentPath=STM32_MCU.SchDoc
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=PQGZFLMQ
+
+[Document8]
 DocumentPath=Power_3V3.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -167,7 +184,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=YTWABLYV
 
-[Document8]
+[Document9]
 DocumentPath=MAX14921_AFE.Harness
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -184,7 +201,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document9]
+[Document10]
 DocumentPath=Temperature_Sense.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
