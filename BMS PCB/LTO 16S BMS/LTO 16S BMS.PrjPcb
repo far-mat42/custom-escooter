@@ -269,6 +269,35 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=YEYIISFD
 
+[Document14]
+DocumentPath=High_Side_Switch.Harness
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=
+
+[Parameter1]
+Name=Revision
+Value=1.0
+
+[Parameter2]
+Name=Title
+Value=LTO 16S BMS
+
+[Parameter3]
+Name=Engineer
+Value=Farris Matar
+
 [Configuration1]
 Name=Sources
 ParameterCount=0
@@ -1283,6 +1312,7 @@ Net2=NetName=5V|NetColor=$0049885D
 Net3=NetName=NetC4_2|NetColor=$00E8864A
 Net4=NetName=VBAT-|NetColor=$00999999
 Net5=NetName=VBAT+|NetColor=$00000098
+Net6=NetName=VPACK+|NetColor=clRed
 
 [Comparison Options]
 ComparisonOptions0=Kind=Net|MinPercent=75|MinMatch=3|ShowMatch=0|UseName=-1|InclAllRules=0
