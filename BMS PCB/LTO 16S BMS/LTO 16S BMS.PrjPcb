@@ -320,17 +320,34 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=AFNEQROS
 
+[Document17]
+DocumentPath=Pack_Interface.Harness
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=
+
 [Parameter1]
-Name=Engineer
-Value=Farris Matar
+Name=Title
+Value=LTO 16S BMS
 
 [Parameter2]
 Name=Revision
 Value=1.0
 
 [Parameter3]
-Name=Title
-Value=LTO 16S BMS
+Name=Engineer
+Value=Farris Matar
 
 [Configuration1]
 Name=Sources
@@ -1128,7 +1145,7 @@ Type6=2
 Type7=0
 Type8=1
 Type9=1
-Type10=1
+Type10=0
 Type11=2
 Type12=2
 Type13=2
