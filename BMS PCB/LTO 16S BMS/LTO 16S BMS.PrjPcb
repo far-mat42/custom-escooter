@@ -83,7 +83,7 @@ GenerateClassCluster=0
 DocumentUniqueId=ROMQLGMI
 
 [Document3]
-DocumentPath=MAX14921_AFE.SchDoc
+DocumentPath=BQ76952_AFE.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
@@ -168,7 +168,7 @@ GenerateClassCluster=0
 DocumentUniqueId=YTWABLYV
 
 [Document8]
-DocumentPath=MAX14921_AFE.Harness
+DocumentPath=BQ76952_AFE.Harness
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
