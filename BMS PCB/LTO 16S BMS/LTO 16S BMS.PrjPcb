@@ -219,7 +219,7 @@ GenerateClassCluster=0
 DocumentUniqueId=
 
 [Document11]
-DocumentPath=High_Side_Switch.SchDoc
+DocumentPath=High_Side_FETs.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
@@ -304,7 +304,7 @@ GenerateClassCluster=0
 DocumentUniqueId=VHDVSWXE
 
 [Document16]
-DocumentPath=High_Side_Switch.Harness
+DocumentPath=High_Side_FETs.Harness
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
