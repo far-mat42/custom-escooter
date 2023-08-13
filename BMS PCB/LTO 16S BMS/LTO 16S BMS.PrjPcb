@@ -609,12 +609,6 @@ OutputDocumentPath14=
 OutputVariantName14=[No Variations]
 OutputDefault14=0
 PageOptions14=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-3|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=A4|PaperIndex=9
-OutputType15=PCBDrawing
-OutputName15=Draftsman
-OutputDocumentPath15=
-OutputVariantName15=[No Variations]
-OutputDefault15=0
-PageOptions15=Record=PageOptions|CenterHorizontal=True|CenterVertical=True|PrintScale=1.00|XCorrection=1.00|YCorrection=1.00|PrintKind=1|BorderSize=5000000|LeftOffset=0|BottomOffset=0|Orientation=2|PaperLength=1000|PaperWidth=1000|Scale=100|PaperSource=7|PrintQuality=-3|MediaType=1|DitherType=10|PrintScaleMode=1|PaperKind=A4|PaperIndex=9
 
 [OutputGroup4]
 Name=Assembly Outputs
@@ -1412,11 +1406,13 @@ PartTypes=0
 Net1=NetName=1V8|NetColor=$001D7638
 Net2=NetName=3V3|NetColor=$00E8864A
 Net3=NetName=5V|NetColor=$0049885D
-Net4=NetName=NetC4_2|NetColor=$00E8864A
-Net5=NetName=VBAT-|NetColor=$00666666
-Net6=NetName=VBAT+|NetColor=$00000098
-Net7=NetName=VPACK-|NetColor=$00666666
-Net8=NetName=VPACK+|NetColor=clRed
+Net4=NetName=CPACK+|NetColor=$000099FF
+Net5=NetName=NetC36_1|NetColor=$000099FF
+Net6=NetName=NetC4_2|NetColor=$00E8864A
+Net7=NetName=VBAT-|NetColor=$00666666
+Net8=NetName=VBAT+|NetColor=$00000098
+Net9=NetName=VPACK-|NetColor=$00666666
+Net10=NetName=VPACK+|NetColor=clRed
 
 [Comparison Options]
 ComparisonOptions0=Kind=Net|MinPercent=75|MinMatch=3|ShowMatch=0|UseName=-1|InclAllRules=0
