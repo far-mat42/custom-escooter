@@ -321,6 +321,23 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=VWMEAYVV
 
+[Document17]
+DocumentPath=LTO 16S BMS.BomDoc
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=
+
 [ProjectVariant1]
 UniqueID=AFBFE0E9-C139-4BCE-A2B7-B05FB35DD58C
 Description=BUILD
