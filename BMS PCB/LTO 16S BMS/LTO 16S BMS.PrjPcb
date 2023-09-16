@@ -1465,7 +1465,7 @@ Net3=NetName=5V|NetColor=$0049885D
 Net4=NetName=CPACK+|NetColor=$000099FF
 Net5=NetName=NetC36_1|NetColor=$000099FF
 Net6=NetName=NetC4_2|NetColor=$00E8864A
-Net7=NetName=VBAT-|NetColor=$00666666
+Net7=NetName=VBAT-|NetColor=$00999999
 Net8=NetName=VBAT+|NetColor=$00000098
 Net9=NetName=VPACK-|NetColor=$00666666
 Net10=NetName=VPACK+|NetColor=clRed
