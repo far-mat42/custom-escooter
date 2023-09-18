@@ -355,6 +355,10 @@ Variation8=Designator=R90|UniqueId=\OVWQHXVW\NNEVQFIR|Kind=1|AlternatePart=
 Variation9=Designator=R91|UniqueId=\OVWQHXVW\KVDNWAIR|Kind=1|AlternatePart= 
 ParamVariationCount=0
 
+[GeneratedDocument1]
+DocumentPath=Project Outputs for LTO 16S BMS\Design Rule Check - LTO 16S BMS.html
+DItemRevisionGUID=
+
 [Parameter1]
 Name=Engineer
 Value=Farris Matar
@@ -1465,7 +1469,7 @@ Net3=NetName=5V|NetColor=$0049885D
 Net4=NetName=CPACK+|NetColor=$000099FF
 Net5=NetName=NetC36_1|NetColor=$000099FF
 Net6=NetName=NetC4_2|NetColor=$00E8864A
-Net7=NetName=VBAT-|NetColor=$00999999
+Net7=NetName=VBAT-|NetColor=$00666666
 Net8=NetName=VBAT+|NetColor=$00000098
 Net9=NetName=VPACK-|NetColor=$00666666
 Net10=NetName=VPACK+|NetColor=clRed
