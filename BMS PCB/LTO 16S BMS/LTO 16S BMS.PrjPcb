@@ -359,6 +359,70 @@ ParamVariationCount=0
 DocumentPath=Project Outputs for LTO 16S BMS\Design Rule Check - LTO 16S BMS.html
 DItemRevisionGUID=
 
+[GeneratedDocument2]
+DocumentPath=Project Outputs for LTO 16S BMS\NC Drill\LTO 16S BMS.DRR
+DItemRevisionGUID=
+
+[GeneratedDocument3]
+DocumentPath=Project Outputs for LTO 16S BMS\Gerber\LTO 16S BMS.EXTREP
+DItemRevisionGUID=
+
+[GeneratedDocument4]
+DocumentPath=Project Outputs for LTO 16S BMS\Gerber\LTO 16S BMS.G1
+DItemRevisionGUID=
+
+[GeneratedDocument5]
+DocumentPath=Project Outputs for LTO 16S BMS\Gerber\LTO 16S BMS.G2
+DItemRevisionGUID=
+
+[GeneratedDocument6]
+DocumentPath=Project Outputs for LTO 16S BMS\Gerber\LTO 16S BMS.GBL
+DItemRevisionGUID=
+
+[GeneratedDocument7]
+DocumentPath=Project Outputs for LTO 16S BMS\Gerber\LTO 16S BMS.GBO
+DItemRevisionGUID=
+
+[GeneratedDocument8]
+DocumentPath=Project Outputs for LTO 16S BMS\Gerber\LTO 16S BMS.GBP
+DItemRevisionGUID=
+
+[GeneratedDocument9]
+DocumentPath=Project Outputs for LTO 16S BMS\Gerber\LTO 16S BMS.GBS
+DItemRevisionGUID=
+
+[GeneratedDocument10]
+DocumentPath=Project Outputs for LTO 16S BMS\Gerber\LTO 16S BMS.GM1
+DItemRevisionGUID=
+
+[GeneratedDocument11]
+DocumentPath=Project Outputs for LTO 16S BMS\Gerber\LTO 16S BMS.GTL
+DItemRevisionGUID=
+
+[GeneratedDocument12]
+DocumentPath=Project Outputs for LTO 16S BMS\Gerber\LTO 16S BMS.GTO
+DItemRevisionGUID=
+
+[GeneratedDocument13]
+DocumentPath=Project Outputs for LTO 16S BMS\Gerber\LTO 16S BMS.GTP
+DItemRevisionGUID=
+
+[GeneratedDocument14]
+DocumentPath=Project Outputs for LTO 16S BMS\Gerber\LTO 16S BMS.GTS
+DItemRevisionGUID=
+
+[GeneratedDocument15]
+DocumentPath=Project Outputs for LTO 16S BMS\NC Drill\LTO 16S BMS.LDP
+DItemRevisionGUID=
+
+[GeneratedDocument16]
+DocumentPath=Project Outputs for LTO 16S BMS\Gerber\LTO 16S BMS.REP
+DItemRevisionGUID=
+
+[GeneratedDocument17]
+DocumentPath=Project Outputs for LTO 16S BMS\NC Drill\LTO 16S BMS.TXT
+DItemRevisionGUID=
+
 [Parameter1]
 Name=Engineer
 Value=Farris Matar
@@ -693,6 +757,10 @@ OutputName5=Gerber Files
 OutputDocumentPath5=
 OutputVariantName5=[No Variations]
 OutputDefault5=0
+Configuration5_Name1=ForceUpdateSettings
+Configuration5_Item1=False
+Configuration5_Name2=OutputConfigurationParameter1
+Configuration5_Item2=AddToAllLayerClasses.Set= |AddToAllPlots.Set=SerializeLayerHash.Version~2,ClassName~TPlotLayerStateArray|BoardID=VHDVSWXE|CentrePlots=False|DrillDrawingSymbol=GraphicsSymbol|DrillDrawingSymbolSize=500000|EmbeddedApertures=True|FilmBorderSize=10000000|FilmXSize=200000000|FilmYSize=160000000|FlashAllFills=False|FlashPadShapes=True|G54OnApertureChange=False|GenerateDRCRulesFile=False|GenerateDRCRulesFile=False|GenerateReliefShapes=True|GenerateReports=True|GerberUnit=Metric|GerberUnit=Metric|IncludeUnconnectedMidLayerPads=True|LayerClassesMirror.Set= |LayerClassesPlot.Set= |LeadingAndTrailingZeroesMode=SuppressLeadingZeroes|MaxApertureSize=2500000|MergePadAndRegion=False|MinusApertureTolerance=50|MinusApertureTolerance=50|Mirror.Set=SerializeLayerHash.Version~2,ClassName~TPlotLayerStateArray|MirrorDrillDrawingPlots=False|MirrorDrillGuidePlots=False|NoRegularPolygons=False|NumberOfDecimals=4|NumberOfDecimals=4|OptimizeChangeLocationCommands=True|OptimizeChangeLocationCommands=True|OriginPosition=Relative|OutputFormat=Different|Panelize=False|Plot.Set=SerializeLayerHash.Version~2,ClassName~TPlotLayerStateArray|PlotBoardProfile=False|PlotBoardProfileFileName= |PlotPositivePlaneLayers=False|PlotUsedDrillDrawingLayerPairs=False|PlotUsedDrillGuideLayerPairs=False|PlusApertureTolerance=50|PlusApertureTolerance=50|Record=GerberView|SoftwareArcs=False|Sorted=False|Sorted=False|DocumentPath=C:\Farris' Files\School\Side Projects\Electric Scooter\custom-escooter\BMS PCB\LTO 16S BMS\LTO 16S BMS.PcbDoc
 OutputType6=Gerber X2
 OutputName6=Gerber X2 Files
 OutputDocumentPath6=
@@ -1469,7 +1537,7 @@ Net3=NetName=5V|NetColor=$0049885D
 Net4=NetName=CPACK+|NetColor=$000099FF
 Net5=NetName=NetC36_1|NetColor=$000099FF
 Net6=NetName=NetC4_2|NetColor=$00E8864A
-Net7=NetName=VBAT-|NetColor=$00666666
+Net7=NetName=VBAT-|NetColor=$00999999
 Net8=NetName=VBAT+|NetColor=$00000098
 Net9=NetName=VPACK-|NetColor=$00666666
 Net10=NetName=VPACK+|NetColor=clRed
