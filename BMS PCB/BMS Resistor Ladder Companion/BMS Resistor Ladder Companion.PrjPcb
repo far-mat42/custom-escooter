@@ -116,6 +116,27 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=WGLAYXOB
 
+[Document5]
+DocumentPath=BMS Resistor Ladder Companion.OutJob
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=
+
+[GeneratedDocument1]
+DocumentPath=Project Outputs for BMS Resistor Ladder Companion\Design Rule Check - BMS Resistor Ladder Companion.html
+DItemRevisionGUID=
+
 [Configuration1]
 Name=Sources
 ParameterCount=0
