@@ -1,0 +1,58 @@
+--------------- ELECTRIC SCOOTER BUILD REQUIREMENTS ---------------
+Criteria and Constraints:
+- Top speed 30km/h 
+	- Nice to have: "Turbo" option that increases top speed to 40km/h
+	- Top speed determined on level ground, little to no headwind, and full throttle with max. 10 seconds to accelerate from 0
+- Minimum 30km range (approx. 1 hour of continuous use)
+- Adjustable speed via a throttle 
+- Display to show power consumption/capacity remaining, speed, other info maybe
+- Safety (mainly for the battery):
+	- E-stop: Button to press that will disconnect the battery from the system
+	- Temperature monitoring
+	- Current and voltage monitoring
+	- Cell balancing
+		- Nice to have: Active cell balancing. Passive cell balancing is easier and less risky, but less efficient
+- Capability to ride at night (interface is visible/can be made visible at night, can provide visibility at night)
+
+List of high-level parts:
+- Kick scooter (includes the frame, base, brakes, and steering)
+- Battery
+- BMS
+- Motor
+- Motor controller
+- Control interface
+- Lighting
+
+High-to-Low Level Requirements (by part):
+- Kick scooter:
+	- Support weight of the rider, small cargo, and the added parts (battery, motor, electronics)
+	- Manual brake system
+	- Big, durable tires
+- Battery:
+	- Enough battery capacity to support full 30km range
+	- High enough discharge rating to power the motor and auxiliary electronics
+	- Cable connection provided for cell balancing
+- BMS:
+	- Custom PCB
+	- Temperature, current and voltage monitoring
+	- State of charge monitoring
+	- Cell balancing (preferably active, but passive works too)
+	- Telemetry with the display so relevant information is available to the rider
+	- Capable of partially and fully disconnecting the battery from the rest of the system, in case of faults or emergencies 
+		- Example scenarios: overcurrent, overtemperature, low battery/cell voltage, charge depleted 
+	- Logging and log storage - log monitored values and save them so they can be accessed in case of emergency shutoff
+- Motor:
+	- Generate enough torque and power to achieve the top speed
+	- Brushless DC motor (optimal efficiency, durability, and ease of maintenance)
+- Motor controller:
+	- Custom PCB
+	- Research needed on how to make a BLDC motor controller - can talk to design team members
+	- Control will probably be done with an Arduino or similar device
+- Control interface:
+	- Continuous throttle to control motor speed
+	- Emergency stop and shut-off: Allow the rider to immediately disconnect the battery from the motor and/or the entire system
+	- Status display via a display screen and/or LEDs
+	- Discrete control for lights
+- Lighting:
+	- Forward and rear facing lights. Forward lights need to be bright enough to light the way
+		- Nice to have: brake lights
