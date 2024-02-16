@@ -60,8 +60,8 @@ all: main-build
 main-build: Nucleo-Test-Ground.elf secondary-outputs
 
 # Tool invocations
-Nucleo-Test-Ground.elf Nucleo-Test-Ground.map: $(OBJS) $(USER_OBJS) C:\Users\farri\STM32CubeIDE\workspace_1.14.1\Nucleo-Test-Ground\STM32L412KBUX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
-	arm-none-eabi-gcc -o "Nucleo-Test-Ground.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Users\farri\STM32CubeIDE\workspace_1.14.1\Nucleo-Test-Ground\STM32L412KBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Nucleo-Test-Ground.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Nucleo-Test-Ground.elf Nucleo-Test-Ground.map: $(OBJS) $(USER_OBJS) C:\Farris'\ Files\School\Side\ Projects\Electric\ Scooter\custom-escooter\BMS\ PCB\Testing\STM32\ Testing\ Ground\Nucleo-Test-Ground\STM32L412KBUX_FLASH.ld makefile objects.list $(OPTIONAL_TOOL_DEPS)
+	arm-none-eabi-gcc -o "Nucleo-Test-Ground.elf" @"objects.list" $(USER_OBJS) $(LIBS) -mcpu=cortex-m4 -T"C:\Farris' Files\School\Side Projects\Electric Scooter\custom-escooter\BMS PCB\Testing\STM32 Testing Ground\Nucleo-Test-Ground\STM32L412KBUX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Nucleo-Test-Ground.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
 	@echo 'Finished building target: $@'
 	@echo ' '
 
