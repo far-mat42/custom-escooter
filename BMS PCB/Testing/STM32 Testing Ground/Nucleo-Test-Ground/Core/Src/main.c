@@ -6,6 +6,8 @@
 void initClocks(void);
 void configGPIO(void);
 void configSPI(void);
+uint8_t readSPI(uint8_t addr);
+uint8_t writeSPI(uint8_t addr, uint8_t tx_data);
 
 /**
   * @brief  The application entry point.
@@ -13,9 +15,22 @@ void configSPI(void);
   */
 int main(void)
 {
+	// Initializing registers for GPIO, clocks and SPI
 	initClocks();
 	configGPIO();
-//	configSPI();
+	configSPI();
+
+	// SPI addresses
+	uint8_t addr[4] = {37, 89, 121, 14};
+	uint8_t data[4] = {197, 5, 73, 41};
+
+	// Main loop
+	while (1) {
+		for (int i = 0; i < sizeof(addr); i++) {
+			writeSPI(addr[i], data[i]);
+			HAL_Delay(50);
+		}
+	}
 }
 
 /* Function definitions ------------------------------------------------------*/
@@ -39,13 +54,14 @@ void configGPIO(void) {
 }
 
 void configSPI(void) {
+	//SPI1->CR1 &= (~(0x0040)); // Disable SPI
 	SPI1->CR1 &= (~(0x0003)); // Resetting CPOL and CPHA
 	SPI1->CR1 &= (~(0x8400)); // Set to full duplex mode
 	SPI1->CR1 &= (~(0x0080)); // Set to MSB first
 	SPI1->CR1 &= (~(0x0038)); // Reset baud rate register to known state
 	SPI1->CR1 &= (~(0x2000)); // Disable CRC calculation
 	SPI1->CR1 &= (~(0x0200)); // Disable software slave management (hardware mode only)
-	SPI1->CR1 |= 0x0010; // Set clock frequency to fPCLK/8 (500kHz)
+	SPI1->CR1 |= 0x0010; // Set clock frequency to fPCLK/8 (250kHz)
 	SPI1->CR1 |= 0x0004; // Set to master configuration
 
 	SPI1->CR2 &= (~(0x1000)); // RXNE event triggers when FIFO level equals 16 bits (performing 16-bit transactions w/ AFE)
@@ -53,4 +69,43 @@ void configSPI(void) {
 	SPI1->CR2 &= (~(0x00F0)); // Mask interrupts & set frame format to Motorola mode
 	SPI1->CR2 |= 0x0004; // Enable slave select output
 	SPI1->CR2 &= (~(0x0003)); // Disable DMA requests
+}
+
+uint8_t readSPI(uint8_t addr) {
+	uint8_t rx_data = 0;
+
+	SPI1->CR1 |= 0x0040; // Enable SPI, also pulls CS low
+
+	// Shift in address & dummy byte (0x00) into data frame
+	SPI1->DR = (uint16_t)(addr << 8);
+	SPI1->DR |= 0x8000; // Set the R/W bit high to indicate a read
+
+	// Tight poll until SPI not busy and RX buffer is not empty
+	while ( ((SPI1->SR) & 0x0080) || (!((SPI1->SR) & 0x0001)) ) {}
+
+	rx_data = (uint8_t)SPI1->DR; // Store data from SPI RX buffer
+
+	SPI1->CR1 &= (~(0x0040)); // Disable SPI, also pulls CS high
+
+	return rx_data;
+}
+
+uint8_t writeSPI(uint8_t addr, uint8_t tx_data) {
+	uint16_t rx_data = 0; // Variable for storing slave's response to write
+
+	SPI1->CR1 |= 0x0040; // Enable SPI, also pulls CS low
+
+	// Shift in address & tx_data into data frame
+	SPI1->DR = (uint16_t)(addr << 8);
+	SPI1->DR |= (uint16_t)(tx_data);
+	SPI1->DR &= (~(0x8000)); // Set the R/W bit low to indicate a write
+	// Tight poll until SPI not busy and TX buffer is not empty
+//	while ( ((SPI1->SR) & 0x0080) || ((SPI1->SR) & 0x0002) ) {}
+	while ( ((SPI1->SR) & 0x0080) ) {}
+
+	rx_data = SPI1->DR; // Store slave's response to write
+
+	SPI1->CR1 &= (~(0x0040)); // Disable SPI, also pulls CS high
+
+	return rx_data;
 }
