@@ -6,6 +6,9 @@
 void initClocks(void);
 void configGPIO(void);
 void configSPI(void);
+void configTIM1(void);
+void delay(uint16_t milliseconds);
+void toggleLED(void);
 uint8_t readSPI(uint8_t addr);
 uint8_t writeSPI(uint8_t addr, uint8_t tx_data);
 
@@ -19,6 +22,7 @@ int main(void)
 	initClocks();
 	configGPIO();
 	configSPI();
+	configTIM1();
 
 	// SPI addresses
 	uint8_t addr[4] = {37, 89, 121, 14};
@@ -27,8 +31,13 @@ int main(void)
 	// Main loop
 	while (1) {
 		for (int i = 0; i < sizeof(addr); i++) {
-			writeSPI(addr[i], data[i]);
-			HAL_Delay(50);
+			for (int j = 0; j < sizeof(data); j++) {
+				writeSPI(addr[i], data[j]);
+				delay(1000);
+				toggleLED();
+			}
+
+//			HAL_Delay(50);
 		}
 	}
 }
@@ -36,18 +45,19 @@ int main(void)
 /* Function definitions ------------------------------------------------------*/
 void initClocks(void) {
 	RCC->AHB2ENR |= 0x00000003; // Enable AHB2 peripheral clock for GPIOA and GPIOB
-	RCC->APB2ENR |= 0x00001000;
+	RCC->APB2ENR |= 0x00001800; // Enable APB2 peripheral clock for SPI1 and TIM1
 }
 
 void configGPIO(void) {
 	// Resetting registers to be set later to ensure they are in a known state
 	GPIOA->MODER &= (~(0x0000FC00));
-	GPIOB->MODER &= (~(0x00000003));
+	GPIOB->MODER &= (~(0x000000C3));
 	GPIOA->AFR[0] &= (~(0xFFF00000));
 	GPIOB->AFR[0] &= (~(0x0000000F));
 
 	GPIOA->MODER |= 0x0000A800; // Set PA5-7 to alternate function mode
-	GPIOB->MODER |= 0x00000002; // Set PB0 to alternate function mode
+	GPIOB->MODER |= 0x00000042; // Set PB0 to alternate function mode, PB3 to general output mode
+	GPIOB->OTYPER &= (~(0x00000008)); // Set PB3 to push-pull mode
 
 	GPIOA->AFR[0] |= 0x55500000; // Set PA5-7 to AF5 (SPI1)
 	GPIOB->AFR[0] |= 0x00000005; // Set PB0 to AF5 (SPI1)
@@ -69,6 +79,47 @@ void configSPI(void) {
 	SPI1->CR2 &= (~(0x00F0)); // Mask interrupts & set frame format to Motorola mode
 	SPI1->CR2 |= 0x0004; // Enable slave select output
 	SPI1->CR2 &= (~(0x0003)); // Disable DMA requests
+}
+
+void configTIM1(void) {
+	TIM1->PSC = 0x0027; // Set prescaler to 40, dividing 4MHz input frequency down to 1kHz
+	TIM1->ARR = (uint32_t)1000000; // Set auto-reload value to 1 million
+	TIM1->CNT &= (~(0x0000FFFF)); // Set timer's initial count to 0
+//	TIM1->CR1 |= 0x0001; // Enable TIM1
+}
+
+void delay(uint16_t milliseconds) {
+//	uint32_t counter = 0; // Counts how much time elapsed between cycles
+//	uint32_t goalCount = milliseconds*1000; // Sets the goal based on requested delay time in ms
+//	// Variables to calculate time elapsed between cycles
+//	uint32_t prevCount = 0;
+//	uint32_t currCount = 0;
+//
+//	prevCount = TIM1->CNT; // Get current count of TIM1
+//
+//	// Loop until the goal count is reached
+//	while (counter < goalCount) {
+//		currCount = TIM1->CNT; // Get newest count
+//
+//		// Handling for case where auto-reload reached
+//		if (currCount < prevCount) {
+//			counter += (1000000 - prevCount) + currCount;
+//		}
+//		// Default case; add difference between prev and current counts
+//		else {
+//			counter += currCount - prevCount;
+//		}
+//		prevCount = currCount; // Previous count is assigned value of current count for next iteration
+//	}
+
+	TIM1->CNT &= (~(0x0000FFFF)); // Reset initial count value to 0
+	TIM1->CR1 |= 0x0001; // Enable the timer
+	while (TIM1->CNT <= milliseconds) {} // Tight poll until timer count exceeds value in milliseconds
+	TIM1->CR1 &= (~(0x0001)); // Disable the timer
+}
+
+void toggleLED(void) {
+	GPIOB->ODR ^= (0x00000008); // Toggles PB3 (LED GPIO)
 }
 
 uint8_t readSPI(uint8_t addr) {
@@ -99,9 +150,9 @@ uint8_t writeSPI(uint8_t addr, uint8_t tx_data) {
 	SPI1->DR = (uint16_t)(addr << 8);
 	SPI1->DR |= (uint16_t)(tx_data);
 	SPI1->DR &= (~(0x8000)); // Set the R/W bit low to indicate a write
-	// Tight poll until SPI not busy and TX buffer is not empty
-//	while ( ((SPI1->SR) & 0x0080) || ((SPI1->SR) & 0x0002) ) {}
-	while ( ((SPI1->SR) & 0x0080) ) {}
+	// Tight poll until SPI not busy and TX buffer is empty
+	while ( ((SPI1->SR) & 0x0080) || (!((SPI1->SR) & 0x0002)) ) {}
+//	while ( ((SPI1->SR) & 0x0080) ) {}
 
 	rx_data = SPI1->DR; // Store slave's response to write
 
