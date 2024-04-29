@@ -1,0 +1,7 @@
+../Core/Src/main.c:15:6:SPI_Init	4	static
+../Core/Src/main.c:39:6:SPI_Select	4	static
+../Core/Src/main.c:44:6:SPI_Deselect	4	static
+../Core/Src/main.c:49:6:SPI_Transmit	16	static
+../Core/Src/main.c:61:9:SPI_Receive	4	static
+../Core/Src/main.c:70:9:SPI_CalculateCRC	32	static
+../Core/Src/main.c:88:5:main	24	static

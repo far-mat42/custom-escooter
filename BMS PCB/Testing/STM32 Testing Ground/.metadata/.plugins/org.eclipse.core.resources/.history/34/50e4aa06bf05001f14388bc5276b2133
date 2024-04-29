@@ -1,0 +1,116 @@
+#include "stm32l4xx.h"
+
+// CRC Polynomial
+#define CRC_POLY 0x07 // x^8 + x^2 + x + 1
+
+// Function prototypes
+void SPI_Init(void);
+void SPI_Select(void);
+void SPI_Deselect(void);
+void SPI_Transmit(uint8_t data);
+uint8_t SPI_Receive(void);
+uint8_t SPI_CalculateCRC(uint8_t *data, uint32_t size);
+
+// Initialize SPI peripheral
+void SPI_Init(void) {
+    // Enable GPIO clocks
+    RCC->AHB2ENR |= RCC_AHB2ENR_GPIOAEN | RCC_AHB2ENR_GPIOBEN;
+
+    // Configure GPIO pins for SPI functionality
+    GPIOA->MODER &= ~(GPIO_MODER_MODE5_Msk | GPIO_MODER_MODE6_Msk | GPIO_MODER_MODE7_Msk);
+    GPIOA->MODER |= (GPIO_MODER_MODE5_1 | GPIO_MODER_MODE6_1 | GPIO_MODER_MODE7_1);
+    GPIOA->AFR[0] |= (5 << GPIO_AFRL_AFSEL5_Pos) | (5 << GPIO_AFRL_AFSEL6_Pos) | (5 << GPIO_AFRL_AFSEL7_Pos);
+
+    // Configure GPIO pin for chip select
+    GPIOB->MODER &= ~GPIO_MODER_MODE0_Msk;
+    GPIOB->MODER |= GPIO_MODER_MODE0_0; // Output mode
+
+    // Enable SPI peripheral clock
+    RCC->APB2ENR |= RCC_APB2ENR_SPI1EN;
+
+    // Configure SPI1 settings
+    SPI1->CR1 = 0;
+    SPI1->CR1 |= (SPI_CR1_MSTR | SPI_CR1_SSM | SPI_CR1_SSI);
+    SPI1->CR1 |= (SPI_CR1_BR_0 | SPI_CR1_BR_1 | SPI_CR1_BR_2); // Assuming PCLK/256
+    SPI1->CR1 |= SPI_CR1_SPE;
+}
+
+// Select SPI chip
+void SPI_Select(void) {
+    GPIOB->ODR &= ~GPIO_ODR_OD0;
+}
+
+// Deselect SPI chip
+void SPI_Deselect(void) {
+    GPIOB->ODR |= GPIO_ODR_OD0;
+}
+
+// Transmit data over SPI
+void SPI_Transmit(uint8_t data) {
+    // Wait until transmit buffer is empty
+    while (!(SPI1->SR & SPI_SR_TXE));
+
+    // Write data to transmit buffer
+    *((__IO uint8_t*)&SPI1->DR) = data;
+
+    // Wait until transmission is complete
+    while (SPI1->SR & SPI_SR_BSY);
+}
+
+// Receive data over SPI
+uint8_t SPI_Receive(void) {
+    // Wait until receive buffer is not empty
+    while (!(SPI1->SR & SPI_SR_RXNE));
+
+    // Read data from receive buffer
+    return *((__IO uint8_t*)&SPI1->DR);
+}
+
+// Calculate CRC
+uint8_t SPI_CalculateCRC(uint8_t *data, uint32_t size) {
+    uint8_t crc = 0;
+
+    for (uint32_t i = 0; i < size; i++) {
+        crc ^= data[i];
+
+        for (uint32_t j = 0; j < 8; j++) {
+            if (crc & 0x80) {
+                crc = (crc << 1) ^ CRC_POLY;
+            } else {
+                crc <<= 1;
+            }
+        }
+    }
+
+    return crc;
+}
+
+int main(void) {
+    // Initialize SPI
+    SPI_Init();
+
+    while (1) {
+        // Select SPI chip
+        SPI_Select();
+
+        // Example data to transmit
+        uint8_t data[] = {0x12, 0x34}; // Example data to transmit, change as needed
+
+        // Transmit data over SPI
+        for (int i = 0; i < sizeof(data); i++) {
+            SPI_Transmit(data[i]);
+        }
+
+        // Calculate CRC for the data
+        uint8_t crc = SPI_CalculateCRC(data, sizeof(data));
+
+        // Transmit CRC over SPI
+        SPI_Transmit(crc);
+
+        // Deselect SPI chip
+        SPI_Deselect();
+
+        // Delay for approximately one second (assuming 4 MHz system clock)
+        for (volatile int i = 0; i < 10000; ++i);
+    }
+}

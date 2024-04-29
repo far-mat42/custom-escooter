@@ -1,0 +1,34 @@
+19:04:10 **** Incremental Build of configuration Debug for project Nucleo-HAL-Testing ****
+make -j16 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L412xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+../Core/Src/main.c: In function 'main':
+../Core/Src/main.c:88:21: warning: unused variable 'hal_status' [-Wunused-variable]
+   88 |   HAL_StatusTypeDef hal_status; // Status indicator for SPI transaction
+      |                     ^~~~~~~~~~
+../Core/Src/main.c:87:21: warning: unused variable 'rxData' [-Wunused-variable]
+   87 |   uint8_t txData[2],rxData[2]; // Buffers for storing TX/RX data
+      |                     ^~~~~~
+../Core/Src/main.c:87:11: warning: variable 'txData' set but not used [-Wunused-but-set-variable]
+   87 |   uint8_t txData[2],rxData[2]; // Buffers for storing TX/RX data
+      |           ^~~~~~
+At top level:
+../Core/Src/main.c:240:13: warning: 'MX_GPIO_Init' defined but not used [-Wunused-function]
+  240 | static void MX_GPIO_Init(void)
+      |             ^~~~~~~~~~~~
+../Core/Src/main.c:200:13: warning: 'MX_SPI1_Init' defined but not used [-Wunused-function]
+  200 | static void MX_SPI1_Init(void)
+      |             ^~~~~~~~~~~~
+arm-none-eabi-gcc -o "Nucleo-HAL-Testing.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Farris' Files\School\Side Projects\Electric Scooter\custom-escooter\BMS PCB\Testing\STM32 Testing Ground\Nucleo-HAL-Testing\STM32L412K8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Nucleo-HAL-Testing.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Nucleo-HAL-Testing.elf
+ 
+arm-none-eabi-size  Nucleo-HAL-Testing.elf 
+arm-none-eabi-objdump -h -S Nucleo-HAL-Testing.elf  > "Nucleo-HAL-Testing.list"
+   text	   data	    bss	    dec	    hex	filename
+   5984	     20	   1572	   7576	   1d98	Nucleo-HAL-Testing.elf
+Finished building: default.size.stdout
+ 
+Finished building: Nucleo-HAL-Testing.list
+ 
+
+19:04:11 Build Finished. 0 errors, 5 warnings. (took 645ms)
+
