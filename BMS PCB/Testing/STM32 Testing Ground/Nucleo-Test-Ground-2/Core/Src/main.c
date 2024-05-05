@@ -4,12 +4,31 @@
 #define CRC_POLY 0x07 // x^8 + x^2 + x + 1
 
 // Function prototypes
+void SystemClock_Config(void);
+
 void SPI_Init(void);
 void SPI_Select(void);
 void SPI_Deselect(void);
 void SPI_Transmit(uint8_t data);
 uint8_t SPI_Receive(void);
 uint8_t SPI_CalculateCRC(uint8_t *data, uint32_t size);
+
+void TIM1_Init(void);
+void TIM1_UP_TIM16_IRQHandler(void);
+
+// Configure the system clock
+void SystemClock_Config(void) {
+	RCC->CR |= RCC_CR_HSION; // Enable HSI clock
+	while (!(RCC->CR & RCC_CR_HSIRDY)); // Wait until HSI clock is ready
+
+	RCC->CR |= RCC_CR_MSIPLLEN; // Enable MSI PLL
+	while (!(RCC->CR & RCC_CR_MSIRDY)); // Wait until MSI clock is ready
+
+	RCC->CFGR &= ~(RCC_CFGR_SW); // Reset SW bits
+	RCC->CFGR |= RCC_CFGR_SW_MSI; // Select MSI as system clock
+
+	while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_MSI); // Wait until MSI is used as system clock
+}
 
 // Initialize SPI peripheral
 void SPI_Init(void) {
@@ -31,7 +50,8 @@ void SPI_Init(void) {
     // Configure SPI1 settings
     SPI1->CR1 = 0;
     SPI1->CR1 |= (SPI_CR1_MSTR | SPI_CR1_SSM | SPI_CR1_SSI);
-    SPI1->CR1 |= (SPI_CR1_BR_0 | SPI_CR1_BR_1 | SPI_CR1_BR_2); // Assuming PCLK/256
+    SPI1->CR1 |= (SPI_CR1_BR_1 | SPI_CR1_BR_2); // Assuming PCLK/128
+//    SPI1->CR1 |= 0x0020; // Assuming PCLK/32
     SPI1->CR1 |= SPI_CR1_SPE;
 }
 
@@ -85,32 +105,75 @@ uint8_t SPI_CalculateCRC(uint8_t *data, uint32_t size) {
     return crc;
 }
 
+// Initialize TIM1 peripheral
+void TIM1_Init(void) {
+	RCC->APB2ENR |= RCC_APB2ENR_TIM1EN; // Enable TIM1 clock
+
+	TIM1->PSC = 4000 - 1; // Assuming 4MHz clock, 4000 cycles for 1ms
+	TIM1->ARR = 1000 - 1; // Generate interrupt every 2000ms (2s)
+
+	TIM1->DIER |= TIM_DIER_UIE; // Enable update interrupt
+
+	NVIC_SetPriority(TIM1_UP_TIM16_IRQn, 0); // Set TIM1 interrupt priority
+	NVIC_EnableIRQ(TIM1_UP_TIM16_IRQn); // Enable TIM1 interrupt
+
+	TIM1->CR1 |= TIM_CR1_CEN; // Enable TIM1
+}
+
+// IRQ handler for TIM1
+void TIM1_UP_TIM16_IRQHandler(void) {
+	// Check if UIF flag is set
+	if (TIM1->SR & TIM_SR_UIF) {
+		// Select SPI chip
+		SPI_Select();
+
+		// Example data to transmit
+		uint8_t data[] = {0x12, 0x34}; // Example data to transmit, change as needed
+
+		// Calculate CRC for the data
+		uint8_t crc = SPI_CalculateCRC(data, sizeof(data));
+
+		// Transmit data over SPI
+		for (int i = 0; i < sizeof(data); i++) {
+			SPI_Transmit(data[i]);
+		}
+
+		// Transmit CRC over SPI
+		SPI_Transmit(crc);
+
+		// Deselect SPI chip
+		SPI_Deselect();
+
+		TIM1->SR &= ~TIM_SR_UIF; // Clear UIF flag
+	}
+}
+
 int main(void) {
-    // Initialize SPI
+	// Initialize system clock
+	SystemClock_Config();
+    // Initialize peripherals
     SPI_Init();
+    TIM1_Init();
 
     while (1) {
         // Select SPI chip
-        SPI_Select();
-
-        // Example data to transmit
-        uint8_t data[] = {0x12, 0x34}; // Example data to transmit, change as needed
-
-        // Calculate CRC for the data
-        uint8_t crc = SPI_CalculateCRC(data, sizeof(data));
-
-        // Transmit data over SPI
-        for (int i = 0; i < sizeof(data); i++) {
-            SPI_Transmit(data[i]);
-        }
-
-        // Transmit CRC over SPI
-        SPI_Transmit(crc);
-
-        // Deselect SPI chip
-        SPI_Deselect();
-
-        // Delay for approximately one second (assuming 4 MHz system clock)
-        for (volatile int i = 0; i < 10000; ++i);
+//        SPI_Select();
+//
+//        // Example data to transmit
+//        uint8_t data[] = {0x12, 0x34}; // Example data to transmit, change as needed
+//
+//        // Calculate CRC for the data
+//        uint8_t crc = SPI_CalculateCRC(data, sizeof(data));
+//
+//        // Transmit data over SPI
+//        for (int i = 0; i < sizeof(data); i++) {
+//            SPI_Transmit(data[i]);
+//        }
+//
+//        // Transmit CRC over SPI
+//        SPI_Transmit(crc);
+//
+//        // Deselect SPI chip
+//        SPI_Deselect();
     }
 }

@@ -1,4 +1,4 @@
-20:25:49 **** Incremental Build of configuration Debug for project Nucleo-Test-Ground-2 ****
+17:19:47 **** Incremental Build of configuration Debug for project Nucleo-Test-Ground-2 ****
 make -j16 all 
 arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L412xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
 arm-none-eabi-gcc -o "Nucleo-Test-Ground-2.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Farris' Files\School\Side Projects\Electric Scooter\custom-escooter\BMS PCB\Testing\STM32 Testing Ground\Nucleo-Test-Ground-2\STM32L412K8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Nucleo-Test-Ground-2.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
@@ -7,15 +7,29 @@ Finished building target: Nucleo-Test-Ground-2.elf
 arm-none-eabi-size  Nucleo-Test-Ground-2.elf 
 arm-none-eabi-objdump -h -S Nucleo-Test-Ground-2.elf  > "Nucleo-Test-Ground-2.list"
    text	   data	    bss	    dec	    hex	filename
-   1316	     12	   1572	   2900	    b54	Nucleo-Test-Ground-2.elf
+   1680	     12	   1572	   3264	    cc0	Nucleo-Test-Ground-2.elf
 Finished building: default.size.stdout
  
 Finished building: Nucleo-Test-Ground-2.list
  
-20:25:51 **** Incremental Build of configuration Debug for project Nucleo-Test-Ground-2 ****
+17:19:57 **** Incremental Build of configuration Debug for project Nucleo-Test-Ground-2 ****
 make -j16 all 
 arm-none-eabi-size  Nucleo-Test-Ground-2.elf 
    text	   data	    bss	    dec	    hex	filename
-   1316	     12	   1572	   2900	    b54	Nucleo-Test-Ground-2.elf
+   1680	     12	   1572	   3264	    cc0	Nucleo-Test-Ground-2.elf
 Finished building: default.size.stdout
+ 
+17:29:37 **** Incremental Build of configuration Debug for project Nucleo-Test-Ground-2 ****
+make -j16 all 
+arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L412xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
+arm-none-eabi-gcc -o "Nucleo-Test-Ground-2.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Farris' Files\School\Side Projects\Electric Scooter\custom-escooter\BMS PCB\Testing\STM32 Testing Ground\Nucleo-Test-Ground-2\STM32L412K8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Nucleo-Test-Ground-2.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+Finished building target: Nucleo-Test-Ground-2.elf
+ 
+arm-none-eabi-size  Nucleo-Test-Ground-2.elf 
+arm-none-eabi-objdump -h -S Nucleo-Test-Ground-2.elf  > "Nucleo-Test-Ground-2.list"
+   text	   data	    bss	    dec	    hex	filename
+   1680	     12	   1572	   3264	    cc0	Nucleo-Test-Ground-2.elf
+Finished building: default.size.stdout
+ 
+Finished building: Nucleo-Test-Ground-2.list
  
