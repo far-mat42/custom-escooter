@@ -1,0 +1,301 @@
+/** Early-May code for getting SPI to transmit from the Nucleo
+#include "stm32l4xx.h"
+
+// CRC Polynomial
+#define CRC_POLY 0x07 // x^8 + x^2 + x + 1
+
+// Function prototypes
+void SystemClock_Config(void);
+
+void SPI_Init(void);
+void SPI_Select(void);
+void SPI_Deselect(void);
+void SPI_Transmit(uint8_t data);
+uint8_t SPI_Receive(void);
+uint8_t SPI_CalculateCRC(uint8_t *data, uint32_t size);
+
+void TIM1_Init(void);
+void TIM1_UP_TIM16_IRQHandler(void);
+
+// Configure the system clock
+void SystemClock_Config(void) {
+	RCC->CR |= RCC_CR_HSION; // Enable HSI clock
+	while (!(RCC->CR & RCC_CR_HSIRDY)); // Wait until HSI clock is ready
+
+	RCC->CR |= RCC_CR_MSIPLLEN; // Enable MSI PLL
+	while (!(RCC->CR & RCC_CR_MSIRDY)); // Wait until MSI clock is ready
+
+	RCC->CFGR &= ~(RCC_CFGR_SW); // Reset SW bits
+	RCC->CFGR |= RCC_CFGR_SW_MSI; // Select MSI as system clock
+
+	while ((RCC->CFGR & RCC_CFGR_SWS) != RCC_CFGR_SWS_MSI); // Wait until MSI is used as system clock
+}
+
+// Initialize SPI peripheral
+void SPI_Init(void) {
+    // Enable GPIO clocks
+    RCC->AHB2ENR |= RCC_AHB2ENR_GPIOAEN | RCC_AHB2ENR_GPIOBEN;
+
+    // Configure GPIO pins for SPI functionality
+    GPIOA->MODER &= ~(GPIO_MODER_MODE5_Msk | GPIO_MODER_MODE6_Msk | GPIO_MODER_MODE7_Msk);
+    GPIOA->MODER |= (GPIO_MODER_MODE5_1 | GPIO_MODER_MODE6_1 | GPIO_MODER_MODE7_1);
+    GPIOA->AFR[0] |= (5 << GPIO_AFRL_AFSEL5_Pos) | (5 << GPIO_AFRL_AFSEL6_Pos) | (5 << GPIO_AFRL_AFSEL7_Pos);
+
+    // Configure GPIO pin for chip select
+    GPIOB->MODER &= ~GPIO_MODER_MODE0_Msk;
+    GPIOB->MODER |= GPIO_MODER_MODE0_0; // Output mode
+
+    // Enable SPI peripheral clock
+    RCC->APB2ENR |= RCC_APB2ENR_SPI1EN;
+
+    // Configure SPI1 settings
+    SPI1->CR1 = 0;
+    SPI1->CR1 |= (SPI_CR1_MSTR | SPI_CR1_SSM | SPI_CR1_SSI);
+    SPI1->CR1 |= (SPI_CR1_BR_1 | SPI_CR1_BR_2); // Assuming PCLK/128
+//    SPI1->CR1 |= 0x0020; // Assuming PCLK/32
+    SPI1->CR1 |= SPI_CR1_SPE;
+}
+
+// Select SPI chip
+void SPI_Select(void) {
+    GPIOB->ODR &= ~GPIO_ODR_OD0;
+}
+
+// Deselect SPI chip
+void SPI_Deselect(void) {
+    GPIOB->ODR |= GPIO_ODR_OD0;
+}
+
+// Transmit data over SPI
+void SPI_Transmit(uint8_t data) {
+    // Wait until transmit buffer is empty
+    while (!(SPI1->SR & SPI_SR_TXE));
+
+    // Write data to transmit buffer
+    *((__IO uint8_t*)&SPI1->DR) = data;
+
+    // Wait until transmission is complete
+    while (SPI1->SR & SPI_SR_BSY);
+}
+
+// Receive data over SPI
+uint8_t SPI_Receive(void) {
+    // Wait until receive buffer is not empty
+    while (!(SPI1->SR & SPI_SR_RXNE));
+
+    // Read data from receive buffer
+    return *((__IO uint8_t*)&SPI1->DR);
+}
+
+// Calculate CRC
+uint8_t SPI_CalculateCRC(uint8_t *data, uint32_t size) {
+    uint8_t crc = 0;
+
+    for (uint32_t i = 0; i < size; i++) {
+        crc ^= data[i];
+
+        for (uint32_t j = 0; j < 8; j++) {
+            if (crc & 0x80) {
+                crc = (crc << 1) ^ CRC_POLY;
+            } else {
+                crc <<= 1;
+            }
+        }
+    }
+
+    return crc;
+}
+
+// Initialize TIM1 peripheral
+void TIM1_Init(void) {
+	RCC->APB2ENR |= RCC_APB2ENR_TIM1EN; // Enable TIM1 clock
+
+	TIM1->PSC = 4000 - 1; // Assuming 4MHz clock, 4000 cycles for 1ms
+	TIM1->ARR = 1000 - 1; // Generate interrupt every 2000ms (2s)
+
+	TIM1->DIER |= TIM_DIER_UIE; // Enable update interrupt
+
+	NVIC_SetPriority(TIM1_UP_TIM16_IRQn, 0); // Set TIM1 interrupt priority
+	NVIC_EnableIRQ(TIM1_UP_TIM16_IRQn); // Enable TIM1 interrupt
+
+	TIM1->CR1 |= TIM_CR1_CEN; // Enable TIM1
+}
+
+// IRQ handler for TIM1
+void TIM1_UP_TIM16_IRQHandler(void) {
+	// Check if UIF flag is set
+	if (TIM1->SR & TIM_SR_UIF) {
+		// Select SPI chip
+		SPI_Select();
+
+		// Example data to transmit
+		uint8_t data[] = {0x12, 0x34}; // Example data to transmit, change as needed
+
+		// Calculate CRC for the data
+		uint8_t crc = SPI_CalculateCRC(data, sizeof(data));
+
+		// Transmit data over SPI
+		for (int i = 0; i < sizeof(data); i++) {
+			SPI_Transmit(data[i]);
+		}
+
+		// Transmit CRC over SPI
+		SPI_Transmit(crc);
+
+		// Deselect SPI chip
+		SPI_Deselect();
+
+		TIM1->SR &= ~TIM_SR_UIF; // Clear UIF flag
+	}
+}
+
+int main(void) {
+	// Initialize system clock
+	SystemClock_Config();
+    // Initialize peripherals
+    SPI_Init();
+    TIM1_Init();
+
+    while (1) {
+        // Select SPI chip
+//        SPI_Select();
+//
+//        // Example data to transmit
+//        uint8_t data[] = {0x12, 0x34}; // Example data to transmit, change as needed
+//
+//        // Calculate CRC for the data
+//        uint8_t crc = SPI_CalculateCRC(data, sizeof(data));
+//
+//        // Transmit data over SPI
+//        for (int i = 0; i < sizeof(data); i++) {
+//            SPI_Transmit(data[i]);
+//        }
+//
+//        // Transmit CRC over SPI
+//        SPI_Transmit(crc);
+//
+//        // Deselect SPI chip
+//        SPI_Deselect();
+    }
+}
+
+**/
+
+#include "stm32l4xx.h"
+
+void SystemClock_Config(void);
+void GPIO_Init(void);
+void SPI1_Init(void);
+uint8_t crc8(uint8_t *data, size_t len);
+void EnterConfigUpdateMode(void);
+void SPI1_Transmit(uint8_t *data, size_t len);
+
+int main(void)
+{
+    // System initialization
+    SystemClock_Config();
+    GPIO_Init();
+    SPI1_Init();
+
+    // Enter Config Update Mode
+    EnterConfigUpdateMode();
+
+    while (1)
+    {
+    }
+}
+
+void SystemClock_Config(void)
+{
+    // System Clock Configuration here
+}
+
+void GPIO_Init(void)
+{
+    // Enable GPIO clocks
+    RCC->AHB2ENR |= RCC_AHB2ENR_GPIOAEN | RCC_AHB2ENR_GPIOBEN;
+
+    // Configure PB0 as SPI1_NSS (software controlled, push-pull)
+    GPIOB->MODER &= ~GPIO_MODER_MODE0;
+    GPIOB->MODER |= GPIO_MODER_MODE0_0; // General purpose output mode
+    GPIOB->OSPEEDR |= GPIO_OSPEEDER_OSPEEDR0; // High speed
+    GPIOB->PUPDR &= ~GPIO_PUPDR_PUPD0; // No pull-up, no pull-down
+    GPIOB->OTYPER &= ~GPIO_OTYPER_OT0; // Push-pull mode
+    GPIOB->ODR |= GPIO_ODR_OD0; // Set NSS high
+
+    // Configure PA5 (SPI1_SCK), PA6 (SPI1_MISO), PA7 (SPI1_MOSI)
+    GPIOA->MODER &= ~(GPIO_MODER_MODE5 | GPIO_MODER_MODE6 | GPIO_MODER_MODE7);
+    GPIOA->MODER |= (GPIO_MODER_MODE5_1 | GPIO_MODER_MODE6_1 | GPIO_MODER_MODE7_1); // Alternate function mode
+    GPIOA->AFR[0] |= (0x5 << GPIO_AFRL_AFSEL5_Pos) | (0x5 << GPIO_AFRL_AFSEL6_Pos) | (0x5 << GPIO_AFRL_AFSEL7_Pos); // AF5 for SPI1
+    GPIOA->OSPEEDR |= GPIO_OSPEEDER_OSPEEDR5 | GPIO_OSPEEDER_OSPEEDR6 | GPIO_OSPEEDER_OSPEEDR7; // High speed
+    GPIOA->PUPDR &= ~(GPIO_PUPDR_PUPD5 | GPIO_PUPDR_PUPD6 | GPIO_PUPDR_PUPD7); // No pull-up, no pull-down
+}
+
+void SPI1_Init(void)
+{
+    // Enable SPI1 clock
+    RCC->APB2ENR |= RCC_APB2ENR_SPI1EN;
+
+    // Configure SPI1
+    SPI1->CR1 = SPI_CR1_MSTR | SPI_CR1_BR_2 | SPI_CR1_BR_0 | SPI_CR1_SSI | SPI_CR1_SSM;
+    SPI1->CR2 = SPI_CR2_DS_2 | SPI_CR2_DS_1 | SPI_CR2_DS_0 | SPI_CR2_FRXTH;
+    SPI1->CRCPR = 7; // CRC Polynomial
+
+    // Enable SPI1
+    SPI1->CR1 |= SPI_CR1_SPE;
+}
+
+uint8_t crc8(uint8_t *data, size_t len)
+{
+    uint8_t crc = 0x00;
+    while (len--)
+    {
+        crc ^= *data++;
+        for (uint8_t i = 0; i < 8; ++i)
+        {
+            if (crc & 0x80)
+                crc = (crc << 1) ^ 0x07; // Polynomial 0x07
+            else
+                crc <<= 1;
+        }
+    }
+    return crc;
+}
+
+void EnterConfigUpdateMode(void)
+{
+    uint8_t command[] = { 0x00, 0x90 };
+    uint8_t crc = crc8(command, 2);
+    uint8_t txData[] = { command[0], command[1], crc };
+
+    // Pull NSS low
+    GPIOB->ODR &= ~GPIO_ODR_OD0;
+
+    // Transmit data
+    SPI1_Transmit(txData, sizeof(txData));
+
+    // Pull NSS high
+    GPIOB->ODR |= GPIO_ODR_OD0;
+}
+
+void SPI1_Transmit(uint8_t *data, size_t len)
+{
+    for (size_t i = 0; i < len; ++i)
+    {
+        // Wait until TXE (Transmit buffer empty) flag is set
+        while (!(SPI1->SR & SPI_SR_TXE));
+        // Send data
+        SPI1->DR = data[i];
+        // Wait until RXNE (Receive buffer not empty) flag is set
+        while (!(SPI1->SR & SPI_SR_RXNE));
+        // Read data to clear RXNE flag
+        (void)SPI1->DR;
+    }
+
+    // Wait until not busy
+    while (SPI1->SR & SPI_SR_BSY);
+
+    // Clear overrun flag by reading DR and SR
+    (void)SPI1->DR;
+    (void)SPI1->SR;
+}
