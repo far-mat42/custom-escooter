@@ -1,10 +1,10 @@
-22:28:13 **** Incremental Build of configuration Debug for project Nucleo-Test-Ground-2 ****
+19:04:11 **** Incremental Build of configuration Debug for project Nucleo-Test-Ground-2 ****
 make -j16 all 
 arm-none-eabi-size  Nucleo-Test-Ground-2.elf 
    text	   data	    bss	    dec	    hex	filename
-  10352	     20	   1668	  12040	   2f08	Nucleo-Test-Ground-2.elf
+   9764	     20	   1668	  11452	   2cbc	Nucleo-Test-Ground-2.elf
 Finished building: default.size.stdout
  
 
-22:28:13 Build Finished. 0 errors, 0 warnings. (took 244ms)
+19:04:12 Build Finished. 0 errors, 0 warnings. (took 294ms)
 

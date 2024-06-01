@@ -26,7 +26,8 @@
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
+// CRC Polynomial
+#define CRC_POLY 0x07 // x^8 + x^2 + x + 1
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/

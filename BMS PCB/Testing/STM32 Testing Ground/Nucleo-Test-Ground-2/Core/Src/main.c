@@ -305,6 +305,7 @@ void SPI1_Transmit(uint8_t *data, size_t len)
 **/
 
 #include "stm32l4xx_hal.h"
+#include <stdbool.h>
 
 // Function prototypes
 void SystemClock_Config(void);
@@ -313,11 +314,28 @@ void SPI1_Init(void);
 uint8_t crc8(uint8_t *data, size_t len);
 void EnterConfigUpdateMode(void);
 void ReadManufacturingStatusRegister(void);
+void SubCmdNoData(uint16_t cmd);
+void SubCmdReadData(uint16_t cmd, uint8_t *returnData, uint8_t len);
 void SPI1_Receive(uint8_t *data, size_t len);
 void SPI1_Transmit(uint8_t *data, size_t len);
 
 // Global SPI handle
 SPI_HandleTypeDef hspi1;
+
+// Global constants
+// Register addresses for writing command/RAM addresses in transactions
+const uint8_t LOWER_ADDR_REG_READ = 0x3E;
+const uint8_t UPPER_ADDR_REG_READ = 0x3F;
+const uint8_t LOWER_ADDR_REG_WRITE = 0xBE;
+const uint8_t UPPER_ADDR_REG_WRITE = 0xBF;
+
+// Starting address for 32-byte data buffer
+const uint8_t READ_DATA_BUFF_LSB = 0x40;
+const uint8_t WRITE_DATA_BUFF_LSB = 0xC0;
+
+// Register addresses for writing checksum and data length info for transactions
+const uint8_t CHECKSUM_ADDR = 0x60;
+const uint8_t DATALEN_ADDR = 0x61;
 
 int main(void)
 {
@@ -331,14 +349,19 @@ int main(void)
     GPIO_Init();
     SPI1_Init();
 
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_RESET); // Turn off heartbeat
+
+    // Blank array to store data from any commands that receive data
+    uint8_t readData[32] = {0};
+    // Send FET_ENABLE sub-command to allow test commands to toggle FETs
+//	SubCmdNoData(0x0022);
+
     while (1)
     {
-    	// Enter Config Update Mode
-    	ReadManufacturingStatusRegister();
-
-    	for (int i = 0; i < 400000; i++) {
-
-    	}
+    	SubCmdNoData(0x0022); // Send FET_ENABLE sub-command
+    	SubCmdReadData(0x0057, readData, 2);
+    	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5); // Toggle heartbeat LED
+    	HAL_Delay(2000);
     }
 }
 
@@ -375,13 +398,20 @@ void GPIO_Init(void)
 
     GPIO_InitTypeDef GPIO_InitStruct = {0};
 
-    // Configure PB0 as SPI1_NSS (software controlled, push-pull)
+    // Configure PB0 as SPI1_NSS (software controlled, open-drain)
     GPIO_InitStruct.Pin = GPIO_PIN_0;
-    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
     GPIO_InitStruct.Pull = GPIO_NOPULL;
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
     HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
     HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET); // Set NSS high
+
+    // Configure PB5 as a GPIO (push-pull, no pull-up)
+	GPIO_InitStruct.Pin = GPIO_PIN_5;
+	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
     // Configure PA5 (SPI1_SCK), PA6 (SPI1_MISO), PA7 (SPI1_MOSI)
     GPIO_InitStruct.Pin = GPIO_PIN_5 | GPIO_PIN_6 | GPIO_PIN_7;
@@ -405,7 +435,7 @@ void SPI1_Init(void)
     hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
     hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
     hspi1.Init.NSS = SPI_NSS_SOFT;
-    hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_64;
+    hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_128;
     hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
     hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
     hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
@@ -433,6 +463,145 @@ uint8_t crc8(uint8_t *data, size_t len)
         }
     }
     return crc;
+}
+
+void SubCmdNoData(uint16_t cmd)
+{
+	uint8_t rxData[3] = {0};
+	uint8_t commandLowerAddr[] = { LOWER_ADDR_REG_WRITE, ((uint8_t)(cmd & 0xFF)) };
+	uint8_t crcLower = crc8(commandLowerAddr, 2);
+	uint8_t commandUpperAddr[] = { UPPER_ADDR_REG_WRITE, ((uint8_t)(cmd >> 8)) };
+	uint8_t crcUpper = crc8(commandUpperAddr, 2);
+	bool commReceived = false;
+
+	// Keep writing the command until MISO reflects command was received
+	// Starting with lower byte
+	uint8_t txData[] = { commandLowerAddr[0], commandLowerAddr[1], crcLower };
+	while (!commReceived)
+	{
+		// Pull NSS low
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
+		// Transmit data and receive AFE's response
+		HAL_SPI_TransmitReceive(&hspi1, txData, rxData, sizeof(txData), HAL_MAX_DELAY);
+
+		// Confirm command was received
+		commReceived = true;
+		for (int i = 0; i < sizeof(txData); i++)
+		{
+			if (txData[i] != rxData[i]) commReceived = false; // If any mismatch occurs, flag it and retransmit
+		}
+		// Pull NSS high and wait for transaction to be processed
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
+		HAL_Delay(3);
+	}
+
+	// Continue to upper byte
+	txData[0] = commandUpperAddr[0];
+	txData[1] = commandUpperAddr[1];
+	txData[2] = crcUpper;
+	commReceived = false;
+	while (!commReceived)
+	{
+		// Pull NSS low
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
+
+		// Transmit data and receive AFE's response
+		HAL_SPI_TransmitReceive(&hspi1, txData, rxData, sizeof(txData), HAL_MAX_DELAY);
+
+		// Confirm command was received
+		commReceived = true;
+		for (int i = 0; i < sizeof(txData); i++)
+		{
+			if (txData[i] != rxData[i]) commReceived = false; // If any mismatch occurs, flag it and retransmit
+		}
+		// Pull NSS high and wait for transaction to be processed
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
+		HAL_Delay(3);
+	}
+}
+
+void SubCmdReadData(uint16_t cmd, uint8_t *returnData, uint8_t len)
+{
+	uint8_t rxData[3] = {0};
+	uint8_t commandLowerAddr[] = { LOWER_ADDR_REG_WRITE, ((uint8_t)(cmd & 0xFF)) };
+	uint8_t crcLower = crc8(commandLowerAddr, 2);
+	uint8_t commandUpperAddr[] = { UPPER_ADDR_REG_WRITE, ((uint8_t)(cmd >> 8)) };
+	uint8_t crcUpper = crc8(commandUpperAddr, 2);
+	bool commReceived = false;
+
+	// Keep writing the command until MISO reflects command was received
+	// Starting with lower byte
+	uint8_t txData[] = { commandLowerAddr[0], commandLowerAddr[1], crcLower };
+	while (!commReceived)
+	{
+		// Pull NSS low
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
+		// Transmit data and receive AFE's response
+		HAL_SPI_TransmitReceive(&hspi1, txData, rxData, sizeof(txData), HAL_MAX_DELAY);
+
+		// Confirm command was received
+		commReceived = true;
+		for (int i = 0; i < sizeof(txData); i++)
+		{
+			if (txData[i] != rxData[i]) commReceived = false; // If any mismatch occurs, flag it and retransmit
+		}
+		// Pull NSS high and wait for transaction to be processed
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
+		HAL_Delay(3);
+	}
+
+	// Continue to upper byte
+	txData[0] = commandUpperAddr[0];
+	txData[1] = commandUpperAddr[1];
+	txData[2] = crcUpper;
+	commReceived = false;
+	while (!commReceived)
+	{
+		// Pull NSS low
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
+
+		// Transmit data and receive AFE's response
+		HAL_SPI_TransmitReceive(&hspi1, txData, rxData, sizeof(txData), HAL_MAX_DELAY);
+
+		// Confirm command was received
+		commReceived = true;
+		for (int i = 0; i < sizeof(txData); i++)
+		{
+			if (txData[i] != rxData[i]) commReceived = false; // If any mismatch occurs, flag it and retransmit
+		}
+		// Pull NSS high and wait for transaction to be processed
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
+		HAL_Delay(3);
+	}
+
+	// Read each byte based on the data length given in parameters
+	uint8_t readData[2] = {0};
+	for (int i = 0; i < len; i++) {
+		readData[0] = READ_DATA_BUFF_LSB + i;
+		readData[1] = 0xFF;
+
+		txData[0] = readData[0];
+		txData[1] = readData[1];
+		txData[2] = crc8(readData, 2);
+
+		commReceived = false;
+		while (!commReceived)
+		{
+			// Pull NSS low
+			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
+
+			// Transmit data and receive AFE's response
+			HAL_SPI_TransmitReceive(&hspi1, txData, rxData, sizeof(txData), HAL_MAX_DELAY);
+
+			// Confirm command was received by checking address byte received
+			if (txData[0] == rxData[0]) commReceived = true;
+			// Pull NSS high and wait for transaction to be processed
+			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
+			HAL_Delay(3);
+		}
+
+		returnData[i] = rxData[1]; // Save data byte received from last transaction
+	}
 }
 
 void EnterConfigUpdateMode(void)
