@@ -355,7 +355,7 @@ int main(void)
     // Blank array to store data from any commands that receive data
     uint8_t readData[32] = {0};
 
-    uint16_t cellVolt = 0;
+    uint16_t cellVoltRaw = 0;
     uint8_t cmdAddr = 0;
     // Send FET_ENABLE sub-command to allow test commands to toggle FETs
 //	SubCmdNoData(0x0022);
@@ -501,7 +501,6 @@ void DirectCmdRead(uint8_t cmd, uint8_t *returnData, uint8_t len)
 		txData[2] = crcLower;
 
 		// Keep sending the command until MISO reflects the command was received
-		commReceived = false;
 		while (!commReceived)
 		{
 			// Pull NSS low

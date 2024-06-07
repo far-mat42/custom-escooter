@@ -312,11 +312,10 @@ void SystemClock_Config(void);
 void GPIO_Init(void);
 void SPI1_Init(void);
 uint8_t crc8(uint8_t *data, size_t len);
-
-void DirectCmdRead(uint8_t cmd, uint8_t *returnData, uint8_t len);
+void EnterConfigUpdateMode(void);
+void ReadManufacturingStatusRegister(void);
 void SubCmdNoData(uint16_t cmd);
 void SubCmdReadData(uint16_t cmd, uint8_t *returnData, uint8_t len);
-
 void SPI1_Receive(uint8_t *data, size_t len);
 void SPI1_Transmit(uint8_t *data, size_t len);
 
@@ -354,23 +353,13 @@ int main(void)
 
     // Blank array to store data from any commands that receive data
     uint8_t readData[32] = {0};
-
-    uint16_t cellVolt = 0;
-    uint8_t cmdAddr = 0;
     // Send FET_ENABLE sub-command to allow test commands to toggle FETs
 //	SubCmdNoData(0x0022);
 
     while (1)
     {
-//    	SubCmdNoData(0x0022); // Send FET_ENABLE sub-command
-//    	SubCmdReadData(0x0057, readData, 2);
-    	// Read the cell voltage for all 16 cells and then the pack voltage
-    	for (int i = 0; i < 17; i++) {
-    		cmdAddr = 0x14 + 2*i;
-    		DirectCmdRead(cmdAddr, readData, 2);
-    		// Combine the 2 8-bit cell voltage bytes into a single 16-byte variable
-    		cellVolt = (readData[0]) + (readData[1] << 8);
-    	}
+    	SubCmdNoData(0x0022); // Send FET_ENABLE sub-command
+    	SubCmdReadData(0x0057, readData, 2);
     	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5); // Toggle heartbeat LED
     	HAL_Delay(2000);
     }
@@ -476,54 +465,6 @@ uint8_t crc8(uint8_t *data, size_t len)
     return crc;
 }
 
-/**
- * Sends a direct command to the AFE and reads the data that is output
- * @param cmd The address byte for the command
- * @param returnData Pointer to the 8-bit integer array for storing the read data
- * @param len Number of bytes to read from the AFE. The function automatically increments the address byte based on this value
- */
-void DirectCmdRead(uint8_t cmd, uint8_t *returnData, uint8_t len)
-{
-	uint8_t rxData[3] = {0};
-	uint8_t txData[3] = {0};
-	uint8_t fullCmd[] = { cmd, 0xFF }; // Data byte doesn't matter since it's a read, just use 0xFF
-	uint8_t crcLower = 0;
-	bool commReceived = false;
-
-	// Increment the command address based on the data length given
-	for (int i = 0; i < len; i++)
-	{
-		fullCmd[0] = cmd + i; // Increment the address
-		crcLower = crc8(fullCmd, 2); // Recalculate the CRC
-		// Construct the TX data for the SPI transaction
-		txData[0] = fullCmd[0];
-		txData[1] = fullCmd[1];
-		txData[2] = crcLower;
-
-		// Keep sending the command until MISO reflects the command was received
-		commReceived = false;
-		while (!commReceived)
-		{
-			// Pull NSS low
-			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
-			// Transmit data and receive AFE's response
-			HAL_SPI_TransmitReceive(&hspi1, txData, rxData, sizeof(txData), HAL_MAX_DELAY);
-
-			// Confirm command was received by checking address byte received
-			if (rxData[0] == txData[0]) commReceived = true;
-
-			// Pull NSS high and wait for transaction to be processed
-			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
-			HAL_Delay(1);
-		}
-		returnData[i] = rxData[1]; // Save data byte received from last transaction
-	}
-}
-
-/**
- * Sends a sub-command to the AFE, no data is written or read
- * @param cmd The upper and lower address bytes for the sub-command
- */
 void SubCmdNoData(uint16_t cmd)
 {
 	uint8_t rxData[3] = {0};
@@ -579,12 +520,6 @@ void SubCmdNoData(uint16_t cmd)
 	}
 }
 
-/**
- * Sends a sub-command to the AFE and reads the data that is output
- * @param cmd The upper and lower address bytes for the sub-command
- * @param returnData Pointer to the 8-bit integer array for storing the read data
- * @param len Number of bytes to read from the AFE's 32-byte data buffer
- */
 void SubCmdReadData(uint16_t cmd, uint8_t *returnData, uint8_t len)
 {
 	uint8_t rxData[3] = {0};
@@ -667,6 +602,61 @@ void SubCmdReadData(uint16_t cmd, uint8_t *returnData, uint8_t len)
 
 		returnData[i] = rxData[1]; // Save data byte received from last transaction
 	}
+}
+
+void EnterConfigUpdateMode(void)
+{
+    uint8_t command[] = { 0x00, 0x20 };
+    uint8_t crc = crc8(command, 2);
+    uint8_t txData[] = { command[0], command[1], crc };
+
+    // Pull NSS low
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
+
+    // Transmit data
+    if (HAL_SPI_Transmit(&hspi1, txData, sizeof(txData), HAL_MAX_DELAY) != HAL_OK)
+    {
+        // Transmission error
+        while (1);
+    }
+
+    // Pull NSS high
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
+}
+
+void ReadManufacturingStatusRegister(void)
+{
+    uint8_t command[] = { 0x00, 0x57 }; // Command to read Manufacturing Status Register
+    uint8_t crc = crc8(command, 2);
+    uint8_t txData[] = { command[0], command[1], crc };
+    uint8_t rxData[3] = {0};
+
+    // Pull NSS low
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
+
+    // Transmit command
+    HAL_SPI_Transmit(&hspi1, txData, sizeof(txData), HAL_MAX_DELAY);
+
+    // Receive response
+    HAL_SPI_Receive(&hspi1, rxData, sizeof(rxData), HAL_MAX_DELAY);
+
+    // Pull NSS high
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
+
+    // Process the received data
+    uint8_t received_crc = rxData[2];
+    uint8_t calculated_crc = crc8(rxData, 2);
+
+    if (received_crc == calculated_crc)
+    {
+        // CRC is valid, process the received data
+        uint8_t manufacturing_status = rxData[1];
+        // Use the manufacturing_status as needed
+    }
+    else
+    {
+        // CRC is invalid, handle the error
+    }
 }
 
 void SPI1_Transmit(uint8_t *data, size_t len)

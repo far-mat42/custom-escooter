@@ -354,23 +354,13 @@ int main(void)
 
     // Blank array to store data from any commands that receive data
     uint8_t readData[32] = {0};
-
-    uint16_t cellVolt = 0;
-    uint8_t cmdAddr = 0;
     // Send FET_ENABLE sub-command to allow test commands to toggle FETs
 //	SubCmdNoData(0x0022);
 
     while (1)
     {
-//    	SubCmdNoData(0x0022); // Send FET_ENABLE sub-command
-//    	SubCmdReadData(0x0057, readData, 2);
-    	// Read the cell voltage for all 16 cells and then the pack voltage
-    	for (int i = 0; i < 17; i++) {
-    		cmdAddr = 0x14 + 2*i;
-    		DirectCmdRead(cmdAddr, readData, 2);
-    		// Combine the 2 8-bit cell voltage bytes into a single 16-byte variable
-    		cellVolt = (readData[0]) + (readData[1] << 8);
-    	}
+    	SubCmdNoData(0x0022); // Send FET_ENABLE sub-command
+    	SubCmdReadData(0x0057, readData, 2);
     	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5); // Toggle heartbeat LED
     	HAL_Delay(2000);
     }
@@ -477,10 +467,10 @@ uint8_t crc8(uint8_t *data, size_t len)
 }
 
 /**
- * Sends a direct command to the AFE and reads the data that is output
- * @param cmd The address byte for the command
+ * Sends a sub-command to the AFE and reads the data that is output
+ * @param cmd The upper and lower address bytes for the sub-command
  * @param returnData Pointer to the 8-bit integer array for storing the read data
- * @param len Number of bytes to read from the AFE. The function automatically increments the address byte based on this value
+ * @param len Number of bytes to read from the AFE's 32-byte data buffer
  */
 void DirectCmdRead(uint8_t cmd, uint8_t *returnData, uint8_t len)
 {
@@ -501,7 +491,6 @@ void DirectCmdRead(uint8_t cmd, uint8_t *returnData, uint8_t len)
 		txData[2] = crcLower;
 
 		// Keep sending the command until MISO reflects the command was received
-		commReceived = false;
 		while (!commReceived)
 		{
 			// Pull NSS low

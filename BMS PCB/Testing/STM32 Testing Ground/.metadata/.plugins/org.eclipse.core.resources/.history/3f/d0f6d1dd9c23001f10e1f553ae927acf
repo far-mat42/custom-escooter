@@ -501,7 +501,6 @@ void DirectCmdRead(uint8_t cmd, uint8_t *returnData, uint8_t len)
 		txData[2] = crcLower;
 
 		// Keep sending the command until MISO reflects the command was received
-		commReceived = false;
 		while (!commReceived)
 		{
 			// Pull NSS low
