@@ -313,9 +313,16 @@ void GPIO_Init(void);
 void SPI1_Init(void);
 uint8_t crc8(uint8_t *data, size_t len);
 
+// Functions to handle communication with the AFE
 void DirectCmdRead(uint8_t cmd, uint8_t *returnData, uint8_t len);
 void SubCmdNoData(uint16_t cmd);
 void SubCmdReadData(uint16_t cmd, uint8_t *returnData, uint8_t len);
+void RAMRegisterRead(uint16_t addr, uint8_t *returnData, uint8_t len);
+void RAMRegisterWrite(uint16_t addr, uint8_t *writeData, uint8_t len);
+
+// Helper functions that do the handling for verifying the AFE received a SPI command
+void AFETransmitReadCmd(uint8_t *txBytes, uint8_t *rxBytes, uint8_t arrSize);
+void AFETransmitWriteCmd(uint8_t *txBytes, uint8_t *rxBytes, uint8_t arrSize);
 
 void SPI1_Receive(uint8_t *data, size_t len);
 void SPI1_Transmit(uint8_t *data, size_t len);
@@ -335,8 +342,10 @@ const uint8_t READ_DATA_BUFF_LSB = 0x40;
 const uint8_t WRITE_DATA_BUFF_LSB = 0xC0;
 
 // Register addresses for writing checksum and data length info for transactions
-const uint8_t CHECKSUM_ADDR = 0x60;
-const uint8_t DATALEN_ADDR = 0x61;
+const uint8_t READ_CHECKSUM_ADDR = 0x60;
+const uint8_t READ_DATALEN_ADDR = 0x61;
+const uint8_t WRITE_CHECKSUM_ADDR = 0xE0;
+const uint8_t WRITE_DATALEN_ADDR = 0xE1;
 
 int main(void)
 {
@@ -356,21 +365,23 @@ int main(void)
     uint8_t readData[32] = {0};
 
     uint16_t cellVolt = 0;
+    uint16_t cellVolts[17] = {0};
     uint8_t cmdAddr = 0;
     // Send FET_ENABLE sub-command to allow test commands to toggle FETs
 //	SubCmdNoData(0x0022);
 
     while (1)
     {
-//    	SubCmdNoData(0x0022); // Send FET_ENABLE sub-command
-//    	SubCmdReadData(0x0057, readData, 2);
+    	SubCmdNoData(0x0022); // Send FET_ENABLE sub-command
+    	SubCmdReadData(0x0057, readData, 2); // Read manufacturing data
     	// Read the cell voltage for all 16 cells and then the pack voltage
-    	for (int i = 0; i < 17; i++) {
-    		cmdAddr = 0x14 + 2*i;
-    		DirectCmdRead(cmdAddr, readData, 2);
-    		// Combine the 2 8-bit cell voltage bytes into a single 16-byte variable
-    		cellVolt = (readData[0]) + (readData[1] << 8);
-    	}
+//    	for (int i = 0; i < 17; i++) {
+//    		cmdAddr = 0x14 + 2*i;
+//    		DirectCmdRead(cmdAddr, readData, 2);
+//    		// Combine the 2 8-bit cell voltage bytes into a single 16-byte variable
+//    		cellVolt = (readData[0]) + (readData[1] << 8);
+//    		cellVolts[i] = cellVolt;
+//    	}
     	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5); // Toggle heartbeat LED
     	HAL_Delay(2000);
     }
@@ -488,7 +499,7 @@ void DirectCmdRead(uint8_t cmd, uint8_t *returnData, uint8_t len)
 	uint8_t txData[3] = {0};
 	uint8_t fullCmd[] = { cmd, 0xFF }; // Data byte doesn't matter since it's a read, just use 0xFF
 	uint8_t crcLower = 0;
-	bool commReceived = false;
+//	bool commReceived = false;
 
 	// Increment the command address based on the data length given
 	for (int i = 0; i < len; i++)
@@ -500,22 +511,7 @@ void DirectCmdRead(uint8_t cmd, uint8_t *returnData, uint8_t len)
 		txData[1] = fullCmd[1];
 		txData[2] = crcLower;
 
-		// Keep sending the command until MISO reflects the command was received
-		commReceived = false;
-		while (!commReceived)
-		{
-			// Pull NSS low
-			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
-			// Transmit data and receive AFE's response
-			HAL_SPI_TransmitReceive(&hspi1, txData, rxData, sizeof(txData), HAL_MAX_DELAY);
-
-			// Confirm command was received by checking address byte received
-			if (rxData[0] == txData[0]) commReceived = true;
-
-			// Pull NSS high and wait for transaction to be processed
-			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
-			HAL_Delay(1);
-		}
+		AFETransmitReadCmd(txData, rxData, sizeof(txData));
 		returnData[i] = rxData[1]; // Save data byte received from last transaction
 	}
 }
@@ -531,52 +527,17 @@ void SubCmdNoData(uint16_t cmd)
 	uint8_t crcLower = crc8(commandLowerAddr, 2);
 	uint8_t commandUpperAddr[] = { UPPER_ADDR_REG_WRITE, ((uint8_t)(cmd >> 8)) };
 	uint8_t crcUpper = crc8(commandUpperAddr, 2);
-	bool commReceived = false;
 
 	// Keep writing the command until MISO reflects command was received
 	// Starting with lower byte
 	uint8_t txData[] = { commandLowerAddr[0], commandLowerAddr[1], crcLower };
-	while (!commReceived)
-	{
-		// Pull NSS low
-		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
-		// Transmit data and receive AFE's response
-		HAL_SPI_TransmitReceive(&hspi1, txData, rxData, sizeof(txData), HAL_MAX_DELAY);
-
-		// Confirm command was received
-		commReceived = true;
-		for (int i = 0; i < sizeof(txData); i++)
-		{
-			if (txData[i] != rxData[i]) commReceived = false; // If any mismatch occurs, flag it and retransmit
-		}
-		// Pull NSS high and wait for transaction to be processed
-		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
-		HAL_Delay(3);
-	}
+	AFETransmitWriteCmd(txData, rxData, sizeof(txData));
 
 	// Continue to upper byte
 	txData[0] = commandUpperAddr[0];
 	txData[1] = commandUpperAddr[1];
 	txData[2] = crcUpper;
-	commReceived = false;
-	while (!commReceived)
-	{
-		// Pull NSS low
-		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
-
-		// Transmit data and receive AFE's response
-		HAL_SPI_TransmitReceive(&hspi1, txData, rxData, sizeof(txData), HAL_MAX_DELAY);
-
-		// Confirm command was received
-		commReceived = true;
-		for (int i = 0; i < sizeof(txData); i++)
-		{
-			if (txData[i] != rxData[i]) commReceived = false; // If any mismatch occurs, flag it and retransmit
-		}
-		// Pull NSS high and wait for transaction to be processed
-		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
-		HAL_Delay(3);
-	}
+	AFETransmitWriteCmd(txData, rxData, sizeof(txData));
 }
 
 /**
@@ -592,52 +553,17 @@ void SubCmdReadData(uint16_t cmd, uint8_t *returnData, uint8_t len)
 	uint8_t crcLower = crc8(commandLowerAddr, 2);
 	uint8_t commandUpperAddr[] = { UPPER_ADDR_REG_WRITE, ((uint8_t)(cmd >> 8)) };
 	uint8_t crcUpper = crc8(commandUpperAddr, 2);
-	bool commReceived = false;
 
 	// Keep writing the command until MISO reflects command was received
 	// Starting with lower byte
 	uint8_t txData[] = { commandLowerAddr[0], commandLowerAddr[1], crcLower };
-	while (!commReceived)
-	{
-		// Pull NSS low
-		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
-		// Transmit data and receive AFE's response
-		HAL_SPI_TransmitReceive(&hspi1, txData, rxData, sizeof(txData), HAL_MAX_DELAY);
-
-		// Confirm command was received
-		commReceived = true;
-		for (int i = 0; i < sizeof(txData); i++)
-		{
-			if (txData[i] != rxData[i]) commReceived = false; // If any mismatch occurs, flag it and retransmit
-		}
-		// Pull NSS high and wait for transaction to be processed
-		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
-		HAL_Delay(3);
-	}
+	AFETransmitWriteCmd(txData, rxData, sizeof(txData));
 
 	// Continue to upper byte
 	txData[0] = commandUpperAddr[0];
 	txData[1] = commandUpperAddr[1];
 	txData[2] = crcUpper;
-	commReceived = false;
-	while (!commReceived)
-	{
-		// Pull NSS low
-		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
-
-		// Transmit data and receive AFE's response
-		HAL_SPI_TransmitReceive(&hspi1, txData, rxData, sizeof(txData), HAL_MAX_DELAY);
-
-		// Confirm command was received
-		commReceived = true;
-		for (int i = 0; i < sizeof(txData); i++)
-		{
-			if (txData[i] != rxData[i]) commReceived = false; // If any mismatch occurs, flag it and retransmit
-		}
-		// Pull NSS high and wait for transaction to be processed
-		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
-		HAL_Delay(3);
-	}
+	AFETransmitWriteCmd(txData, rxData, sizeof(txData));
 
 	// Read each byte based on the data length given in parameters
 	uint8_t readData[2] = {0};
@@ -649,23 +575,313 @@ void SubCmdReadData(uint16_t cmd, uint8_t *returnData, uint8_t len)
 		txData[1] = readData[1];
 		txData[2] = crc8(readData, 2);
 
-		commReceived = false;
-		while (!commReceived)
-		{
-			// Pull NSS low
-			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
-
-			// Transmit data and receive AFE's response
-			HAL_SPI_TransmitReceive(&hspi1, txData, rxData, sizeof(txData), HAL_MAX_DELAY);
-
-			// Confirm command was received by checking address byte received
-			if (txData[0] == rxData[0]) commReceived = true;
-			// Pull NSS high and wait for transaction to be processed
-			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
-			HAL_Delay(3);
-		}
+		AFETransmitReadCmd(txData, rxData, sizeof(txData));
 
 		returnData[i] = rxData[1]; // Save data byte received from last transaction
+	}
+}
+
+/**
+ * Reads the value stored in one of the AFE's RAM registers
+ * Might remove this function, it's exactly the same as the SubCmd read data function
+ * @param addr The register address
+ * @param returnData Pointer to the 8-bit integer array for storing the read data
+ * @param len Number of bytes to read from the AFE's 32-byte data buffer
+ */
+void RAMRegisterRead(uint16_t addr, uint8_t *returnData, uint8_t len)
+{
+	// Preparing the SPI transaction to send to tell the AFE a RAM register read is happening
+	uint8_t rxData[3] = {0};
+	uint8_t commandLowerAddr[] = { LOWER_ADDR_REG_WRITE, ((uint8_t)(addr & 0xFF)) };
+	uint8_t crcLower = crc8(commandLowerAddr, 2);
+	uint8_t commandUpperAddr[] = { UPPER_ADDR_REG_WRITE, ((uint8_t)(addr >> 8)) };
+	uint8_t crcUpper = crc8(commandUpperAddr, 2);
+//	bool commReceived = false;
+
+	// Keep writing the command until MISO reflects command was received
+	// Starting with lower byte
+	uint8_t txData[] = { commandLowerAddr[0], commandLowerAddr[1], crcLower };
+//	while (!commReceived)
+//	{
+//		// Pull NSS low
+//		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
+//		// Transmit data and receive AFE's response
+//		HAL_SPI_TransmitReceive(&hspi1, txData, rxData, sizeof(txData), HAL_MAX_DELAY);
+//
+//		// Confirm command was received
+//		commReceived = true;
+//		for (int i = 0; i < sizeof(txData); i++)
+//		{
+//			if (txData[i] != rxData[i]) commReceived = false; // If any mismatch occurs, flag it and retransmit
+//		}
+//		// Pull NSS high and wait for transaction to be processed
+//		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
+//		HAL_Delay(3);
+//	}
+	AFETransmitWriteCmd(txData, rxData, sizeof(txData));
+
+	// Continue to upper byte
+	txData[0] = commandUpperAddr[0];
+	txData[1] = commandUpperAddr[1];
+	txData[2] = crcUpper;
+//	commReceived = false;
+//	while (!commReceived)
+//	{
+//		// Pull NSS low
+//		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
+//
+//		// Transmit data and receive AFE's response
+//		HAL_SPI_TransmitReceive(&hspi1, txData, rxData, sizeof(txData), HAL_MAX_DELAY);
+//
+//		// Confirm command was received
+//		commReceived = true;
+//		for (int i = 0; i < sizeof(txData); i++)
+//		{
+//			if (txData[i] != rxData[i]) commReceived = false; // If any mismatch occurs, flag it and retransmit
+//		}
+//		// Pull NSS high and wait for transaction to be processed
+//		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
+//		HAL_Delay(3);
+//	}
+	AFETransmitWriteCmd(txData, rxData, sizeof(txData));
+
+	// Read each byte based on the data length given in parameters
+	uint8_t readData[2] = {0};
+	for (int i = 0; i < len; i++) {
+		readData[0] = READ_DATA_BUFF_LSB + i;
+		readData[1] = 0xFF;
+
+		txData[0] = readData[0];
+		txData[1] = readData[1];
+		txData[2] = crc8(readData, 2);
+
+//		commReceived = false;
+//		while (!commReceived)
+//		{
+//			// Pull NSS low
+//			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
+//
+//			// Transmit data and receive AFE's response
+//			HAL_SPI_TransmitReceive(&hspi1, txData, rxData, sizeof(txData), HAL_MAX_DELAY);
+//
+//			// Confirm command was received by checking address byte received
+//			if (txData[0] == rxData[0]) commReceived = true;
+//			// Pull NSS high and wait for transaction to be processed
+//			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
+//			HAL_Delay(3);
+//		}
+		AFETransmitReadCmd(txData, rxData, sizeof(txData));
+
+		returnData[i] = rxData[1]; // Save data byte received from last transaction
+	}
+}
+
+/**
+ * Writes the given value in one of the AFE's RAM registers
+ * Might remove this function, it's exactly the same as the SubCmd read data function
+ * @param addr The register address
+ * @param writeData Pointer to the 8-bit integer array for the data to write to the register
+ * @param len Number of bytes to write to the AFE's 32-byte data buffer
+ */
+void RAMRegisterWrite(uint16_t addr, uint8_t *writeData, uint8_t len)
+{
+	uint8_t rxData[3] = {0};
+	uint8_t lowerAddr[] = { LOWER_ADDR_REG_WRITE, ((uint8_t)(addr & 0xFF)) };
+	uint8_t crcLower = crc8(lowerAddr, 2);
+	uint8_t upperAddr[] = { UPPER_ADDR_REG_WRITE, ((uint8_t)(addr >> 8)) };
+	uint8_t crcUpper = crc8(upperAddr, 2);
+//	bool commReceived = false;
+
+	// Keep writing the register address until MISO reflects command was received
+	// Starting with lower byte
+	uint8_t txData[] = { lowerAddr[0], lowerAddr[1], crcLower };
+//	while (!commReceived)
+//	{
+//		// Pull NSS low
+//		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
+//		// Transmit data and receive AFE's response
+//		HAL_SPI_TransmitReceive(&hspi1, txData, rxData, sizeof(txData), HAL_MAX_DELAY);
+//
+//		// Confirm address byte was received
+//		commReceived = true;
+//		for (int i = 0; i < sizeof(txData); i++)
+//		{
+//			if (txData[i] != rxData[i]) commReceived = false; // If any mismatch occurs, flag it and retransmit
+//		}
+//		// Pull NSS high and wait for transaction to be processed
+//		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
+//		HAL_Delay(1);
+//	}
+	AFETransmitWriteCmd(txData, rxData, sizeof(txData));
+
+	// Continue to upper byte
+	txData[0] = upperAddr[0];
+	txData[1] = upperAddr[1];
+	txData[2] = crcUpper;
+//	commReceived = false;
+//	while (!commReceived)
+//	{
+//		// Pull NSS low
+//		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
+//
+//		// Transmit data and receive AFE's response
+//		HAL_SPI_TransmitReceive(&hspi1, txData, rxData, sizeof(txData), HAL_MAX_DELAY);
+//
+//		// Confirm address byte was received
+//		commReceived = true;
+//		for (int i = 0; i < sizeof(txData); i++)
+//		{
+//			if (txData[i] != rxData[i]) commReceived = false; // If any mismatch occurs, flag it and retransmit
+//		}
+//		// Pull NSS high and wait for transaction to be processed
+//		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
+//		HAL_Delay(1);
+//	}
+	AFETransmitWriteCmd(txData, rxData, sizeof(txData));
+
+	// Write the data provided to the AFE's 32-byte data buffer
+	uint8_t writeBytes[2] = {0};
+	for (int i = 0; i < len; i++)
+	{
+		// Increment data buffer address and include the next address byte
+		writeBytes[0] = WRITE_DATA_BUFF_LSB + i;
+		writeBytes[1] = writeData[i];
+
+		txData[0] = writeBytes[0];
+		txData[1] = writeBytes[1];
+		txData[2] = crc8(writeBytes, 2); // Recalculate CRC
+
+//		commReceived = false;
+//		while (!commReceived)
+//		{
+//			// Pull NSS low
+//			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
+//			// Transmit data and receive AFE's response
+//			HAL_SPI_TransmitReceive(&hspi1, txData, rxData, sizeof(txData), HAL_MAX_DELAY);
+//
+//			// Confirm write data was received
+//			commReceived = true;
+//			for (int i = 0; i < sizeof(txData); i++)
+//			{
+//				if (txData[i] != rxData[i]) commReceived = false; // If any mismatch occurs, flag it and retransmit
+//			}
+//
+//			// Pull NSS high and wait for transaction to be processed
+//			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
+//			HAL_Delay(1);
+//		}
+		AFETransmitWriteCmd(txData, rxData, sizeof(txData));
+	}
+
+	// Calculate the check-sum and write it to the AFE's checksum register
+	uint8_t checkSum = 0;
+	for (int i = 0; i < len; i++) {
+		checkSum += writeData[i];
+	}
+	checkSum += lowerAddr[1];
+	checkSum += upperAddr[1];
+
+	writeBytes[0] = WRITE_CHECKSUM_ADDR;
+	writeBytes[1] = checkSum;
+
+	txData[0] = writeBytes[0];
+	txData[1] = writeBytes[1];
+	txData[2] = crc8(writeBytes, 2); // Recalculate CRC
+
+	AFETransmitWriteCmd(txData, rxData, sizeof(txData));
+//	commReceived = false;
+//	while (!commReceived)
+//	{
+//		// Pull NSS low
+//		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
+//		// Transmit data and receive AFE's response
+//		HAL_SPI_TransmitReceive(&hspi1, txData, rxData, sizeof(txData), HAL_MAX_DELAY);
+//
+//		// Confirm write data was received
+//		commReceived = true;
+//		for (int i = 0; i < sizeof(txData); i++)
+//		{
+//			if (txData[i] != rxData[i]) commReceived = false; // If any mismatch occurs, flag it and retransmit
+//		}
+//
+//		// Pull NSS high and wait for transaction to be processed
+//		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
+//		HAL_Delay(1);
+//	}
+
+	// Write the data length to the AFE's data length register
+	writeBytes[0] = WRITE_DATALEN_ADDR;
+	writeBytes[1] = len + 4; // Length of data buffer, plus upper and lower address bytes, plus checksum and data length bytes
+
+	txData[0] = writeBytes[0];
+	txData[1] = writeBytes[1];
+	txData[2] = crc8(writeBytes, 2); // Recalculate CRC
+
+	AFETransmitWriteCmd(txData, rxData, sizeof(txData));
+//	commReceived = false;
+//	while (!commReceived)
+//	{
+//		// Pull NSS low
+//		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
+//		// Transmit data and receive AFE's response
+//		HAL_SPI_TransmitReceive(&hspi1, txData, rxData, sizeof(txData), HAL_MAX_DELAY);
+//
+//		// Confirm write data was received
+//		commReceived = true;
+//		for (int i = 0; i < sizeof(txData); i++)
+//		{
+//			if (txData[i] != rxData[i]) commReceived = false; // If any mismatch occurs, flag it and retransmit
+//		}
+//
+//		// Pull NSS high and wait for transaction to be processed
+//		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
+//		HAL_Delay(1);
+//	}
+}
+
+void AFETransmitReadCmd(uint8_t *txBytes, uint8_t *rxBytes, uint8_t arrSize)
+{
+	// Continuously transmit the SPI transaction until the AFE has received it
+	bool commReceived = false;
+	while (!commReceived)
+	{
+		// Pull NSS low
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
+		// Transmit data and receive AFE's response
+		HAL_SPI_TransmitReceive(&hspi1, txBytes, rxBytes, arrSize, HAL_MAX_DELAY);
+
+		// For read command, confirm the AFE received the command by checking the address and CRC bytes
+		if (txBytes[0] == rxBytes[0]) commReceived = true;
+		// TODO: implement CRC checking for received data
+
+		// Pull NSS high and wait for transaction to be processed
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
+		HAL_Delay(1);
+	}
+
+}
+
+void AFETransmitWriteCmd(uint8_t *txBytes, uint8_t *rxBytes, uint8_t arrSize)
+{
+	// Continuously transmit the SPI transaction until the AFE has received it
+	bool commReceived = false;
+	while (!commReceived)
+	{
+		// Pull NSS low
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
+		// Transmit data and receive AFE's response
+		HAL_SPI_TransmitReceive(&hspi1, txBytes, rxBytes, arrSize, HAL_MAX_DELAY);
+
+		// For write command, confirm the AFE received the command by checking every single byte
+		commReceived = true;
+		for (int i = 0; i < arrSize; i++)
+		{
+			if (txBytes[i] != rxBytes[i]) commReceived = false; // If any mismatch occurs, flag it and retransmit
+		}
+
+		// Pull NSS high and wait for transaction to be processed
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
+		HAL_Delay(1);
 	}
 }
 
