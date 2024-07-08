@@ -1,0 +1,13 @@
+/*
+ * bq76952.h
+ * Header file for defining addresses and functions to communicate with the BQ76952 AFE
+ *  Created on: Jul 7, 2024
+ *      Author: farri
+ */
+
+#ifndef INC_BQ76952_H_
+#define INC_BQ76952_H_
+
+
+
+#endif /* INC_BQ76952_H_ */
