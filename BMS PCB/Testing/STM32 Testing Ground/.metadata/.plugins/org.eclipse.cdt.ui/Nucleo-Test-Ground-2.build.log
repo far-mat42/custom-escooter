@@ -1,27 +1,10 @@
-21:34:57 **** Incremental Build of configuration Debug for project Nucleo-Test-Ground-2 ****
+21:56:58 **** Incremental Build of configuration Debug for project Nucleo-Test-Ground-2 ****
 make -j16 all 
-arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L412xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
-../Core/Src/main.c: In function 'main':
-../Core/Src/main.c:374:13: warning: unused variable 'cmdAddr' [-Wunused-variable]
-  374 |     uint8_t cmdAddr = 0;
-      |             ^~~~~~~
-../Core/Src/main.c:373:14: warning: unused variable 'cellVolts' [-Wunused-variable]
-  373 |     uint16_t cellVolts[17] = {0};
-      |              ^~~~~~~~~
-../Core/Src/main.c:372:14: warning: unused variable 'cellVolt' [-Wunused-variable]
-  372 |     uint16_t cellVolt = 0;
-      |              ^~~~~~~~
-arm-none-eabi-gcc -o "Nucleo-Test-Ground-2.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Farris' Files\School\Side Projects\Electric Scooter\custom-escooter\BMS PCB\Testing\STM32 Testing Ground\Nucleo-Test-Ground-2\STM32L412K8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Nucleo-Test-Ground-2.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
-Finished building target: Nucleo-Test-Ground-2.elf
- 
 arm-none-eabi-size  Nucleo-Test-Ground-2.elf 
-arm-none-eabi-objdump -h -S Nucleo-Test-Ground-2.elf  > "Nucleo-Test-Ground-2.list"
    text	   data	    bss	    dec	    hex	filename
-   9532	     20	   1668	  11220	   2bd4	Nucleo-Test-Ground-2.elf
+   9988	     20	   1668	  11676	   2d9c	Nucleo-Test-Ground-2.elf
 Finished building: default.size.stdout
  
-Finished building: Nucleo-Test-Ground-2.list
- 
 
-21:34:57 Build Finished. 0 errors, 3 warnings. (took 639ms)
+21:56:58 Build Finished. 0 errors, 0 warnings. (took 244ms)
 

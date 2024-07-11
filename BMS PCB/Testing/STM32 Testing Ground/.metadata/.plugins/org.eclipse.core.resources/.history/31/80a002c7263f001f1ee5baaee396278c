@@ -372,15 +372,13 @@ int main(void)
     uint16_t cellVolt = 0;
     uint16_t cellVolts[17] = {0};
     uint8_t cmdAddr = 0;
-
-    uint8_t writeData[32] = {0};
     // Send FET_ENABLE sub-command to allow test commands to toggle FETs
 //	SubCmdNoData(0x0022);
 
     while (1)
     {
-//    	SubCmdNoData(0x0022); // Send FET_ENABLE sub-command
-//    	SubCmdReadData(0x0057, readData, 2); // Read manufacturing data
+    	SubCmdNoData(0x0022); // Send FET_ENABLE sub-command
+    	SubCmdReadData(0x0057, readData, 2); // Read manufacturing data
     	// Read the cell voltage for all 16 cells and then the pack voltage
 //    	for (int i = 0; i < 17; i++) {
 //    		cmdAddr = 0x14 + 2*i;
@@ -389,41 +387,8 @@ int main(void)
 //    		cellVolt = (readData[0]) + (readData[1] << 8);
 //    		cellVolts[i] = cellVolt;
 //    	}
-    	// Read initial value of cell 1 calibration gain
-    	RAMRegisterRead(CAL_GAIN_CL1, readData, 2);
-
-    	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5); // Blink heartbeat LED
-    	HAL_Delay(250);
-    	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
-    	HAL_Delay(250);
-
-    	// Write value of 0x307A to cell 1 calibration gain
-    	writeData[0] = 0x7A;
-    	writeData[1] = 0x30;
-    	RAMRegisterWrite(CAL_GAIN_CL1, writeData, 2);
-
-    	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5); // Blink heartbeat LED
-		HAL_Delay(250);
-		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
-		HAL_Delay(250);
-
-		// Read value of cell 1 calibration gain again
-		RAMRegisterRead(CAL_GAIN_CL1, readData, 2);
-
-		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5); // Blink heartbeat LED
-		HAL_Delay(250);
-		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
-		HAL_Delay(250);
-
-		// Write value of 0x0000 to cell 1 calibration gain (default value)
-		writeData[0] = 0x00;
-		writeData[1] = 0x00;
-		RAMRegisterWrite(CAL_GAIN_CL1, writeData, 2);
-
-		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5); // Blink heartbeat LED
-		HAL_Delay(250);
-		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
-		HAL_Delay(250);
+    	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5); // Toggle heartbeat LED
+    	HAL_Delay(2000);
     }
 }
 
@@ -820,7 +785,6 @@ void RAMRegisterWrite(uint16_t addr, uint8_t *writeData, uint8_t len)
 	}
 	checkSum += lowerAddr[1];
 	checkSum += upperAddr[1];
-	checkSum = ~(checkSum);
 
 	writeBytes[0] = WRITE_CHECKSUM_ADDR;
 	writeBytes[1] = checkSum;
