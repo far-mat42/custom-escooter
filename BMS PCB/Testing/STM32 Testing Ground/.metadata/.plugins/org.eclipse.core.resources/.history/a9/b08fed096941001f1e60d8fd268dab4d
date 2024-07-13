@@ -396,7 +396,6 @@ int main(void)
 	SubCmdNoData(0x0090);
 	writeData[0] = 0x0C;
 	RAMRegisterWrite(SET_FET_OPTIONS, writeData, 1);
-	SubCmdNoData(0x0092);
 
 	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
 	HAL_Delay(250);

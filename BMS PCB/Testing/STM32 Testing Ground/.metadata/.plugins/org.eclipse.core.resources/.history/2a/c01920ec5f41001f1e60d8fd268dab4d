@@ -375,6 +375,8 @@ int main(void)
 
     uint8_t writeData[32] = {0};
 
+    SubCmdReadData(0x0057, readData, 2);
+
     // Read battery status register and manufacturing status register
 	DirectCmdRead(0x12, readData, 2);
 	SubCmdReadData(0x0057, readData, 2);
@@ -383,21 +385,14 @@ int main(void)
 	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
 	HAL_Delay(750);
 
-	// Disable SLEEP mode and enter FET_TEST mode if not already in FET_TEST
-	SubCmdNoData(0x009A);
+	// Enable SLEEP mode and enter FET_TEST mode if not already in FET_TEST
+	SubCmdNoData(0x0099);
 //	SubCmdNoData(0x0022);
 	if (readData[0] & (1 << 4)) SubCmdNoData(0x0022);
 
 	// Read battery status register and manufacturing status register
 	DirectCmdRead(0x12, readData, 2);
 	SubCmdReadData(0x0057, readData, 2);
-
-	// Enter CONFIG_UPDATE mode, disable body diode protection, then exit CONFIG_UPDATE mode
-	SubCmdNoData(0x0090);
-	writeData[0] = 0x0C;
-	RAMRegisterWrite(SET_FET_OPTIONS, writeData, 1);
-	SubCmdNoData(0x0092);
-
 	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
 	HAL_Delay(250);
 	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
@@ -405,10 +400,8 @@ int main(void)
 
     while (1)
     {
-    	// Toggle the DSG FET every 4 seconds
-    	HAL_Delay(4000);
-    	SubCmdNoData(0x0020);
-    	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
+
+
 //
 //		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
 //		HAL_Delay(250);
