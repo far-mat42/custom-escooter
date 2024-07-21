@@ -1,4 +1,4 @@
-18:42:42 **** Incremental Build of configuration Debug for project Nucleo-Test-Ground-2 ****
+19:12:36 **** Incremental Build of configuration Debug for project Nucleo-Test-Ground-2 ****
 make -j16 all 
 arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L412xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
 ../Core/Src/main.c: In function 'main':
@@ -23,5 +23,5 @@ Finished building: default.size.stdout
 Finished building: Nucleo-Test-Ground-2.list
  
 
-18:42:43 Build Finished. 0 errors, 3 warnings. (took 645ms)
+19:12:36 Build Finished. 0 errors, 3 warnings. (took 866ms)
 

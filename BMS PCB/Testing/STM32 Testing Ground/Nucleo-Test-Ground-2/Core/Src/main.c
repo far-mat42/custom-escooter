@@ -407,7 +407,7 @@ int main(void)
     {
     	// Toggle the DSG FET every 4 seconds
     	HAL_Delay(4000);
-    	SubCmdNoData(0x0020);
+    	SubCmdNoData(0x001F);
     	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
 //
 //		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);

@@ -241,8 +241,8 @@ int main(void)
     	HAL_Delay(4000);
  80002de:	f44f 607a 	mov.w	r0, #4000	; 0xfa0
  80002e2:	f000 fcbf 	bl	8000c64 <HAL_Delay>
-    	SubCmdNoData(0x0020);
- 80002e6:	2020      	movs	r0, #32
+    	SubCmdNoData(0x001F);
+ 80002e6:	201f      	movs	r0, #31
  80002e8:	f000 f964 	bl	80005b4 <SubCmdNoData>
     	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
  80002ec:	2120      	movs	r1, #32
