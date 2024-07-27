@@ -391,12 +391,8 @@ int main(void)
 	DirectCmdRead(0x12, readData, 2);
 	SubCmdReadData(0x0057, readData, 2);
 
-	// Enter CONFIG_UPDATE mode
+	// Enter CONFIG_UPDATE mode, disable body diode protection, then exit CONFIG_UPDATE mode
 	SubCmdNoData(0x0090);
-	// Configuring Settings in RAM
-
-
-	// Disable body diode protection
 	writeData[0] = 0x0C;
 	RAMRegisterWrite(SET_FET_OPTIONS, writeData, 1);
 	// Setting MFG Status Init to disable FET Test commands
