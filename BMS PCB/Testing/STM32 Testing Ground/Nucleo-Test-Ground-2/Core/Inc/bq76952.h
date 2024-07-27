@@ -2,8 +2,12 @@
  * bq76952.h
  * Header file for defining addresses and functions to communicate with the BQ76952 AFE
  *  Created on: Jul 7, 2024
- *      Author: farri
+ *      Author: Farris matar
  */
+
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdlib.h>
 
 #ifndef INC_BQ76952_H_
 #define INC_BQ76952_H_
@@ -415,5 +419,15 @@
 #define SCRTY_KEY_UNSL_2		0x9259
 #define SCRTY_KEY_FL_ACS_1		0x925B
 #define SCRTY_KEY_FL_ACS_2		0x925D
+
+
+/**
+ * Helper functions for formatting data types into the AFE's data buffer
+ */
+void format_uint16(uint8_t *dataArr, uint16_t data);
+void format_uint32(uint8_t *dataArr, uint32_t data);
+
+void format_int16(uint8_t *dataArr, int data);
+void format_int32(uint8_t *dataArr, int data);
 
 #endif /* INC_BQ76952_H_ */

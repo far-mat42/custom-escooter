@@ -1,0 +1,38 @@
+/*
+ * bq76952.c
+ *  Source file for implementing helper functions to communicate with the BQ76952 AFE
+ *  Created on: Jul 27, 2024
+ *      Author: Farris Matar
+ */
+
+#include "bq76952.h"
+
+/**
+ * Implementation for functions to format data types into the AFE's data buffer
+ */
+
+/**
+ * Formats an unsigned 16-bit integer into the AFE's data buffer
+ * @param dataArr 8-bit integer array for storing the bytes to be transmitted to the AFE
+ * @param data 16-bit integer to re-format
+ */
+void format_uint16(uint8_t *dataArr, uint16_t data) {
+	dataArr[0] = ((uint8_t)(data & 0xFF));
+	dataArr[1] = ((uint8_t)(data >> 8));
+}
+
+void format_uint32(uint8_t *dataArr, uint32_t data) {
+	dataArr[0] = ((uint8_t)(data & 0xFF));
+	dataArr[1] = ((uint8_t)((data >> 8) & 0xFF));
+	dataArr[1] = ((uint8_t)((data >> 16) & 0xFF));
+	dataArr[1] = ((uint8_t)(data >> 24));
+}
+
+void format_int16(uint8_t *dataArr, uint16_t data, bool neg) {
+
+}
+
+void format_int32(uint8_t *dataArr, uint32_t data, bool neg) {
+
+}
+

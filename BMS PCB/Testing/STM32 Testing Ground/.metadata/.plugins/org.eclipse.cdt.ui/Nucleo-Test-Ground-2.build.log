@@ -1,4 +1,4 @@
-19:12:36 **** Incremental Build of configuration Debug for project Nucleo-Test-Ground-2 ****
+13:54:11 **** Incremental Build of configuration Debug for project Nucleo-Test-Ground-2 ****
 make -j16 all 
 arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L412xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
 ../Core/Src/main.c: In function 'main':
@@ -17,11 +17,11 @@ Finished building target: Nucleo-Test-Ground-2.elf
 arm-none-eabi-size  Nucleo-Test-Ground-2.elf 
 arm-none-eabi-objdump -h -S Nucleo-Test-Ground-2.elf  > "Nucleo-Test-Ground-2.list"
    text	   data	    bss	    dec	    hex	filename
-  10284	     20	   1668	  11972	   2ec4	Nucleo-Test-Ground-2.elf
+  10368	     20	   1668	  12056	   2f18	Nucleo-Test-Ground-2.elf
 Finished building: default.size.stdout
  
 Finished building: Nucleo-Test-Ground-2.list
  
 
-19:12:36 Build Finished. 0 errors, 3 warnings. (took 866ms)
+13:54:12 Build Finished. 0 errors, 3 warnings. (took 697ms)
 

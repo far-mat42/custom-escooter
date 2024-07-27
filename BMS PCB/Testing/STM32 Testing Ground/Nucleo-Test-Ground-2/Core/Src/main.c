@@ -383,10 +383,9 @@ int main(void)
 	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
 	HAL_Delay(750);
 
-	// Disable SLEEP mode and enter FET_TEST mode if not already in FET_TEST
+	// Disable SLEEP mode and disable FET_TEST mode if already in FET_TEST
 	SubCmdNoData(0x009A);
-//	SubCmdNoData(0x0022);
-	if (readData[0] & (1 << 4)) SubCmdNoData(0x0022);
+	if (!(readData[0] & (1 << 4))) SubCmdNoData(0x0022);
 
 	// Read battery status register and manufacturing status register
 	DirectCmdRead(0x12, readData, 2);
@@ -396,7 +395,11 @@ int main(void)
 	SubCmdNoData(0x0090);
 	writeData[0] = 0x0C;
 	RAMRegisterWrite(SET_FET_OPTIONS, writeData, 1);
+	// Setting MFG Status Init to disable FET Test commands
+	format_uint16(writeData, 0x0050);
+	RAMRegisterWrite(SET_MFG_STATUS_INIT, writeData, 2);
 	SubCmdNoData(0x0092);
+	SubCmdReadData(0x0057, readData, 2);
 
 	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
 	HAL_Delay(250);

@@ -1,0 +1,4 @@
+../Core/Src/bq76952.c:19:6:format_uint16	1
+../Core/Src/bq76952.c:29:6:format_uint32	1
+../Core/Src/bq76952.c:41:6:format_int16	2
+../Core/Src/bq76952.c:51:6:format_int32	2
