@@ -1,6 +1,10 @@
 /* Includes ------------------------------------------------------------------*/
 #include "main.h"
 #include "stm32l4xx.h"
+#include "stm32l4xx_hal.h"
+#include "stm32l4xx_hal_uart.h"
+
+UART_HandleTypeDef huart1;
 
 /* Function Prototypes -------------------------------------------------------*/
 void initClocks(void);
@@ -11,6 +15,11 @@ void delay(uint16_t milliseconds);
 void toggleLED(void);
 uint8_t readSPI(uint8_t addr);
 uint8_t writeSPI(uint8_t addr, uint8_t tx_data);
+void SPI1_Receive(uint8_t *data, size_t len);
+void SPI1_Transmit(uint8_t *data, size_t len);
+void configUART(void);
+void UART_Receive(uint8_t *pData, uint16_t len);
+void UART_Transmit(uint8_t *pData, uint16_t len);
 
 /**
   * @brief  The application entry point.
@@ -24,28 +33,20 @@ int main(void)
 	configSPI();
 	configTIM1();
 
-	// SPI addresses
-	uint8_t addr[4] = {37, 89, 121, 14};
-	uint8_t data[4] = {197, 5, 73, 41};
+	uint8_t msg[] = "Hello world!";
 
 	// Main loop
 	while (1) {
-		for (int i = 0; i < sizeof(addr); i++) {
-			for (int j = 0; j < sizeof(data); j++) {
-				writeSPI(addr[i], data[j]);
-				delay(1000);
-				toggleLED();
-			}
-
-//			HAL_Delay(50);
-		}
+		UART_Transmit(msg, sizeof(msg) - 1);
+		HAL_Delay(1000);
+		toggleLED();
 	}
 }
 
 /* Function definitions ------------------------------------------------------*/
 void initClocks(void) {
 	RCC->AHB2ENR |= 0x00000003; // Enable AHB2 peripheral clock for GPIOA and GPIOB
-	RCC->APB2ENR |= 0x00001800; // Enable APB2 peripheral clock for SPI1 and TIM1
+	RCC->APB2ENR |= 0x00005800; // Enable APB2 peripheral clock for SPI1 and TIM1 and USART1
 }
 
 void configGPIO(void) {
@@ -56,11 +57,11 @@ void configGPIO(void) {
 	GPIOB->AFR[0] &= (~(0x0000000F));
 
 	GPIOA->MODER |= 0x0000A800; // Set PA5-7 to alternate function mode
-	GPIOB->MODER |= 0x00000042; // Set PB0 to alternate function mode, PB3 to general output mode
+	GPIOB->MODER |= 0x00009042; // Set PB0, PB6-7 to alternate function mode, PB3 to general output mode
 	GPIOB->OTYPER &= (~(0x00000008)); // Set PB3 to push-pull mode
 
 	GPIOA->AFR[0] |= 0x55500000; // Set PA5-7 to AF5 (SPI1)
-	GPIOB->AFR[0] |= 0x00000005; // Set PB0 to AF5 (SPI1)
+	GPIOB->AFR[0] |= 0x33000005; // Set PB0 to AF5 (SPI1), PB6-7 to AF3 (USART1)
 }
 
 void configSPI(void) {
@@ -86,6 +87,22 @@ void configTIM1(void) {
 	TIM1->ARR = (uint32_t)1000000; // Set auto-reload value to 1 million
 	TIM1->CNT &= (~(0x0000FFFF)); // Set timer's initial count to 0
 //	TIM1->CR1 |= 0x0001; // Enable TIM1
+}
+
+void configUART(void) {
+    huart1.Instance = USART1;
+    huart1.Init.BaudRate = 9600;
+    huart1.Init.WordLength = UART_WORDLENGTH_8B;
+    huart1.Init.StopBits = UART_STOPBITS_1;
+    huart1.Init.Parity = UART_PARITY_NONE;
+    huart1.Init.Mode = UART_MODE_TX_RX;
+    huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+    huart1.Init.OverSampling = UART_OVERSAMPLING_16;
+
+    if (HAL_UART_Init(&huart1) != HAL_OK) {
+        // Initialization error
+        Error_Handler();
+    }
 }
 
 void delay(uint16_t milliseconds) {
@@ -159,4 +176,64 @@ uint8_t writeSPI(uint8_t addr, uint8_t tx_data) {
 	SPI1->CR1 &= (~(0x0040)); // Disable SPI, also pulls CS high
 
 	return rx_data;
+}
+
+void SPI1_Transmit(uint8_t *data, size_t len)
+{
+    for (size_t i = 0; i < len; ++i)
+    {
+        // Wait until TXE (Transmit buffer empty) flag is set
+        while (!(SPI1->SR & SPI_SR_TXE));
+        // Send data
+        SPI1->DR = data[i];
+        // Wait until RXNE (Receive buffer not empty) flag is set
+//        while (!(SPI1->SR & SPI_SR_RXNE));
+        // Read data to clear RXNE flag
+        (void)SPI1->DR;
+    }
+
+    // Wait until not busy
+    while (SPI1->SR & SPI_SR_BSY);
+
+    // Clear overrun flag by reading DR and SR
+    (void)SPI1->DR;
+    (void)SPI1->SR;
+}
+
+void SPI1_Receive(uint8_t *data, size_t len)
+{
+    for (size_t i = 0; i < len; ++i)
+    {
+        // Wait until TXE (Transmit buffer empty) flag is set
+        while (!(SPI1->SR & SPI_SR_TXE));
+        // Send dummy data to generate clock for receiving
+        SPI1->DR = 0xFF;
+        // Wait until RXNE (Receive buffer not empty) flag is set
+//        while (!(SPI1->SR & SPI_SR_RXNE));
+        // Read received data
+        data[i] = SPI1->DR;
+    }
+
+    // Wait until not busy
+    while (SPI1->SR & SPI_SR_BSY);
+}
+
+void UART_Transmit(uint8_t *pData, uint16_t len) {
+    if (HAL_UART_Transmit(&huart1, pData, len, HAL_MAX_DELAY) != HAL_OK) {
+        // Transmission error
+        Error_Handler();
+    }
+}
+
+void UART_Receive(uint8_t *pData, uint16_t len) {
+    if (HAL_UART_Receive(&huart1, pData, len, HAL_MAX_DELAY) != HAL_OK) {
+        // Reception error
+        Error_Handler();
+    }
+}
+
+void Error_Handler(void) {
+    while (1) {
+        // Stay in an infinite loop for debugging
+    }
 }

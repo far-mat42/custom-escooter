@@ -40,7 +40,8 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
-SPI_HandleTypeDef hspi1;
+
+UART_HandleTypeDef huart1;
 
 /* USER CODE BEGIN PV */
 
@@ -50,6 +51,7 @@ SPI_HandleTypeDef hspi1;
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
 static void MX_SPI1_Init(void);
+static void MX_USART1_UART_Init(void);
 /* USER CODE BEGIN PFP */
 /* Function Prototypes -------------------------------------------------------*/
 void initClocks(void);
@@ -60,6 +62,8 @@ void delay(uint16_t milliseconds);
 void toggleLED(void);
 uint8_t readSPI(uint8_t addr);
 uint8_t writeSPI(uint8_t addr, uint8_t tx_data);
+void UART_Receive(uint8_t *pData, uint16_t len);
+void UART_Transmit(uint8_t *pData, uint16_t len);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -86,6 +90,7 @@ int main(void)
 
   uint8_t txData[2],rxData[2]; // Buffers for storing TX/RX data
   HAL_StatusTypeDef hal_status; // Status indicator for SPI transaction
+  uint8_t msg[] = "Hello world!";
 
   /* USER CODE END Init */
 
@@ -97,12 +102,12 @@ int main(void)
   /* USER CODE END SysInit */
 
   /* Initialize all configured peripherals */
-//  MX_GPIO_Init();
-//  MX_SPI1_Init();
+  MX_GPIO_Init();
+  MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
   initClocks();
-  configGPIO();
-  configSPI();
+//  configGPIO();
+//  configSPI();
 
   // SPI addresses
   uint8_t addr[4] = {37, 6, 22, 57};
@@ -117,22 +122,26 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
-	  // Loop through all addresses and write all 4 data bytes
-	  for (int i = 0; i < 4; i++) {
-		  for (int j = 0; j < 4; j++) {
-			  // Load the address and data into the TX buffer
-			  txData[0] = addr[i];
-			  txData[1] = data[j];
+	  UART_Transmit(msg, sizeof(msg));
+	  HAL_Delay(1000);
+	  HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_3);
 
-//			  // Initiate the SPI transaction
-//			  hal_status = HAL_SPI_TransmitReceive(&hspi1, txData, rxData, 2, 0x0000FFFF);
-//			  if (hal_status == HAL_OK) {
-//				  txData[1] = data[j]; // Placeholder, we really just do nothing
-//			  }
-			  writeSPI(addr[i], data[j]);
-			  HAL_Delay(1000); // Delay a second between transactions
-		  }
-	  }
+	  // Loop through all addresses and write all 4 data bytes
+//	  for (int i = 0; i < 4; i++) {
+//		  for (int j = 0; j < 4; j++) {
+//			  // Load the address and data into the TX buffer
+//			  txData[0] = addr[i];
+//			  txData[1] = data[j];
+//
+////			  // Initiate the SPI transaction
+////			  hal_status = HAL_SPI_TransmitReceive(&hspi1, txData, rxData, 2, 0x0000FFFF);
+////			  if (hal_status == HAL_OK) {
+////				  txData[1] = data[j]; // Placeholder, we really just do nothing
+////			  }
+//			  writeSPI(addr[i], data[j]);
+//			  HAL_Delay(1000); // Delay a second between transactions
+//		  }
+//	  }
 
   }
   /* USER CODE END 3 */
@@ -192,43 +201,39 @@ void SystemClock_Config(void)
   HAL_RCCEx_EnableMSIPLLMode();
 }
 
+
 /**
-  * @brief SPI1 Initialization Function
+  * @brief USART1 Initialization Function
   * @param None
   * @retval None
   */
-static void MX_SPI1_Init(void)
+static void MX_USART1_UART_Init(void)
 {
 
-  /* USER CODE BEGIN SPI1_Init 0 */
+  /* USER CODE BEGIN USART1_Init 0 */
+	__HAL_RCC_USART1_CLK_ENABLE();
+  /* USER CODE END USART1_Init 0 */
 
-  /* USER CODE END SPI1_Init 0 */
+  /* USER CODE BEGIN USART1_Init 1 */
 
-  /* USER CODE BEGIN SPI1_Init 1 */
-
-  /* USER CODE END SPI1_Init 1 */
-  /* SPI1 parameter configuration*/
-  hspi1.Instance = SPI1;
-  hspi1.Init.Mode = SPI_MODE_MASTER;
-  hspi1.Init.Direction = SPI_DIRECTION_2LINES;
-  hspi1.Init.DataSize = SPI_DATASIZE_16BIT;
-  hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
-  hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
-  hspi1.Init.NSS = SPI_NSS_HARD_OUTPUT;
-  hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_16;
-  hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
-  hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
-  hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_ENABLE;
-  hspi1.Init.CRCPolynomial = 7;
-  hspi1.Init.CRCLength = SPI_CRC_LENGTH_8BIT;
-  hspi1.Init.NSSPMode = SPI_NSS_PULSE_DISABLE;
-  if (HAL_SPI_Init(&hspi1) != HAL_OK)
+  /* USER CODE END USART1_Init 1 */
+  huart1.Instance = USART1;
+  huart1.Init.BaudRate = 9600;
+  huart1.Init.WordLength = UART_WORDLENGTH_8B;
+  huart1.Init.StopBits = UART_STOPBITS_1;
+  huart1.Init.Parity = UART_PARITY_NONE;
+  huart1.Init.Mode = UART_MODE_TX_RX;
+  huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+  huart1.Init.OverSampling = UART_OVERSAMPLING_16;
+  huart1.Init.OneBitSampling = UART_ONE_BIT_SAMPLE_DISABLE;
+  huart1.AdvancedInit.AdvFeatureInit = UART_ADVFEATURE_NO_INIT;
+  if (HAL_UART_Init(&huart1) != HAL_OK)
   {
     Error_Handler();
   }
-  /* USER CODE BEGIN SPI1_Init 2 */
+  /* USER CODE BEGIN USART1_Init 2 */
 
-  /* USER CODE END SPI1_Init 2 */
+  /* USER CODE END USART1_Init 2 */
 
 }
 
@@ -259,13 +264,22 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
 /* USER CODE BEGIN MX_GPIO_Init_2 */
+  GPIO_InitStruct.Pin = GPIO_PIN_6; // TX pin for USART1
+  GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_VERY_HIGH;
+  GPIO_InitStruct.Alternate = GPIO_AF7_USART1;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+  GPIO_InitStruct.Pin = GPIO_PIN_7;
+  HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 /* USER CODE END MX_GPIO_Init_2 */
 }
 
 /* USER CODE BEGIN 4 */
 void initClocks(void) {
 	RCC->AHB2ENR |= 0x00000003; // Enable AHB2 peripheral clock for GPIOA and GPIOB
-	RCC->APB2ENR |= 0x00001800; // Enable APB2 peripheral clock for SPI1 and TIM1
+	RCC->APB2ENR |= 0x00005800; // Enable APB2 peripheral clock for SPI1 and TIM1
 }
 
 void configGPIO(void) {
@@ -276,11 +290,11 @@ void configGPIO(void) {
 	GPIOB->AFR[0] &= (~(0x0000000F));
 
 	GPIOA->MODER |= 0x0000A800; // Set PA5-7 to alternate function mode
-	GPIOB->MODER |= 0x00000042; // Set PB0 to alternate function mode, PB3 to general output mode
+	GPIOB->MODER |= 0x0000A042; // Set PB0, PB6-7 to alternate function mode, PB3 to general output mode
 	GPIOB->OTYPER &= (~(0x00000008)); // Set PB3 to push-pull mode
 
 	GPIOA->AFR[0] |= 0x55500000; // Set PA5-7 to AF5 (SPI1)
-	GPIOB->AFR[0] |= 0x00000005; // Set PB0 to AF5 (SPI1)
+	GPIOB->AFR[0] |= 0x77000005; // Set PB0 to AF5 (SPI1), PB6-7 to AF7 (USART1)
 }
 
 void configSPI(void) {
@@ -339,6 +353,21 @@ uint8_t writeSPI(uint8_t addr, uint8_t tx_data) {
 
 	return rx_data;
 }
+
+void UART_Receive(uint8_t *pData, uint16_t len) {
+    if (HAL_UART_Receive(&huart1, pData, len, HAL_MAX_DELAY) != HAL_OK) {
+        // Reception error
+        Error_Handler();
+    }
+}
+
+void UART_Transmit(uint8_t *pData, uint16_t len) {
+    if (HAL_UART_Transmit(&huart1, pData, len, HAL_MAX_DELAY) != HAL_OK) {
+        // Transmission error
+        Error_Handler();
+    }
+}
+
 /* USER CODE END 4 */
 
 /**
