@@ -6,6 +6,7 @@
 void SystemClock_Config(void);
 void GPIO_Init(void);
 void SPI1_Init(void);
+void USART1_Init(void);
 uint8_t crc8(uint8_t *data, size_t len);
 
 // Functions to handle communication with the AFE
@@ -22,29 +23,12 @@ void AFETransmitWriteCmd(uint8_t *txBytes, uint8_t *rxBytes, uint8_t arrSize);
 void SPI1_Receive(uint8_t *data, size_t len);
 void SPI1_Transmit(uint8_t *data, size_t len);
 
-// Global defines 
+void UART_Transmit(uint8_t *data, uint8_t len);
+void Error_Handler(void);
 
-
-// Global SPI handle
+// Global handles
 SPI_HandleTypeDef hspi1;
-
-// Global constants
-// Register addresses for writing command/RAM addresses in transactions
-// TODO: Move these into a header file for the BQ7695204
-//const uint8_t LOWER_ADDR_REG_READ = 0x3E;
-//const uint8_t UPPER_ADDR_REG_READ = 0x3F;
-//const uint8_t LOWER_ADDR_REG_WRITE = 0xBE;
-//const uint8_t UPPER_ADDR_REG_WRITE = 0xBF;
-
-// Starting address for 32-byte data buffer
-//const uint8_t READ_DATA_BUFF_LSB = 0x40;
-//const uint8_t WRITE_DATA_BUFF_LSB = 0xC0;
-
-// Register addresses for writing checksum and data length info for transactions
-//const uint8_t READ_CHECKSUM_ADDR = 0x60;
-//const uint8_t READ_DATALEN_ADDR = 0x61;
-//const uint8_t WRITE_CHECKSUM_ADDR = 0xE0;
-//const uint8_t WRITE_DATALEN_ADDR = 0xE1;
+UART_HandleTypeDef huart1;
 
 int main(void)
 {
@@ -54,9 +38,10 @@ int main(void)
     // System clock configuration
     SystemClock_Config();
 
-    // Initialize GPIO and SPI
+    // Initialize GPIO, SPI, UART
     GPIO_Init();
     SPI1_Init();
+    USART1_Init();
 
     HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_RESET); // Turn off heartbeat
 
@@ -72,6 +57,8 @@ int main(void)
     uint8_t cmdAddr = 0;
 
     uint8_t writeData[32] = {0};
+
+    uint8_t msg[] = "Hello world!\n";
 
     // Read battery status register and manufacturing status register
 	DirectCmdRead(0x12, readData, 2);
@@ -112,46 +99,39 @@ int main(void)
 
     while (1)
     {
-    	// Toggle the DSG FET every 4 seconds
-//    	HAL_Delay(4000);
-//    	SubCmdNoData(0x001F);
-//    	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
-//
-//		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
-//		HAL_Delay(250);
-//		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
-//		HAL_Delay(750);
-
-//    	SubCmdNoData(0x0022); // Send FET_ENABLE sub-command
-//    	SubCmdReadData(0x0057, readData, 2); // Read manufacturing data
     	// Read the control status register
-    	DirectCmdRead(0x02, readData, 2);
-    	ctrlStatus = (readData[0]) + (readData[1] << 8);
-    	// Read the cell voltage for all 16 cells and then the pack voltage
-    	for (int i = 0; i < 17; i++) {
-    		cmdAddr = 0x14 + 2*i;
-    		DirectCmdRead(cmdAddr, readData, 2);
-    		// Combine the 2 8-bit cell voltage bytes into a single 16-byte variable
-    		cellVolt = (readData[0]) + (readData[1] << 8);
-    		cellVolts[i] = cellVolt;
-    	}
-    	// Read the CC2 current and FET status
-    	DirectCmdRead(0x3A, readData, 2);
-    	currentRead = (readData[0]) + (readData[1] << 8);
-    	DirectCmdRead(0x7F, readData, 1);
-    	fetStatus = readData[0];
+//    	DirectCmdRead(0x02, readData, 2);
+//    	ctrlStatus = (readData[0]) + (readData[1] << 8);
+//    	// Read the cell voltage for all 16 cells and then the pack voltage
+//    	for (int i = 0; i < 17; i++) {
+//    		cmdAddr = 0x14 + 2*i;
+//    		DirectCmdRead(cmdAddr, readData, 2);
+//    		// Combine the 2 8-bit cell voltage bytes into a single 16-byte variable
+//    		cellVolt = (readData[0]) + (readData[1] << 8);
+//    		cellVolts[i] = cellVolt;
+//    	}
+//    	// Read the CC2 current and FET status
+//    	DirectCmdRead(0x3A, readData, 2);
+//    	currentRead = (readData[0]) + (readData[1] << 8);
+//    	DirectCmdRead(0x7F, readData, 1);
+//    	fetStatus = readData[0];
+//
+//    	// Read the safety status and alert registers
+//    	for (int i = 0; i < 6; i++) {
+//    		cmdAddr = 0x02 + i;
+//    		DirectCmdRead(cmdAddr, readData, 1);
+//    		safetyStatAlrt[i] = readData[0];
+//    	}
+//
+//    	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
+//    	HAL_Delay(250);
+//    	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
+//    	HAL_Delay(250);
 
-    	// Read the safety status and alert registers
-    	for (int i = 0; i < 6; i++) {
-    		cmdAddr = 0x02 + i;
-    		DirectCmdRead(cmdAddr, readData, 1);
-    		safetyStatAlrt[i] = readData[0];
-    	}
+    	UART_Transmit(msg, sizeof(msg) - 1);
+    	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
+    	HAL_Delay(1000);
 
-    	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
-    	HAL_Delay(250);
-    	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
-    	HAL_Delay(250);
     }
 }
 
@@ -210,6 +190,14 @@ void GPIO_Init(void)
     GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
     GPIO_InitStruct.Alternate = GPIO_AF5_SPI1;
     HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    // Configure PB6 (UART_TX), PB7 (UART_RX)
+    GPIO_InitStruct.Pin = GPIO_PIN_6 | GPIO_PIN_7;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+	GPIO_InitStruct.Alternate = GPIO_AF7_USART1; // Alternate function for USART1
+	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 }
 
 void SPI1_Init(void)
@@ -236,6 +224,28 @@ void SPI1_Init(void)
         // Initialization error
         while (1);
     }
+}
+
+void USART1_Init(void)
+{
+	// Enable USART1 clock
+	__HAL_RCC_USART1_CLK_ENABLE();
+
+	// Configure UART peripheral
+	huart1.Instance = USART1;
+	huart1.Init.BaudRate = 115200;
+	huart1.Init.WordLength = UART_WORDLENGTH_8B;
+	huart1.Init.StopBits = UART_STOPBITS_1;
+	huart1.Init.Parity = UART_PARITY_NONE;
+	huart1.Init.Mode = UART_MODE_TX_RX;
+	huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+	huart1.Init.OverSampling = UART_OVERSAMPLING_16;
+
+	if (HAL_UART_Init(&huart1) != HAL_OK)
+	{
+		// Initialization error
+		while (1);
+	}
 }
 
 uint8_t crc8(uint8_t *data, size_t len)
@@ -546,4 +556,16 @@ void SPI1_Receive(uint8_t *data, size_t len)
 
     // Wait until not busy
     while (SPI1->SR & SPI_SR_BSY);
+}
+
+void UART_Transmit(uint8_t *data, uint8_t len) {
+	if (HAL_UART_Transmit(&huart1, data, len, HAL_MAX_DELAY)) {
+		// Transmission error
+		Error_Handler();
+	}
+}
+
+void Error_Handler(void) {
+    // Stay in an infinite loop to allow for debugging
+    while (1);
 }
