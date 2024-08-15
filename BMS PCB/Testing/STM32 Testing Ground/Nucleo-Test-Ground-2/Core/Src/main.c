@@ -20,15 +20,15 @@ void RAMRegisterWrite(uint16_t addr, uint8_t *writeData, uint8_t len);
 void AFETransmitReadCmd(uint8_t *txBytes, uint8_t *rxBytes, uint8_t arrSize);
 void AFETransmitWriteCmd(uint8_t *txBytes, uint8_t *rxBytes, uint8_t arrSize);
 
-void SPI1_Receive(uint8_t *data, size_t len);
-void SPI1_Transmit(uint8_t *data, size_t len);
-
 void UART_Transmit(uint8_t *data, uint8_t len);
 void Error_Handler(void);
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
 
 // Global handles
 SPI_HandleTypeDef hspi1;
 UART_HandleTypeDef huart1;
+TIM_HandleTypeDef htim1;
 
 int main(void)
 {
@@ -131,7 +131,6 @@ int main(void)
     	UART_Transmit(msg, sizeof(msg) - 1);
     	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
     	HAL_Delay(1000);
-
     }
 }
 
@@ -165,6 +164,7 @@ void GPIO_Init(void)
 {
     __HAL_RCC_GPIOA_CLK_ENABLE();
     __HAL_RCC_GPIOB_CLK_ENABLE();
+    __HAL_RCC_SYSCFG_CLK_ENABLE();
 
     GPIO_InitTypeDef GPIO_InitStruct = {0};
 
@@ -198,6 +198,15 @@ void GPIO_Init(void)
 	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
 	GPIO_InitStruct.Alternate = GPIO_AF7_USART1; // Alternate function for USART1
 	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+	// Configure PA4 (AFE ALERT pin) as an external interrupt
+	GPIO_InitStruct.Pin = GPIO_PIN_4;
+	GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+	HAL_NVIC_SetPriority(EXTI4_IRQn, 0, 0);
+	HAL_NVIC_EnableIRQ(EXTI4_IRQn);
 }
 
 void SPI1_Init(void)
@@ -518,46 +527,6 @@ void AFETransmitWriteCmd(uint8_t *txBytes, uint8_t *rxBytes, uint8_t arrSize)
 	}
 }
 
-void SPI1_Transmit(uint8_t *data, size_t len)
-{
-    for (size_t i = 0; i < len; ++i)
-    {
-        // Wait until TXE (Transmit buffer empty) flag is set
-        while (!(SPI1->SR & SPI_SR_TXE));
-        // Send data
-        SPI1->DR = data[i];
-        // Wait until RXNE (Receive buffer not empty) flag is set
-//        while (!(SPI1->SR & SPI_SR_RXNE));
-        // Read data to clear RXNE flag
-        (void)SPI1->DR;
-    }
-
-    // Wait until not busy
-    while (SPI1->SR & SPI_SR_BSY);
-
-    // Clear overrun flag by reading DR and SR
-    (void)SPI1->DR;
-    (void)SPI1->SR;
-}
-
-void SPI1_Receive(uint8_t *data, size_t len)
-{
-    for (size_t i = 0; i < len; ++i)
-    {
-        // Wait until TXE (Transmit buffer empty) flag is set
-        while (!(SPI1->SR & SPI_SR_TXE));
-        // Send dummy data to generate clock for receiving
-        SPI1->DR = 0xFF;
-        // Wait until RXNE (Receive buffer not empty) flag is set
-//        while (!(SPI1->SR & SPI_SR_RXNE));
-        // Read received data
-        data[i] = SPI1->DR;
-    }
-
-    // Wait until not busy
-    while (SPI1->SR & SPI_SR_BSY);
-}
-
 void UART_Transmit(uint8_t *data, uint8_t len) {
 	if (HAL_UART_Transmit(&huart1, data, len, HAL_MAX_DELAY)) {
 		// Transmission error
@@ -568,4 +537,15 @@ void UART_Transmit(uint8_t *data, uint8_t len) {
 void Error_Handler(void) {
     // Stay in an infinite loop to allow for debugging
     while (1);
+}
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+	uint8_t msg[] = "Interrupt!";
+	UART_Transmit(msg, sizeof(msg) - 1);
+
+	switch (GPIO_Pin) {
+	case GPIO_PIN_4:
+		// TODO: Handle the interrupt by reading the safety registers
+		HAL_GetTick();
+	}
 }
