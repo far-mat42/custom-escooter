@@ -1,0 +1,572 @@
+#include "stm32l4xx_hal.h"
+#include "bq76952.h"
+#include <stdbool.h>
+
+// Function prototypes
+void SystemClock_Config(void);
+void GPIO_Init(void);
+void SPI1_Init(void);
+void USART1_Init(void);
+void TIM1_Init(void);
+uint8_t crc8(uint8_t *data, size_t len);
+
+// Functions to handle communication with the AFE
+void DirectCmdRead(uint8_t cmd, uint8_t *returnData, uint8_t len);
+void SubCmdNoData(uint16_t cmd);
+void SubCmdReadData(uint16_t cmd, uint8_t *returnData, uint8_t len);
+void RAMRegisterRead(uint16_t addr, uint8_t *returnData, uint8_t len);
+void RAMRegisterWrite(uint16_t addr, uint8_t *writeData, uint8_t len);
+
+// Helper functions that do the handling for verifying the AFE received a SPI command
+void AFETransmitReadCmd(uint8_t *txBytes, uint8_t *rxBytes, uint8_t arrSize);
+void AFETransmitWriteCmd(uint8_t *txBytes, uint8_t *rxBytes, uint8_t arrSize);
+
+void UART_Transmit(uint8_t *data, uint8_t len);
+void Error_Handler(void);
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
+
+// Global handles
+SPI_HandleTypeDef hspi1;
+UART_HandleTypeDef huart1;
+TIM_HandleTypeDef htim1;
+
+// Global variables
+
+int main(void) {
+    // HAL initialization
+    HAL_Init();
+
+    // System clock configuration
+    SystemClock_Config();
+
+    // Initialize GPIO, SPI, UART
+    GPIO_Init();
+    SPI1_Init();
+    USART1_Init();
+
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_RESET); // Turn off heartbeat
+
+    // Blank array to store data from any commands that receive data
+    uint8_t readData[32] = {0};
+
+    uint16_t ctrlStatus = 0;
+    uint16_t cellVolt = 0;
+    uint16_t cellVolts[17] = {0};
+    uint16_t currentRead = 0;
+    uint8_t fetStatus = 0;
+    uint8_t safetyStatAlrt[6] = {0};
+    uint8_t cmdAddr = 0;
+
+    uint8_t writeData[32] = {0};
+
+    uint8_t msg[] = "Hello world!\n";
+
+    // Read battery status register and manufacturing status register
+	DirectCmdRead(0x12, readData, 2);
+	SubCmdReadData(0x0057, readData, 2);
+	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
+	HAL_Delay(250);
+	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
+	HAL_Delay(750);
+
+	// Disable SLEEP mode and disable FET_TEST mode if already in FET_TEST
+	SubCmdNoData(0x009A);
+	if (!(readData[0] & (1 << 4))) SubCmdNoData(0x0022);
+
+	// Read battery status register and manufacturing status register
+	DirectCmdRead(0x12, readData, 2);
+	SubCmdReadData(0x0057, readData, 2);
+
+	// Enter CONFIG_UPDATE mode
+	SubCmdNoData(0x0090);
+	// Configuring Settings in RAM
+	writeData[0] = 0x02;
+	RAMRegisterWrite(PROT_SCD_THLD, writeData, 1); // Set SCD threshold to 40mV
+
+	// Disable body diode protection
+	writeData[0] = 0x0C;
+	RAMRegisterWrite(SET_FET_OPTIONS, writeData, 1);
+	// Setting MFG Status Init to disable FET Test commands
+	format_uint16(writeData, 0x0050);
+	RAMRegisterWrite(SET_MFG_STATUS_INIT, writeData, 2);
+	// Exit CONFIG_UPDATE mode, read manufacturing status register again
+	SubCmdNoData(0x0092);
+	SubCmdReadData(0x0057, readData, 2);
+
+	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
+	HAL_Delay(250);
+	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
+	HAL_Delay(750);
+
+    while (1) {
+    	// Read the control status register
+//    	DirectCmdRead(0x02, readData, 2);
+//    	ctrlStatus = (readData[0]) + (readData[1] << 8);
+//    	// Read the cell voltage for all 16 cells and then the pack voltage
+//    	for (int i = 0; i < 17; i++) {
+//    		cmdAddr = 0x14 + 2*i;
+//    		DirectCmdRead(cmdAddr, readData, 2);
+//    		// Combine the 2 8-bit cell voltage bytes into a single 16-byte variable
+//    		cellVolt = (readData[0]) + (readData[1] << 8);
+//    		cellVolts[i] = cellVolt;
+//    	}
+//    	// Read the CC2 current and FET status
+//    	DirectCmdRead(0x3A, readData, 2);
+//    	currentRead = (readData[0]) + (readData[1] << 8);
+//    	DirectCmdRead(0x7F, readData, 1);
+//    	fetStatus = readData[0];
+//
+//    	// Read the safety status and alert registers
+//    	for (int i = 0; i < 6; i++) {
+//    		cmdAddr = 0x02 + i;
+//    		DirectCmdRead(cmdAddr, readData, 1);
+//    		safetyStatAlrt[i] = readData[0];
+//    	}
+//
+//    	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
+//    	HAL_Delay(250);
+//    	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
+//    	HAL_Delay(250);
+
+    	UART_Transmit(msg, sizeof(msg) - 1);
+    	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
+    	HAL_Delay(1000);
+    }
+}
+
+void SystemClock_Config(void) {
+    RCC_OscInitTypeDef RCC_OscInitStruct = {0};
+    RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
+
+    // Configure the main internal regulator output voltage
+    HAL_PWREx_ControlVoltageScaling(PWR_REGULATOR_VOLTAGE_SCALE1);
+
+    // Initializes the RCC Oscillators according to the specified parameters
+    RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_MSI;
+    RCC_OscInitStruct.MSIState = RCC_MSI_ON;
+    RCC_OscInitStruct.MSICalibrationValue = RCC_MSICALIBRATION_DEFAULT;
+    RCC_OscInitStruct.MSIClockRange = RCC_MSIRANGE_6;
+    RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
+    HAL_RCC_OscConfig(&RCC_OscInitStruct);
+
+    // Initializes the CPU, AHB and APB buses clocks
+    RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+    RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_MSI;
+    RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+    RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
+    RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+
+    HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0);
+}
+
+void GPIO_Init(void) {
+    __HAL_RCC_GPIOA_CLK_ENABLE();
+    __HAL_RCC_GPIOB_CLK_ENABLE();
+    __HAL_RCC_SYSCFG_CLK_ENABLE();
+
+    GPIO_InitTypeDef GPIO_InitStruct = {0};
+
+    // Configure PB0 as SPI1_NSS (software controlled, open-drain)
+    GPIO_InitStruct.Pin = GPIO_PIN_0;
+    GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_OD;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+    HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+    HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET); // Set NSS high
+
+    // Configure PB5 as a GPIO (push-pull, no pull-up)
+	GPIO_InitStruct.Pin = GPIO_PIN_5;
+	GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
+	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+    // Configure PA5 (SPI1_SCK), PA6 (SPI1_MISO), PA7 (SPI1_MOSI)
+    GPIO_InitStruct.Pin = GPIO_PIN_5 | GPIO_PIN_6 | GPIO_PIN_7;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+    GPIO_InitStruct.Pull = GPIO_NOPULL;
+    GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+    GPIO_InitStruct.Alternate = GPIO_AF5_SPI1;
+    HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+    // Configure PB6 (UART_TX), PB7 (UART_RX)
+    GPIO_InitStruct.Pin = GPIO_PIN_6 | GPIO_PIN_7;
+    GPIO_InitStruct.Mode = GPIO_MODE_AF_PP;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+	GPIO_InitStruct.Alternate = GPIO_AF7_USART1; // Alternate function for USART1
+	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
+
+	// Configure PA4 (AFE ALERT pin) as an external interrupt
+	GPIO_InitStruct.Pin = GPIO_PIN_4;
+	GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
+	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+	HAL_NVIC_SetPriority(EXTI4_IRQn, 0, 0);
+	HAL_NVIC_EnableIRQ(EXTI4_IRQn);
+}
+
+void SPI1_Init(void) {
+    // Enable SPI1 clock
+    __HAL_RCC_SPI1_CLK_ENABLE();
+
+    // Configure SPI1
+    hspi1.Instance = SPI1;
+    hspi1.Init.Mode = SPI_MODE_MASTER;
+    hspi1.Init.Direction = SPI_DIRECTION_2LINES;
+    hspi1.Init.DataSize = SPI_DATASIZE_8BIT;
+    hspi1.Init.CLKPolarity = SPI_POLARITY_LOW;
+    hspi1.Init.CLKPhase = SPI_PHASE_1EDGE;
+    hspi1.Init.NSS = SPI_NSS_SOFT;
+    hspi1.Init.BaudRatePrescaler = SPI_BAUDRATEPRESCALER_128;
+    hspi1.Init.FirstBit = SPI_FIRSTBIT_MSB;
+    hspi1.Init.TIMode = SPI_TIMODE_DISABLE;
+    hspi1.Init.CRCCalculation = SPI_CRCCALCULATION_DISABLE;
+    hspi1.Init.CRCPolynomial = 7;
+
+    if (HAL_SPI_Init(&hspi1) != HAL_OK)
+    {
+        // Initialization error
+        while (1);
+    }
+}
+
+void USART1_Init(void) {
+	// Enable USART1 clock
+	__HAL_RCC_USART1_CLK_ENABLE();
+
+	// Configure UART peripheral
+	huart1.Instance = USART1;
+	huart1.Init.BaudRate = 115200;
+	huart1.Init.WordLength = UART_WORDLENGTH_8B;
+	huart1.Init.StopBits = UART_STOPBITS_1;
+	huart1.Init.Parity = UART_PARITY_NONE;
+	huart1.Init.Mode = UART_MODE_TX_RX;
+	huart1.Init.HwFlowCtl = UART_HWCONTROL_NONE;
+	huart1.Init.OverSampling = UART_OVERSAMPLING_16;
+
+	if (HAL_UART_Init(&huart1) != HAL_OK)
+	{
+		// Initialization error
+		while (1);
+	}
+}
+
+void TIM1_Init(void) {
+	TIM_ClockConfigTypeDef sClockSourceConfig = {0};
+	TIM_MasterConfigTypeDef sMasterConfig = {0};
+
+	htim1.Instance = TIM1;
+	htim1.Init.Prescaler = 2000 - 1; // Assuming 2MHz clock, 2,000 cycles for 1ms
+	htim1.Init.CounterMode = TIM_COUNTERMODE_UP;
+	htim1.Init.Period = 1000 - 1; // Generate interrupt every 1000ms (1s)
+	htim1.Init.ClockDivision = TIM_CLOCKDIVISION_DIV1;
+	htim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
+	if (HAL_TIM_Base_Init(&htim1) != HAL_OK) {
+		Error_Handler();
+	}
+
+	sClockSourceConfig.ClockSource = TIM_CLOCKSOURCE_INTERNAL;
+	if (HAL_TIM_ConfigClockSource(&htim1, &sClockSourceConfig) != HAL_OK) {
+		Error_Handler();
+	}
+
+	sMasterConfig.MasterOutputTrigger = TIM_TRGO_RESET;
+	sMasterConfig.MasterSlaveMode = TIM_MASTERSLAVEMODE_DISABLE;
+	if (HAL_TIMEx_MasterConfigSynchronization(&htim1, &sMasterConfig) != HAL_OK) {
+		Error_Handler();
+	}
+}
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
+	if (htim->Instance == TIM1) {
+
+	}
+}
+
+uint8_t crc8(uint8_t *data, size_t len) {
+    uint8_t crc = 0x00;
+    while (len--)
+    {
+        crc ^= *data++;
+        for (uint8_t i = 0; i < 8; ++i)
+        {
+            if (crc & 0x80)
+                crc = (crc << 1) ^ 0x07; // Polynomial 0x07
+            else
+                crc <<= 1;
+        }
+    }
+    return crc;
+}
+
+/**
+ * Sends a direct command to the AFE and reads the data that is output
+ * @param cmd The address byte for the command
+ * @param returnData Pointer to the 8-bit integer array for storing the read data
+ * @param len Number of bytes to read from the AFE. The function automatically increments the address byte based on this value
+ */
+void DirectCmdRead(uint8_t cmd, uint8_t *returnData, uint8_t len) {
+	uint8_t rxData[3] = {0};
+	uint8_t txData[3] = {0};
+	uint8_t fullCmd[] = { cmd, 0xFF }; // Data byte doesn't matter since it's a read, just use 0xFF
+	uint8_t crcLower = 0;
+//	bool commReceived = false;
+
+	// Increment the command address based on the data length given
+	for (int i = 0; i < len; i++)
+	{
+		fullCmd[0] = cmd + i; // Increment the address
+		crcLower = crc8(fullCmd, 2); // Recalculate the CRC
+		// Construct the TX data for the SPI transaction
+		txData[0] = fullCmd[0];
+		txData[1] = fullCmd[1];
+		txData[2] = crcLower;
+
+		AFETransmitReadCmd(txData, rxData, sizeof(txData));
+		returnData[i] = rxData[1]; // Save data byte received from last transaction
+	}
+}
+
+/**
+ * Sends a sub-command to the AFE, no data is written or read
+ * @param cmd The upper and lower address bytes for the sub-command
+ */
+void SubCmdNoData(uint16_t cmd) {
+	uint8_t rxData[3] = {0};
+	uint8_t commandLowerAddr[] = { LOWER_ADDR_REG_WRITE, ((uint8_t)(cmd & 0xFF)) };
+	uint8_t crcLower = crc8(commandLowerAddr, 2);
+	uint8_t commandUpperAddr[] = { UPPER_ADDR_REG_WRITE, ((uint8_t)(cmd >> 8)) };
+	uint8_t crcUpper = crc8(commandUpperAddr, 2);
+
+	// Keep writing the command until MISO reflects command was received
+	// Starting with lower byte
+	uint8_t txData[] = { commandLowerAddr[0], commandLowerAddr[1], crcLower };
+	AFETransmitWriteCmd(txData, rxData, sizeof(txData));
+
+	// Continue to upper byte
+	txData[0] = commandUpperAddr[0];
+	txData[1] = commandUpperAddr[1];
+	txData[2] = crcUpper;
+	AFETransmitWriteCmd(txData, rxData, sizeof(txData));
+}
+
+/**
+ * Sends a sub-command to the AFE and reads the data that is output
+ * @param cmd The upper and lower address bytes for the sub-command
+ * @param returnData Pointer to the 8-bit integer array for storing the read data
+ * @param len Number of bytes to read from the AFE's 32-byte data buffer
+ */
+void SubCmdReadData(uint16_t cmd, uint8_t *returnData, uint8_t len) {
+	uint8_t rxData[3] = {0};
+	uint8_t commandLowerAddr[] = { LOWER_ADDR_REG_WRITE, ((uint8_t)(cmd & 0xFF)) };
+	uint8_t crcLower = crc8(commandLowerAddr, 2);
+	uint8_t commandUpperAddr[] = { UPPER_ADDR_REG_WRITE, ((uint8_t)(cmd >> 8)) };
+	uint8_t crcUpper = crc8(commandUpperAddr, 2);
+
+	// Keep writing the command until MISO reflects command was received
+	// Starting with lower byte
+	uint8_t txData[] = { commandLowerAddr[0], commandLowerAddr[1], crcLower };
+	AFETransmitWriteCmd(txData, rxData, sizeof(txData));
+
+	// Continue to upper byte
+	txData[0] = commandUpperAddr[0];
+	txData[1] = commandUpperAddr[1];
+	txData[2] = crcUpper;
+	AFETransmitWriteCmd(txData, rxData, sizeof(txData));
+
+	// Read each byte based on the data length given in parameters
+	uint8_t readData[2] = {0};
+	for (int i = 0; i < len; i++) {
+		readData[0] = READ_DATA_BUFF_LSB + i;
+		readData[1] = 0xFF;
+
+		txData[0] = readData[0];
+		txData[1] = readData[1];
+		txData[2] = crc8(readData, 2);
+
+		AFETransmitReadCmd(txData, rxData, sizeof(txData));
+
+		returnData[i] = rxData[1]; // Save data byte received from last transaction
+	}
+}
+
+/**
+ * Reads the value stored in one of the AFE's RAM registers
+ * Might remove this function, it's exactly the same as the SubCmd read data function
+ * @param addr The register address
+ * @param returnData Pointer to the 8-bit integer array for storing the read data
+ * @param len Number of bytes to read from the AFE's 32-byte data buffer
+ */
+void RAMRegisterRead(uint16_t addr, uint8_t *returnData, uint8_t len) {
+	// Preparing the SPI transaction to send to tell the AFE a RAM register read is happening
+	uint8_t rxData[3] = {0};
+	uint8_t commandLowerAddr[] = { LOWER_ADDR_REG_WRITE, ((uint8_t)(addr & 0xFF)) };
+	uint8_t crcLower = crc8(commandLowerAddr, 2);
+	uint8_t commandUpperAddr[] = { UPPER_ADDR_REG_WRITE, ((uint8_t)(addr >> 8)) };
+	uint8_t crcUpper = crc8(commandUpperAddr, 2);
+
+	// Keep writing the command until MISO reflects command was received
+	// Starting with lower byte
+	uint8_t txData[] = { commandLowerAddr[0], commandLowerAddr[1], crcLower };
+	AFETransmitWriteCmd(txData, rxData, sizeof(txData));
+
+	// Continue to upper byte
+	txData[0] = commandUpperAddr[0];
+	txData[1] = commandUpperAddr[1];
+	txData[2] = crcUpper;
+	AFETransmitWriteCmd(txData, rxData, sizeof(txData));
+
+	// Read each byte based on the data length given in parameters
+	uint8_t readData[2] = {0};
+	for (int i = 0; i < len; i++) {
+		readData[0] = READ_DATA_BUFF_LSB + i;
+		readData[1] = 0xFF;
+
+		txData[0] = readData[0];
+		txData[1] = readData[1];
+		txData[2] = crc8(readData, 2);
+
+		AFETransmitReadCmd(txData, rxData, sizeof(txData));
+
+		returnData[i] = rxData[1]; // Save data byte received from last transaction
+	}
+}
+
+/**
+ * Writes the given value in one of the AFE's RAM registers
+ * Might remove this function, it's exactly the same as the SubCmd read data function
+ * @param addr The register address
+ * @param writeData Pointer to the 8-bit integer array for the data to write to the register
+ * @param len Number of bytes to write to the AFE's 32-byte data buffer
+ */
+void RAMRegisterWrite(uint16_t addr, uint8_t *writeData, uint8_t len) {
+	uint8_t rxData[3] = {0};
+	uint8_t lowerAddr[] = { LOWER_ADDR_REG_WRITE, ((uint8_t)(addr & 0xFF)) };
+	uint8_t crcLower = crc8(lowerAddr, 2);
+	uint8_t upperAddr[] = { UPPER_ADDR_REG_WRITE, ((uint8_t)(addr >> 8)) };
+	uint8_t crcUpper = crc8(upperAddr, 2);
+
+	// Keep writing the register address until MISO reflects command was received
+	// Starting with lower byte
+	uint8_t txData[] = { lowerAddr[0], lowerAddr[1], crcLower };
+	AFETransmitWriteCmd(txData, rxData, sizeof(txData));
+
+	// Continue to upper byte
+	txData[0] = upperAddr[0];
+	txData[1] = upperAddr[1];
+	txData[2] = crcUpper;
+	AFETransmitWriteCmd(txData, rxData, sizeof(txData));
+
+	// Write the data provided to the AFE's 32-byte data buffer
+	uint8_t writeBytes[2] = {0};
+	for (int i = 0; i < len; i++)
+	{
+		// Increment data buffer address and include the next address byte
+		writeBytes[0] = WRITE_DATA_BUFF_LSB + i;
+		writeBytes[1] = writeData[i];
+
+		txData[0] = writeBytes[0];
+		txData[1] = writeBytes[1];
+		txData[2] = crc8(writeBytes, 2); // Recalculate CRC
+
+		AFETransmitWriteCmd(txData, rxData, sizeof(txData));
+	}
+
+	// Calculate the check-sum and write it to the AFE's checksum register
+	uint8_t checkSum = 0;
+	for (int i = 0; i < len; i++) {
+		checkSum += writeData[i];
+	}
+	checkSum += lowerAddr[1];
+	checkSum += upperAddr[1];
+	checkSum = ~(checkSum);
+
+	writeBytes[0] = WRITE_CHECKSUM_ADDR;
+	writeBytes[1] = checkSum;
+
+	txData[0] = writeBytes[0];
+	txData[1] = writeBytes[1];
+	txData[2] = crc8(writeBytes, 2); // Recalculate CRC
+
+	AFETransmitWriteCmd(txData, rxData, sizeof(txData));
+
+	// Write the data length to the AFE's data length register
+	writeBytes[0] = WRITE_DATALEN_ADDR;
+	writeBytes[1] = len + 4; // Length of data buffer, plus upper and lower address bytes, plus checksum and data length bytes
+
+	txData[0] = writeBytes[0];
+	txData[1] = writeBytes[1];
+	txData[2] = crc8(writeBytes, 2); // Recalculate CRC
+
+	AFETransmitWriteCmd(txData, rxData, sizeof(txData));
+}
+
+void AFETransmitReadCmd(uint8_t *txBytes, uint8_t *rxBytes, uint8_t arrSize) {
+	// Continuously transmit the SPI transaction until the AFE has received it
+	bool commReceived = false;
+	while (!commReceived)
+	{
+		// Pull NSS low
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
+		// Transmit data and receive AFE's response
+		HAL_SPI_TransmitReceive(&hspi1, txBytes, rxBytes, arrSize, HAL_MAX_DELAY);
+
+		// For read command, confirm the AFE received the command by checking the address and CRC bytes
+		if (txBytes[0] == rxBytes[0]) commReceived = true;
+		// TODO: implement CRC checking for received data
+
+		// Pull NSS high and wait for transaction to be processed
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
+		HAL_Delay(1);
+	}
+
+}
+
+void AFETransmitWriteCmd(uint8_t *txBytes, uint8_t *rxBytes, uint8_t arrSize) {
+	// Continuously transmit the SPI transaction until the AFE has received it
+	bool commReceived = false;
+	while (!commReceived)
+	{
+		// Pull NSS low
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
+		// Transmit data and receive AFE's response
+		HAL_SPI_TransmitReceive(&hspi1, txBytes, rxBytes, arrSize, HAL_MAX_DELAY);
+
+		// For write command, confirm the AFE received the command by checking every single byte
+		commReceived = true;
+		for (int i = 0; i < arrSize; i++)
+		{
+			if (txBytes[i] != rxBytes[i]) commReceived = false; // If any mismatch occurs, flag it and retransmit
+		}
+
+		// Pull NSS high and wait for transaction to be processed
+		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
+		HAL_Delay(1);
+	}
+}
+
+void UART_Transmit(uint8_t *data, uint8_t len) {
+	if (HAL_UART_Transmit(&huart1, data, len, HAL_MAX_DELAY)) {
+		// Transmission error
+		Error_Handler();
+	}
+}
+
+void Error_Handler(void) {
+    // Stay in an infinite loop to allow for debugging
+    while (1);
+}
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+	uint8_t msg[] = "Interrupt!";
+	UART_Transmit(msg, sizeof(msg) - 1);
+
+	switch (GPIO_Pin) {
+	case GPIO_PIN_4:
+		// TODO: Handle the interrupt by reading the safety registers
+		HAL_GetTick();
+	}
+}
