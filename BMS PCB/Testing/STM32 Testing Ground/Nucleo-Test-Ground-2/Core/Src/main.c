@@ -5,15 +5,18 @@
 #include <stdio.h>
 
 // Function prototypes
+// Initializing peripherals
 void SystemClock_Config(void);
 void GPIO_Init(void);
 void SPI1_Init(void);
 void USART1_Init(void);
 void TIM1_Init(void);
+
 uint8_t crc8(uint8_t *data, size_t len);
 
 // Functions to handle communication with the AFE
 void DirectCmdRead(uint8_t cmd, uint8_t *returnData, uint8_t len);
+void DirectCmdWrite(uint8_t cmd, uint8_t *writeData, uint8_t len);
 void SubCmdNoData(uint16_t cmd);
 void SubCmdReadData(uint16_t cmd, uint8_t *returnData, uint8_t len);
 void RAMRegisterRead(uint16_t addr, uint8_t *returnData, uint8_t len);
@@ -25,6 +28,8 @@ void AFETransmitWriteCmd(uint8_t *txBytes, uint8_t *rxBytes, uint8_t arrSize);
 
 // Other helper functions to transmit the data from the AFE to the UART lines
 void TransmitCellVoltages(uint16_t *volts, uint8_t len);
+void TransmitSafetyStatusA(void);
+void TransmitSafetyStatusB(void);
 
 void UART_Transmit(uint8_t *data, uint8_t len);
 void Error_Handler(void);
@@ -36,7 +41,7 @@ SPI_HandleTypeDef hspi1;
 UART_HandleTypeDef huart1;
 TIM_HandleTypeDef htim1;
 
-// Global variables
+// Global variables - used for ISRs to raise flags
 bool logDataFlag = 0;
 bool logAlertsFlag = 0;
 
@@ -47,14 +52,13 @@ int main(void) {
     // System clock configuration
     SystemClock_Config();
 
-    // Initialize GPIO, SPI, UART
+    // Initialize GPIO, SPI, UART, TIM1
     GPIO_Init();
     SPI1_Init();
     USART1_Init();
     TIM1_Init();
 
     // Start the logging timer
-//    HAL_TIM_Base_Start_IT(&htim1);
     TIM1->CR1 |= TIM_CR1_CEN;
 
     HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_RESET); // Turn off heartbeat
@@ -71,8 +75,6 @@ int main(void) {
     uint8_t cmdAddr = 0;
 
     uint8_t writeData[32] = {0};
-
-    uint8_t msg[] = "Hello world!\n";
 
     // Read battery status register and manufacturing status register
 	DirectCmdRead(0x12, readData, 2);
@@ -92,6 +94,11 @@ int main(void) {
 
 	// Enter CONFIG_UPDATE mode
 	SubCmdNoData(0x0090);
+	// Wait for Battery Status to confirm transition to CONFIG_UPDATE mode
+	do {
+		DirectCmdRead(0x12, readData, 2);
+	} while (!(readData[0] & 0x01));
+
 	// Configuring Settings in RAM
 	writeData[0] = 0x02;
 	RAMRegisterWrite(PROT_SCD_THLD, writeData, 1); // Set SCD threshold to 40mV
@@ -116,8 +123,9 @@ int main(void) {
 //    	DirectCmdRead(0x02, readData, 2);
 //    	ctrlStatus = (readData[0]) + (readData[1] << 8);
 
+    	// Check if flag to log data was raised
     	if (logDataFlag) {
-    		logDataFlag = false;
+    		logDataFlag = false; // Clear the flag
     		// Read the cell voltage for all 16 cells and then the pack voltage
 			for (int i = 0; i < 17; i++) {
 				cmdAddr = 0x14 + 2*i;
@@ -125,7 +133,6 @@ int main(void) {
 				// Combine the 2 8-bit cell voltage bytes into a single 16-byte variable
 				cellVolt = (readData[0]) + (readData[1] << 8);
 				cellVolts[i] = cellVolt;
-				// Format a UART message to be transmitted with the data
 			}
 //			TransmitCellVoltages(cellVolts, sizeof(cellVolts));
 			TransmitCellVoltages(cellVolts, 17);
@@ -137,27 +144,44 @@ int main(void) {
 			fetStatus = readData[0];
     	}
 
+    	// Check if flag indicating a fault occurred was raised
     	if (logAlertsFlag) {
     		logAlertsFlag = false;
-			// Read the safety status and alert registers
-			for (int i = 0; i < 6; i++) {
-				cmdAddr = 0x02 + i;
-				DirectCmdRead(cmdAddr, readData, 1);
-				safetyStatAlrt[i] = readData[0];
-			}
+			// Read the Alarm Status register to figure out what's causing the alert
+    		DirectCmdRead(0x62, readData, 2);
+    		writeData[0] = 0x00;
+    		writeData[1] = 0x00;
+    		// Check each bit and determine where to look for the cause of the alert
+    		// Safety status B/C
+    		if (readData[1] & (1 << 7)) {
+    			TransmitSafetyStatusB();
+    			// No need to check safety status C as no protections there are enabled
+    			writeData[1] |= (1 << 7);
+    		}
+    		// Safety status A
+    		if (readData[1] & (1 << 6)) {
+    			TransmitSafetyStatusA();
+    			writeData[1] |= (1 << 6);
+    		}
+    		// Permanent failure
+    		if (readData[1] & (1 << 5)) {
+    			// If there's a permanent failure, continuously transmit a distress signal
+    			uint8_t msg[] = "Permanent failure! All BMS operations halted, requesting attention...";
+    			while (1) {
+    				HAL_Delay(10000);
+    				HAL_UART_Transmit(&huart1, msg, sizeof(msg) - 1, HAL_MAX_DELAY);
+    			}
+    		}
+    		// Clear the bits for the received safety statuses, as well as the masked safety alerts
+    		writeData[1] |= 0x18;
+    		DirectCmdWrite(0xE2, writeData, 2);
     	}
-
-//    	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
-//    	HAL_Delay(250);
-//    	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
-//    	HAL_Delay(250);
-
-//    	UART_Transmit(msg, sizeof(msg) - 1);
-//    	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
-//    	HAL_Delay(1000);
     }
 }
 
+/**
+ * Configures the clocks for the STM32
+ */
 void SystemClock_Config(void) {
     RCC_OscInitTypeDef RCC_OscInitStruct = {0};
     RCC_ClkInitTypeDef RCC_ClkInitStruct = {0};
@@ -183,6 +207,9 @@ void SystemClock_Config(void) {
     HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0);
 }
 
+/**
+ * Initializes all GPIO pins
+ */
 void GPIO_Init(void) {
     __HAL_RCC_GPIOA_CLK_ENABLE();
     __HAL_RCC_GPIOB_CLK_ENABLE();
@@ -231,6 +258,7 @@ void GPIO_Init(void) {
 	HAL_NVIC_EnableIRQ(EXTI4_IRQn);
 }
 
+// Initializes the SPI1 peripheral in master mode
 void SPI1_Init(void) {
     // Enable SPI1 clock
     __HAL_RCC_SPI1_CLK_ENABLE();
@@ -256,6 +284,9 @@ void SPI1_Init(void) {
     }
 }
 
+/**
+ * Initializes the USART1 peripheral in UART TX/RX mode
+ */
 void USART1_Init(void) {
 	// Enable USART1 clock
 	__HAL_RCC_USART1_CLK_ENABLE();
@@ -277,10 +308,13 @@ void USART1_Init(void) {
 	}
 }
 
+/**
+ * Initializes the TIM1 peripheral with interrupts enabled
+ */
 void TIM1_Init(void) {
 	RCC->APB2ENR |= RCC_APB2ENR_TIM1EN; // Enable TIM1 clock
 
-	TIM1->PSC = 2000 - 1; // Assuming 2MHz clock, 2000 cycles for 1ms
+	TIM1->PSC = 2000 - 1; // Given 2MHz clock, 2000 cycles for 1ms
 	TIM1->ARR = 2000 - 1; // Generate interrupt every 2000ms (2s)
 
 	TIM1->DIER |= TIM_DIER_UIE; // Enable update interrupt
@@ -291,15 +325,22 @@ void TIM1_Init(void) {
 	TIM1->CR1 |= TIM_CR1_CEN; // Enable TIM1
 }
 
+/**
+ * Defining the ISR for the STM32 timers
+ */
 void TIM1_UP_TIM16_IRQHandler(void) {
-	// Check if UIF flag is set
+	// Check if UIF flag is set for TIM1
 	if (TIM1->SR & TIM_SR_UIF) {
-		// Handle the timer interrupt
-		logDataFlag = true;
+		logDataFlag = true; // Raise a flag to log data from the AFE
 		TIM1->SR &= ~TIM_SR_UIF; // Clear UIF flag
 	}
 }
 
+/**
+ * Calculates a CRC value according to the polynomial x^8 + x^2 + x + 1
+ * @param data Pointer to an array storing the data bytes that will be transmitted
+ * @param len Number of bytes that will be transmitted
+ */
 uint8_t crc8(uint8_t *data, size_t len) {
     uint8_t crc = 0x00;
     while (len--)
@@ -341,6 +382,32 @@ void DirectCmdRead(uint8_t cmd, uint8_t *returnData, uint8_t len) {
 
 		AFETransmitReadCmd(txData, rxData, sizeof(txData));
 		returnData[i] = rxData[1]; // Save data byte received from last transaction
+	}
+}
+
+/**
+ * Sends a direct command to the AFE and writes the provided data to it
+ * @param cmd The address byte for the command
+ * @param writeData Pointer to the 8-bit integer array containing the data to write
+ * @param len Number of bytes to write to the AFE. The function automatically increments the address byte based on this value
+ */
+void DirectCmdWrite(uint8_t cmd, uint8_t *writeData, uint8_t len) {
+	uint8_t rxData[3] = {0};
+	uint8_t txData[3] = {0};
+	uint8_t fullCmd[2] = {0};
+	uint8_t crcLower = 0;
+
+	// Increment the command address based on the data length given
+	for (int i = 0; i < len; i++) {
+		fullCmd[0] = cmd + i;
+		fullCmd[1] = writeData[i];
+		crcLower = crc8(fullCmd, 2);
+		// Construct the TX data for the SPI transaction
+		txData[0] = fullCmd[0];
+		txData[1] = fullCmd[1];
+		txData[2] = crcLower;
+
+		AFETransmitWriteCmd(txData, rxData, sizeof(txData));
 	}
 }
 
@@ -518,6 +585,12 @@ void RAMRegisterWrite(uint16_t addr, uint8_t *writeData, uint8_t len) {
 	AFETransmitWriteCmd(txData, rxData, sizeof(txData));
 }
 
+/**
+ * Handles the proper SPI communication procedure with the AFE for a SPI read command
+ * @param txBytes Pointer to array containing the data to transmit
+ * @param rxBytes Pointer to array containing the data to be received
+ * @param arrSize Number of bytes that will be transmitted/received
+ */
 void AFETransmitReadCmd(uint8_t *txBytes, uint8_t *rxBytes, uint8_t arrSize) {
 	// Continuously transmit the SPI transaction until the AFE has received it
 	bool commReceived = false;
@@ -539,6 +612,12 @@ void AFETransmitReadCmd(uint8_t *txBytes, uint8_t *rxBytes, uint8_t arrSize) {
 
 }
 
+/**
+ * Handles the proper SPI communication procedure with the AFE for a SPI write command
+ * @param txBytes Pointer to array containing the data to transmit
+ * @param rxBytes Pointer to array containing the data to be received
+ * @param arrSize Number of bytes that will be transmitted/received
+ */
 void AFETransmitWriteCmd(uint8_t *txBytes, uint8_t *rxBytes, uint8_t arrSize) {
 	// Continuously transmit the SPI transaction until the AFE has received it
 	bool commReceived = false;
@@ -562,6 +641,11 @@ void AFETransmitWriteCmd(uint8_t *txBytes, uint8_t *rxBytes, uint8_t arrSize) {
 	}
 }
 
+/**
+ * Helper function to transmit all the cell voltage readings over UART
+ * @param volts Array containing the cell voltage readings
+ * @param len Length of the provided array
+ */
 void TransmitCellVoltages(uint16_t *volts, uint8_t len) {
 	char buffer[1024] = {0}; // Initialize buffer to store message
 	char temp[32]; // Temporary buffer for each line
@@ -577,25 +661,109 @@ void TransmitCellVoltages(uint16_t *volts, uint8_t len) {
 	HAL_UART_Transmit(&huart1, (uint8_t*)buffer, strlen(buffer), HAL_MAX_DELAY);
 }
 
-void UART_Transmit(uint8_t *data, uint8_t len) {
-	if (HAL_UART_Transmit(&huart1, data, len, HAL_MAX_DELAY)) {
-		// Transmission error
-		Error_Handler();
+/**
+ * Helper function to transmit UART messages corresponding to any faults detected in the
+ * Safety Status A register
+ */
+void TransmitSafetyStatusA(void) {
+	// Read the bits of the Safety Status A register and transmit the appropriate message
+	// if the corresponding fault was triggered
+	uint8_t statusA[1] = {0};
+	DirectCmdRead(0x03, statusA, 1);
+
+	// Short Circuit Discharge
+	if (statusA[0] & (1 << 7)) {
+		uint8_t msg[] = "SCD fault triggered! Discharging will be disabled for a moment...\n";
+		HAL_UART_Transmit(&huart1, msg, sizeof(msg) - 1, HAL_MAX_DELAY);
+	}
+	// Overcurrent in Discharge 1st Tier
+	if (statusA[0] & (1 << 5)) {
+		uint8_t msg[] = "OCD1 fault triggered! Discharging will be disabled for a moment...\n";
+		HAL_UART_Transmit(&huart1, msg, sizeof(msg) - 1, HAL_MAX_DELAY);
+	}
+	// Overcurrent in Charge
+	if (statusA[0] & (1 << 4)) {
+		uint8_t msg[] = "OCC fault triggered! Charging will be disabled for a moment...\n";
+		HAL_UART_Transmit(&huart1, msg, sizeof(msg) - 1, HAL_MAX_DELAY);
+	}
+	// Cell Overvoltage
+	if (statusA[0] & (1 << 3)) {
+		uint8_t msg[] = "COV fault triggered! Charging will be disabled until voltage drops sufficiently.\n";
+		HAL_UART_Transmit(&huart1, msg, sizeof(msg) - 1, HAL_MAX_DELAY);
+	}
+	// Cell Undervoltage
+	if (statusA[0] & (1 << 2)) {
+		uint8_t msg[] = "CUV fault triggered! Discharging will be disabled until voltage rises sufficiently.\n";
+		HAL_UART_Transmit(&huart1, msg, sizeof(msg) - 1, HAL_MAX_DELAY);
 	}
 }
 
+/**
+ * Helper function to transmit UART messages corresponding to any faults detected in the
+ * Safety Status B register
+ */
+void TransmitSafetyStatusB(void) {
+	// Read the bits of the Safety Status B register and transmit the appropriate message
+	// if the corresponding fault was triggered
+	uint8_t statusB[1] = {0};
+	DirectCmdRead(0x05, statusB, 1);
+
+	// FET Overtemperature
+	if (statusB[0] & (1 << 7)) {
+		uint8_t msg[] = "OTF fault triggered! Discharging will be disabled for a moment...\n";
+		HAL_UART_Transmit(&huart1, msg, sizeof(msg) - 1, HAL_MAX_DELAY);
+	}
+	// Internal Overtemperature
+	if (statusB[0] & (1 << 6)) {
+		uint8_t msg[] = "OTINT fault triggered! All AFE operations will be disabled for a moment...\n";
+		HAL_UART_Transmit(&huart1, msg, sizeof(msg) - 1, HAL_MAX_DELAY);
+	}
+	// Overtemperature in Discharge
+	if (statusB[0] & (1 << 5)) {
+		uint8_t msg[] = "OTD fault triggered! Discharging will be disabled for a moment...\n";
+		HAL_UART_Transmit(&huart1, msg, sizeof(msg) - 1, HAL_MAX_DELAY);
+	}
+	// Overtemperature in Charge
+	if (statusB[0] & (1 << 4)) {
+		uint8_t msg[] = "OTC fault triggered! Charging will be disabled for a moment...\n";
+		HAL_UART_Transmit(&huart1, msg, sizeof(msg) - 1, HAL_MAX_DELAY);
+	}
+	// Internal Undertemperature
+	if (statusB[0] & (1 << 2)) {
+		uint8_t msg[] = "UTINT fault triggered! All AFE operations will be disabled for a moment...\n";
+		HAL_UART_Transmit(&huart1, msg, sizeof(msg) - 1, HAL_MAX_DELAY);
+	}
+	// Undertemperature in Discharge
+	if (statusB[0] & (1 << 1)) {
+		uint8_t msg[] = "UTD fault triggered! No operational changes, but prolonged operation is not advised.\n";
+		HAL_UART_Transmit(&huart1, msg, sizeof(msg) - 1, HAL_MAX_DELAY);
+	}
+	// Undertemperature in Charge
+	if (statusB[0] & 0x01) {
+		uint8_t msg[] = "UTC fault triggered! No operational changes, but prolonged operation is not advised.\n";
+		HAL_UART_Transmit(&huart1, msg, sizeof(msg) - 1, HAL_MAX_DELAY);
+	}
+}
+
+/**
+ * Error handler if a UART transmission error occurs
+ * TODO: Implement this
+ */
 void Error_Handler(void) {
     // Stay in an infinite loop to allow for debugging
     while (1);
 }
 
+/**
+ * Callback function for handling an interrupt from a GPIO pin
+ * @param GPIO_Pin The GPIO pin number where an interrupt was received
+ */
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
-	uint8_t msg[] = "Interrupt!";
-	UART_Transmit(msg, sizeof(msg) - 1);
+	uint8_t msg[] = "Interrupt! ";
+	HAL_UART_Transmit(&huart1, msg, sizeof(msg) - 1, HAL_MAX_DELAY);
 
 	switch (GPIO_Pin) {
 	case GPIO_PIN_4:
-		// TODO: Handle the interrupt by reading the safety registers
 		logAlertsFlag = true;
 	}
 }
