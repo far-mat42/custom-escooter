@@ -28,6 +28,7 @@ void AFETransmitWriteCmd(uint8_t *txBytes, uint8_t *rxBytes, uint8_t arrSize);
 
 // Other helper functions to transmit the data from the AFE to the UART lines
 void TransmitCellVoltages(uint16_t *volts, uint8_t len);
+void TransmitADCReadings(uint32_t *counts, uint8_t len);
 void TransmitSafetyStatusA(void);
 void TransmitSafetyStatusB(void);
 
@@ -69,6 +70,9 @@ int main(void) {
     uint16_t ctrlStatus = 0;
     uint16_t cellVolt = 0;
     uint16_t cellVolts[17] = {0};
+    int16_t cellGains[16] = {12000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11900};
+//    uint32_t adcCounts[16] = {0};
+//    uint32_t adcCount = 0;
     uint16_t currentRead = 0;
     uint8_t fetStatus = 0;
     uint8_t safetyStatAlrt[6] = {0};
@@ -106,6 +110,16 @@ int main(void) {
 	// Disable body diode protection
 	writeData[0] = 0x0C;
 	RAMRegisterWrite(SET_FET_OPTIONS, writeData, 1);
+
+	// Set calibration gain values for all cell voltages
+	for (int i = 0; i < 16; i++) {
+		format_int16(writeData, cellGains[i]);
+		RAMRegisterWrite(CAL_GAIN_CL1 + i*2, writeData, 2);
+	}
+	// Set calibration offset value for cell voltages
+//	format_int16(writeData, 80);
+//	RAMRegisterWrite(CAL_OFST_VCELL, writeData, 2);
+
 	// Setting MFG Status Init to disable FET Test commands
 	format_uint16(writeData, 0x0050);
 	RAMRegisterWrite(SET_MFG_STATUS_INIT, writeData, 2);
@@ -134,8 +148,18 @@ int main(void) {
 				cellVolt = (readData[0]) + (readData[1] << 8);
 				cellVolts[i] = cellVolt;
 			}
+    		// Use the DASTATUS subcommands to get the raw 32-bit ADC counts for cell voltages
+//    		for (int i = 0; i < 4; i++) {
+//    			cmdAddr = 0x0071 + i;
+//				SubCmdReadData(cmdAddr, readData, 32);
+//    			for (int j = 0; j < 4; j++) {
+//    				adcCount = (readData[j*8]) + (readData[j*8 + 1] << 8) + (readData[j*8 + 2] << 16) + (readData[j*8 + 3] << 24);
+//    				adcCounts[i*4 + j] = adcCount;
+//    			}
+//    		}
 //			TransmitCellVoltages(cellVolts, sizeof(cellVolts));
 			TransmitCellVoltages(cellVolts, 17);
+//    		TransmitADCReadings(adcCounts, 16);
 
 			// Read the CC2 current and FET status
 			DirectCmdRead(0x3A, readData, 2);
@@ -653,6 +677,21 @@ void TransmitCellVoltages(uint16_t *volts, uint8_t len) {
 	for (int i = 1; i <= len; i++) {
 		// Format the data into a single line
 		snprintf(temp, sizeof(temp), "CV%d: %d mV\n", i, volts[i-1]);
+		// Append the formatted data to the buffer
+		strncat(buffer, temp, sizeof(buffer) - strlen(buffer) - 1);
+	}
+
+	// Transmit the final message over UART
+	HAL_UART_Transmit(&huart1, (uint8_t*)buffer, strlen(buffer), HAL_MAX_DELAY);
+}
+
+void TransmitADCReadings(uint32_t *counts, uint8_t len) {
+	char buffer[1024] = {0}; // Initialize buffer to store message
+	char temp[32]; // Temporary buffer for each line
+
+	for (int i = 1; i <= len; i++) {
+		// Format the data into a single line
+		snprintf(temp, sizeof(temp), "CV%d: %lu mV\n", i, counts[i-1]);
 		// Append the formatted data to the buffer
 		strncat(buffer, temp, sizeof(buffer) - strlen(buffer) - 1);
 	}
