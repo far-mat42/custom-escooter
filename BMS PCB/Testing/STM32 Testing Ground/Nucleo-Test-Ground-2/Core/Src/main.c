@@ -29,6 +29,7 @@ void AFETransmitWriteCmd(uint8_t *txBytes, uint8_t *rxBytes, uint8_t arrSize);
 // Other helper functions to transmit the data from the AFE to the UART lines
 void TransmitCellVoltages(uint16_t *volts, uint8_t len);
 void TransmitADCReadings(uint32_t *counts, uint8_t len);
+void TransmitTemperatures(int16_t *temps, uint8_t len);
 void TransmitSafetyStatusA(void);
 void TransmitSafetyStatusB(void);
 
@@ -71,6 +72,8 @@ int main(void) {
     uint16_t cellVolt = 0;
     uint16_t cellVolts[17] = {0};
     int16_t cellGains[16] = {12000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11900};
+    int16_t temperature = 0;
+    int16_t temperatures[3] = {0};
 //    uint32_t adcCounts[16] = {0};
 //    uint32_t adcCount = 0;
     uint16_t currentRead = 0;
@@ -120,6 +123,13 @@ int main(void) {
 //	format_int16(writeData, 80);
 //	RAMRegisterWrite(CAL_OFST_VCELL, writeData, 2);
 
+	// Configure TS pins
+	writeData[0] = 0x07; // Thermistor temperature, for cell temperature protection
+	RAMRegisterWrite(SET_CONF_TS1_CFG, writeData, 1);
+	RAMRegisterWrite(SET_CONF_TS2_CFG, writeData, 1);
+	writeData[0] = 0x0F; // Thermistor temperature, for FET temperature protection
+	RAMRegisterWrite(SET_CONF_TS3_CFG, writeData, 1);
+
 	// Setting MFG Status Init to disable FET Test commands
 	format_uint16(writeData, 0x0050);
 	RAMRegisterWrite(SET_MFG_STATUS_INIT, writeData, 2);
@@ -148,6 +158,14 @@ int main(void) {
 				cellVolt = (readData[0]) + (readData[1] << 8);
 				cellVolts[i] = cellVolt;
 			}
+
+			// Read the temperature measured at TS1-3
+			for (int i = 0; i < 3; i++) {
+				cmdAddr = 0x70 + 2*i;
+				DirectCmdRead(cmdAddr, readData, 2);
+				temperature = (readData[0]) + (readData[1] << 8);
+				temperatures[i] = temperature;
+			}
     		// Use the DASTATUS subcommands to get the raw 32-bit ADC counts for cell voltages
 //    		for (int i = 0; i < 4; i++) {
 //    			cmdAddr = 0x0071 + i;
@@ -158,8 +176,9 @@ int main(void) {
 //    			}
 //    		}
 //			TransmitCellVoltages(cellVolts, sizeof(cellVolts));
-			TransmitCellVoltages(cellVolts, 17);
+//			TransmitCellVoltages(cellVolts, 17);
 //    		TransmitADCReadings(adcCounts, 16);
+			TransmitTemperatures(temperatures, 3);
 
 			// Read the CC2 current and FET status
 			DirectCmdRead(0x3A, readData, 2);
@@ -692,6 +711,23 @@ void TransmitADCReadings(uint32_t *counts, uint8_t len) {
 	for (int i = 1; i <= len; i++) {
 		// Format the data into a single line
 		snprintf(temp, sizeof(temp), "CV%d: %lu mV\n", i, counts[i-1]);
+		// Append the formatted data to the buffer
+		strncat(buffer, temp, sizeof(buffer) - strlen(buffer) - 1);
+	}
+
+	// Transmit the final message over UART
+	HAL_UART_Transmit(&huart1, (uint8_t*)buffer, strlen(buffer), HAL_MAX_DELAY);
+}
+
+void TransmitTemperatures(int16_t *temps, uint8_t len) {
+	char buffer[1024] = {0}; // Initialize buffer to store message
+	char temp[32]; // Temporary buffer for each line
+	double degC = 0;
+
+	for (int i = 1; i <= len; i++) {
+		// Format the data into a single line
+		degC = temps[i-1]/10 - 272.15;
+		snprintf(temp, sizeof(temp), "TS%d: %.2f C\n", i, degC);
 		// Append the formatted data to the buffer
 		strncat(buffer, temp, sizeof(buffer) - strlen(buffer) - 1);
 	}

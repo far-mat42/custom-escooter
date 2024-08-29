@@ -1,30 +1,33 @@
-23:14:26 **** Incremental Build of configuration Debug for project Nucleo-Test-Ground-2 ****
+23:22:16 **** Incremental Build of configuration Debug for project Nucleo-Test-Ground-2 ****
 make -j16 all 
 arm-none-eabi-gcc "../Core/Src/main.c" -mcpu=cortex-m4 -std=gnu11 -g3 -DDEBUG -DUSE_HAL_DRIVER -DSTM32L412xx -c -I../Core/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc -I../Drivers/STM32L4xx_HAL_Driver/Inc/Legacy -I../Drivers/CMSIS/Device/ST/STM32L4xx/Include -I../Drivers/CMSIS/Include -O0 -ffunction-sections -fdata-sections -Wall -fstack-usage -fcyclomatic-complexity -MMD -MP -MF"Core/Src/main.d" -MT"Core/Src/main.o" --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -o "Core/Src/main.o"
 ../Core/Src/main.c: In function 'main':
-../Core/Src/main.c:74:13: warning: unused variable 'safetyStatAlrt' [-Wunused-variable]
-   74 |     uint8_t safetyStatAlrt[6] = {0};
+../Core/Src/main.c:81:13: warning: unused variable 'safetyStatAlrt' [-Wunused-variable]
+   81 |     uint8_t safetyStatAlrt[6] = {0};
       |             ^~~~~~~~~~~~~~
-../Core/Src/main.c:73:13: warning: variable 'fetStatus' set but not used [-Wunused-but-set-variable]
-   73 |     uint8_t fetStatus = 0;
+../Core/Src/main.c:80:13: warning: variable 'fetStatus' set but not used [-Wunused-but-set-variable]
+   80 |     uint8_t fetStatus = 0;
       |             ^~~~~~~~~
-../Core/Src/main.c:72:14: warning: variable 'currentRead' set but not used [-Wunused-but-set-variable]
-   72 |     uint16_t currentRead = 0;
+../Core/Src/main.c:79:14: warning: variable 'currentRead' set but not used [-Wunused-but-set-variable]
+   79 |     uint16_t currentRead = 0;
       |              ^~~~~~~~~~~
-../Core/Src/main.c:69:14: warning: unused variable 'ctrlStatus' [-Wunused-variable]
-   69 |     uint16_t ctrlStatus = 0;
+../Core/Src/main.c:73:14: warning: variable 'cellVolts' set but not used [-Wunused-but-set-variable]
+   73 |     uint16_t cellVolts[17] = {0};
+      |              ^~~~~~~~~
+../Core/Src/main.c:71:14: warning: unused variable 'ctrlStatus' [-Wunused-variable]
+   71 |     uint16_t ctrlStatus = 0;
       |              ^~~~~~~~~~
-arm-none-eabi-gcc -o "Nucleo-Test-Ground-2.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Farris' Files\School\Side Projects\Electric Scooter\custom-escooter\BMS PCB\Testing\STM32 Testing Ground\Nucleo-Test-Ground-2\STM32L412K8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Nucleo-Test-Ground-2.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
+arm-none-eabi-gcc -o "Nucleo-Test-Ground-2.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Farris' Files\School\Side Projects\Electric Scooter\custom-escooter\BMS PCB\Testing\STM32 Testing Ground\Nucleo-Test-Ground-2\STM32L412K8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="Nucleo-Test-Ground-2.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -u _printf_float -Wl,--start-group -lc -lm -Wl,--end-group
 Finished building target: Nucleo-Test-Ground-2.elf
  
 arm-none-eabi-size  Nucleo-Test-Ground-2.elf 
 arm-none-eabi-objdump -h -S Nucleo-Test-Ground-2.elf  > "Nucleo-Test-Ground-2.list"
    text	   data	    bss	    dec	    hex	filename
-  20800	    100	   2140	  23040	   5a00	Nucleo-Test-Ground-2.elf
+  33876	    476	   2148	  36500	   8e94	Nucleo-Test-Ground-2.elf
 Finished building: default.size.stdout
  
 Finished building: Nucleo-Test-Ground-2.list
  
 
-23:14:27 Build Finished. 0 errors, 4 warnings. (took 745ms)
+23:22:17 Build Finished. 0 errors, 5 warnings. (took 742ms)
 
