@@ -1,5 +1,6 @@
 #include "stm32l4xx_hal.h"
 #include "bq76952.h"
+#include <math.h>
 #include <stdbool.h>
 #include <string.h>
 #include <stdio.h>
@@ -11,6 +12,7 @@ void GPIO_Init(void);
 void SPI1_Init(void);
 void USART1_Init(void);
 void TIM1_Init(void);
+void ADC1_Init(void);
 
 uint8_t crc8(uint8_t *data, size_t len);
 
@@ -29,18 +31,28 @@ void AFETransmitWriteCmd(uint8_t *txBytes, uint8_t *rxBytes, uint8_t arrSize);
 // Other helper functions to transmit the data from the AFE to the UART lines
 void TransmitCellVoltages(uint16_t *volts, uint8_t len);
 void TransmitADCReadings(uint32_t *counts, uint8_t len);
+void TransmitTemperatures(int16_t *temps, uint8_t len);
 void TransmitSafetyStatusA(void);
 void TransmitSafetyStatusB(void);
 
-void UART_Transmit(uint8_t *data, uint8_t len);
+int16_t T4_Acquire(void);
+
 void Error_Handler(void);
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin);
+
+// Global defines
+#define T4_BETA 3435.0
+#define T4_R0 10000.0
+#define T4_PU_R 17800.0
+#define T4_PU_V 3.3
+#define V_REF 2.048
 
 // Global handles
 SPI_HandleTypeDef hspi1;
 UART_HandleTypeDef huart1;
 TIM_HandleTypeDef htim1;
+ADC_HandleTypeDef hadc1;
 
 // Global variables - used for ISRs to raise flags
 bool logDataFlag = 0;
@@ -53,11 +65,12 @@ int main(void) {
     // System clock configuration
     SystemClock_Config();
 
-    // Initialize GPIO, SPI, UART, TIM1
+    // Initialize GPIO, SPI, UART, TIM1, ADC1
     GPIO_Init();
     SPI1_Init();
     USART1_Init();
     TIM1_Init();
+    ADC1_Init();
 
     // Start the logging timer
     TIM1->CR1 |= TIM_CR1_CEN;
@@ -71,6 +84,9 @@ int main(void) {
     uint16_t cellVolt = 0;
     uint16_t cellVolts[17] = {0};
     int16_t cellGains[16] = {12000, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11900};
+    uint32_t MCUTemperature = 0;
+    int16_t AFETemperature = 0;
+    int16_t temperatures[4] = {0};
 //    uint32_t adcCounts[16] = {0};
 //    uint32_t adcCount = 0;
     uint16_t currentRead = 0;
@@ -121,10 +137,10 @@ int main(void) {
 //	RAMRegisterWrite(CAL_OFST_VCELL, writeData, 2);
 
 	// Configure TS pins
-	writeData[0] = 0x07; // Thermistor temperature, for cell temperature protection
+	writeData[0] = 0x07; // Thermistor temperature, for cell AFETemperature protection
 	RAMRegisterWrite(SET_CONF_TS1_CFG, writeData, 1);
 	RAMRegisterWrite(SET_CONF_TS2_CFG, writeData, 1);
-	writeData[0] = 0x0F; // Thermistor temperature, for FET temperature protection
+	writeData[0] = 0x0F; // Thermistor temperature, for FET AFETemperature protection
 	RAMRegisterWrite(SET_CONF_TS3_CFG, writeData, 1);
 
 	// Setting MFG Status Init to disable FET Test commands
@@ -155,6 +171,18 @@ int main(void) {
 				cellVolt = (readData[0]) + (readData[1] << 8);
 				cellVolts[i] = cellVolt;
 			}
+
+			// Read the AFETemperature measured at TS1-3
+			for (int i = 0; i < 3; i++) {
+				cmdAddr = 0x70 + 2*i;
+				DirectCmdRead(cmdAddr, readData, 2);
+				AFETemperature = (readData[0]) + (readData[1] << 8);
+				temperatures[i] = AFETemperature;
+			}
+			// Calculate temperature measured by MCU's ADC
+			MCUTemperature = T4_Acquire();
+			temperatures[3] = MCUTemperature;
+
     		// Use the DASTATUS subcommands to get the raw 32-bit ADC counts for cell voltages
 //    		for (int i = 0; i < 4; i++) {
 //    			cmdAddr = 0x0071 + i;
@@ -165,8 +193,9 @@ int main(void) {
 //    			}
 //    		}
 //			TransmitCellVoltages(cellVolts, sizeof(cellVolts));
-			TransmitCellVoltages(cellVolts, 17);
+//			TransmitCellVoltages(cellVolts, 17);
 //    		TransmitADCReadings(adcCounts, 16);
+			TransmitTemperatures(temperatures, 4);
 
 			// Read the CC2 current and FET status
 			DirectCmdRead(0x3A, readData, 2);
@@ -287,6 +316,11 @@ void GPIO_Init(void) {
 
 	HAL_NVIC_SetPriority(EXTI4_IRQn, 0, 0);
 	HAL_NVIC_EnableIRQ(EXTI4_IRQn);
+
+	// Configure PA1 (T4 pin) as an analog input
+	GPIO_InitStruct.Pin = GPIO_PIN_1;
+	GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 }
 
 // Initializes the SPI1 peripheral in master mode
@@ -365,6 +399,42 @@ void TIM1_UP_TIM16_IRQHandler(void) {
 		logDataFlag = true; // Raise a flag to log data from the AFE
 		TIM1->SR &= ~TIM_SR_UIF; // Clear UIF flag
 	}
+}
+
+void ADC1_Init(void) {
+    ADC_ChannelConfTypeDef sConfig = {0};
+
+    // Enable the clock for ADC1
+    __HAL_RCC_ADC_CLK_ENABLE();
+
+    // Configure the ADC peripheral
+    hadc1.Instance = ADC1;
+    hadc1.Init.ClockPrescaler = ADC_CLOCK_SYNC_PCLK_DIV4;
+    hadc1.Init.Resolution = ADC_RESOLUTION_12B;  // 12-bit resolution
+    hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;  // Right data alignment
+    hadc1.Init.ScanConvMode = ADC_SCAN_DISABLE;  // Single channel
+    hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;  // End of conversion flag after each conversion
+    hadc1.Init.ContinuousConvMode = DISABLE;  // Single conversion mode
+    hadc1.Init.NbrOfConversion = 1;  // Single conversion
+    hadc1.Init.DiscontinuousConvMode = DISABLE;
+    hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;  // Start conversion by software
+    hadc1.Init.DMAContinuousRequests = DISABLE;
+    hadc1.Init.Overrun = ADC_OVR_DATA_PRESERVED;
+
+    if (HAL_ADC_Init(&hadc1) != HAL_OK) {
+        // Initialization error
+        Error_Handler();
+    }
+
+    // Configure the ADC regular channel (PA1 = ADC_CHANNEL_6)
+    sConfig.Channel = ADC_CHANNEL_6;
+    sConfig.Rank = ADC_REGULAR_RANK_1;
+    sConfig.SamplingTime = ADC_SAMPLETIME_47CYCLES_5;  // Sample time (adjust as necessary)
+
+    if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK) {
+        // Channel configuration error
+        Error_Handler();
+    }
 }
 
 /**
@@ -707,6 +777,33 @@ void TransmitADCReadings(uint32_t *counts, uint8_t len) {
 	HAL_UART_Transmit(&huart1, (uint8_t*)buffer, strlen(buffer), HAL_MAX_DELAY);
 }
 
+void TransmitTemperatures(int16_t *temps, uint8_t len) {
+	char buffer[1024] = {0}; // Initialize buffer to store message
+	char temp[32]; // Temporary buffer for each line
+
+	// Separate variables for integer part and decimal part of temperature reading
+	int16_t degC = 0;
+	int16_t deg_int = 0;
+	int16_t deg_dec = 0;
+
+	for (int i = 1; i <= len; i++) {
+		// Convert from Kelvin into Celsius
+		degC = temps[i-1] - 2731;
+		deg_int = degC / 10;
+		deg_dec = degC % 10;
+		// If temperature is negative, keep the decimal part positive
+		if (degC < 0 && deg_dec != 0) deg_dec = abs(deg_dec);
+
+		// Format the data into a single line
+		snprintf(temp, sizeof(temp), "TS%d: %d.%d C\n", i, deg_int, deg_dec);
+		// Append the formatted data to the buffer
+		strncat(buffer, temp, sizeof(buffer) - strlen(buffer) - 1);
+	}
+
+	// Transmit the final message over UART
+	HAL_UART_Transmit(&huart1, (uint8_t*)buffer, strlen(buffer), HAL_MAX_DELAY);
+}
+
 /**
  * Helper function to transmit UART messages corresponding to any faults detected in the
  * Safety Status A register
@@ -789,6 +886,41 @@ void TransmitSafetyStatusB(void) {
 		uint8_t msg[] = "UTC fault triggered! No operational changes, but prolonged operation is not advised.\n";
 		HAL_UART_Transmit(&huart1, msg, sizeof(msg) - 1, HAL_MAX_DELAY);
 	}
+}
+
+int16_t T4_Acquire(void) {
+    uint32_t adcValue = 0;
+    float T4_volt = 0.0;
+    float T4_res = 0.0;
+    float T4_temp = 0.0;
+    int16_t T4 = 0;
+
+    // Start ADC conversion
+    if (HAL_ADC_Start(&hadc1) != HAL_OK) {
+        // Start error
+        Error_Handler();
+    }
+
+    // Poll for end of conversion
+    if (HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY) == HAL_OK) {
+        // Read the ADC conversion result (12-bit resolution)
+        adcValue = HAL_ADC_GetValue(&hadc1);
+
+        // Convert ADC value to voltage (divide by max. ADC counts, multiply by VREF (3.3V))
+        T4_volt = ((float)adcValue / 4095.0) * V_REF;
+        // Calculate thermistor resistance based on voltage (voltage divider rearranged)
+        T4_res = T4_PU_R * (T4_volt / (T4_PU_V - T4_volt));
+        // Using thermistor's beta value, calculate the temperature
+//        T4_temp = 1.0 / ((1.0 / 298.15) + (1.0 / T4_BETA) * log(T4_res / T4_R0));
+        T4_temp = 1.0 / ((1.0 / 298.15) + (log(T4_res / T4_R0)) / T4_BETA);
+        // Convert value in Kelvin to 16-bit integer like the other temperature measurements (units of 0.1K)
+        T4 = (int16_t)(T4_temp * 10.0);
+    }
+
+    // Stop the ADC conversion
+    HAL_ADC_Stop(&hadc1);
+
+    return T4;
 }
 
 /**

@@ -780,21 +780,21 @@ void TransmitADCReadings(uint32_t *counts, uint8_t len) {
 void TransmitTemperatures(int16_t *temps, uint8_t len) {
 	char buffer[1024] = {0}; // Initialize buffer to store message
 	char temp[32]; // Temporary buffer for each line
-//	double degC = 0;
+
 	// Separate variables for integer part and decimal part of temperature reading
 	int16_t degC = 0;
 	int16_t deg_int = 0;
 	int16_t deg_dec = 0;
 
 	for (int i = 1; i <= len; i++) {
-		// Format the data into a single line
-//		degC = temps[i-1]/10 - 272.15;
+		// Convert from Kelvin into Celsius
 		degC = temps[i-1] - 2731;
 		deg_int = degC / 10;
 		deg_dec = degC % 10;
 		// If temperature is negative, keep the decimal part positive
 		if (degC < 0 && deg_dec != 0) deg_dec = abs(deg_dec);
 
+		// Format the data into a single line
 		snprintf(temp, sizeof(temp), "TS%d: %d.%d C\n", i, deg_int, deg_dec);
 		// Append the formatted data to the buffer
 		strncat(buffer, temp, sizeof(buffer) - strlen(buffer) - 1);
@@ -911,7 +911,6 @@ int16_t T4_Acquire(void) {
         // Calculate thermistor resistance based on voltage (voltage divider rearranged)
         T4_res = T4_PU_R * (T4_volt / (T4_PU_V - T4_volt));
         // Using thermistor's beta value, calculate the temperature
-//        T4_temp = 1.0 / ((1.0 / 298.15) + (1.0 / T4_BETA) * log(T4_res / T4_R0));
         T4_temp = 1.0 / ((1.0 / 298.15) + (log(T4_res / T4_R0)) / T4_BETA);
         // Convert value in Kelvin to 16-bit integer like the other temperature measurements (units of 0.1K)
         T4 = (int16_t)(T4_temp * 10.0);
