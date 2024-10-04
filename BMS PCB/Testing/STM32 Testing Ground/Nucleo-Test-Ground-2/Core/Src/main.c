@@ -87,11 +87,8 @@ int main(void) {
     uint32_t MCUTemperature = 0;
     int16_t AFETemperature = 0;
     int16_t temperatures[4] = {0};
-//    uint32_t adcCounts[16] = {0};
-//    uint32_t adcCount = 0;
     uint16_t currentRead = 0;
     uint8_t fetStatus = 0;
-    uint8_t safetyStatAlrt[6] = {0};
     uint8_t cmdAddr = 0;
 
     uint8_t writeData[32] = {0};
@@ -127,14 +124,19 @@ int main(void) {
 	writeData[0] = 0x0C;
 	RAMRegisterWrite(SET_FET_OPTIONS, writeData, 1);
 
+	// Enable protection to be tested: CUV, COV
+	writeData[0] = 0x8C;
+	RAMRegisterWrite(SET_PROT_ENPROT_A, writeData, 1); // Enable protection
+	writeData[0] = 0x14; // 1.012V, cleared above 1.1132V
+	RAMRegisterWrite(PROT_CUV_THLD, writeData, 1);
+	writeData[0] = 0x20; // 1.6192V, cleared below 1.518V
+	RAMRegisterWrite(PROT_COV_THLD, writeData, 1);
+
 	// Set calibration gain values for all cell voltages
 	for (int i = 0; i < 16; i++) {
 		format_int16(writeData, cellGains[i]);
 		RAMRegisterWrite(CAL_GAIN_CL1 + i*2, writeData, 2);
 	}
-	// Set calibration offset value for cell voltages
-//	format_int16(writeData, 80);
-//	RAMRegisterWrite(CAL_OFST_VCELL, writeData, 2);
 
 	// Configure TS pins
 	writeData[0] = 0x07; // Thermistor temperature, for cell AFETemperature protection
@@ -143,17 +145,29 @@ int main(void) {
 	writeData[0] = 0x0F; // Thermistor temperature, for FET AFETemperature protection
 	RAMRegisterWrite(SET_CONF_TS3_CFG, writeData, 1);
 
+	// Configure ALERT pin
+	writeData[0] = 0x2A;
+	RAMRegisterWrite(SET_CONF_ALERT_CFG, writeData, 1);
+
 	// Setting MFG Status Init to disable FET Test commands
 	format_uint16(writeData, 0x0050);
 	RAMRegisterWrite(SET_MFG_STATUS_INIT, writeData, 2);
-	// Exit CONFIG_UPDATE mode, read manufacturing status register again
+	// Exit CONFIG_UPDATE mode, disable SLEEP mode, read manufacturing status register again
 	SubCmdNoData(0x0092);
+	SubCmdNoData(0x009A);
 	SubCmdReadData(0x0057, readData, 2);
+	// Read battery status register
+	DirectCmdRead(0x12, readData, 2);
 
 	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
 	HAL_Delay(250);
 	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
 	HAL_Delay(750);
+
+	// Clear bits in the alarm registers
+	writeData[0] = 0xFF;
+	writeData[1] = 0xFE;
+	DirectCmdWrite(0xE2, writeData, 2);
 
     while (1) {
     	// Read the control status register
@@ -163,6 +177,7 @@ int main(void) {
     	// Check if flag to log data was raised
     	if (logDataFlag) {
     		logDataFlag = false; // Clear the flag
+    		//TODO: Only read measurements if FULLSCAN bit of Alarm Status is set, then clear bit after reading measurements
     		// Read the cell voltage for all 16 cells and then the pack voltage
 			for (int i = 0; i < 17; i++) {
 				cmdAddr = 0x14 + 2*i;
@@ -183,18 +198,7 @@ int main(void) {
 			MCUTemperature = T4_Acquire();
 			temperatures[3] = MCUTemperature;
 
-    		// Use the DASTATUS subcommands to get the raw 32-bit ADC counts for cell voltages
-//    		for (int i = 0; i < 4; i++) {
-//    			cmdAddr = 0x0071 + i;
-//				SubCmdReadData(cmdAddr, readData, 32);
-//    			for (int j = 0; j < 4; j++) {
-//    				adcCount = (readData[j*8]) + (readData[j*8 + 1] << 8) + (readData[j*8 + 2] << 16) + (readData[j*8 + 3] << 24);
-//    				adcCounts[i*4 + j] = adcCount;
-//    			}
-//    		}
-//			TransmitCellVoltages(cellVolts, sizeof(cellVolts));
-//			TransmitCellVoltages(cellVolts, 17);
-//    		TransmitADCReadings(adcCounts, 16);
+			TransmitCellVoltages(cellVolts, 17);
 			TransmitTemperatures(temperatures, 4);
 
 			// Read the CC2 current and FET status
@@ -205,6 +209,7 @@ int main(void) {
     	}
 
     	// Check if flag indicating a fault occurred was raised
+    	// TODO: Instead of relying on the ALERT pin, just poll the SSBC and SSA bits of Alarm Status
     	if (logAlertsFlag) {
     		logAlertsFlag = false;
 			// Read the Alarm Status register to figure out what's causing the alert
@@ -234,6 +239,8 @@ int main(void) {
     		}
     		// Clear the bits for the received safety statuses, as well as the masked safety alerts
     		writeData[1] |= 0x18;
+//    		writeData[0] = 0xFF;
+//    		writeData[1] = 0xFE;
     		DirectCmdWrite(0xE2, writeData, 2);
     	}
     }
@@ -397,6 +404,7 @@ void TIM1_UP_TIM16_IRQHandler(void) {
 	// Check if UIF flag is set for TIM1
 	if (TIM1->SR & TIM_SR_UIF) {
 		logDataFlag = true; // Raise a flag to log data from the AFE
+		logAlertsFlag = true;
 		TIM1->SR &= ~TIM_SR_UIF; // Clear UIF flag
 	}
 }
