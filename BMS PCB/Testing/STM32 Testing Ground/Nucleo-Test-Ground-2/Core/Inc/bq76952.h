@@ -209,6 +209,7 @@
 #define SET_INTRES_CL16			0x9333
 
 // Settings for cell balancing configuration
+#define SET_CLBCFG_CONFIG		0x9335
 #define SET_CLBCFG_CLTEMP_MIN 	0x9336
 #define SET_CLBCFG_CLTEMP_MAX 	0x9337
 #define SET_CLBCFG_INTTEMP_MAX	0x9338

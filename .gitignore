@@ -1,3 +1,12 @@
+# eclipse specific git ignore
+.metadata/
+RemoteSystemsTempFiles/
+.settings/
+Debug/
+*.launch
+
+# STM32 git ignore
+*.mxproject
 
 BLDC Controller PCB/BLDC Motor Controller/History/*
 BLDC Controller PCB/BLDC Motor Controller/__Previews/*
