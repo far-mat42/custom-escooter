@@ -116,42 +116,136 @@ int main(void) {
 		DirectCmdRead(0x12, readData, 2);
 	} while (!(readData[0] & 0x01));
 
-	// Configuring Settings in RAM
-	writeData[0] = 0x02;
-	RAMRegisterWrite(PROT_SCD_THLD, writeData, 1); // Set SCD threshold to 40mV
+	/**
+	 * ***********************************************************************************************
+	 * CONFIGURING BQ76952 RAM REGISTERS
+	 * ***********************************************************************************************
+	 */
 
-	// Disable body diode protection
-	writeData[0] = 0x0C;
+	/**
+	 * Configuration settings registers
+	 */
+	// Configure TS pins
+	writeData[0] = 0x07; // Thermistor temperature, for cell temperature protection
+	RAMRegisterWrite(SET_CONF_TS1_CFG, writeData, 1);
+	RAMRegisterWrite(SET_CONF_TS2_CFG, writeData, 1);
+	writeData[0] = 0x0F; // Thermistor temperature, for FET temperature protection
+	RAMRegisterWrite(SET_CONF_TS3_CFG, writeData, 1);
+	// Configure ALERT pin
+	writeData[0] = 0x2A;
+	RAMRegisterWrite(SET_CONF_ALERT_CFG, writeData, 1);
+	// Configure DA
+	writeData[0] = 0x06;
+	RAMRegisterWrite(SET_CONF_DA_CFG, writeData, 1);
+
+	/**
+	 * Protection settings registers
+	 */
+	writeData[0] = 0xFC;
+	RAMRegisterWrite(SET_PROT_ENPROT_A, writeData, 1); // Enables SCD, OCD1, OCC, COV, CUV protection
+	writeData[0] = 0xF7;
+	RAMRegisterWrite(SET_PROT_ENPROT_B, writeData, 1); // Enables OTF, OTINT, OTD, OTC, and all UT protection
+	writeData[0] = 0x00;
+	RAMRegisterWrite(SET_PROT_ENPROT_C, writeData, 1); // Disables all special/latch protections
+	writeData[0] = 0x98;
+	RAMRegisterWrite(SET_PROT_CHGFET_PROT_A, writeData, 1); // SCD, OCC, and COV disable CHG FET
+	writeData[0] = 0xD4;
+	RAMRegisterWrite(SET_PROT_CHGFET_PROT_B, writeData, 1); // OTF, OTINT, OTC, and UTINT disable CHG FET
+	writeData[0] = 0x00;
+	RAMRegisterWrite(SET_PROT_CHGFET_PROT_C, writeData, 1); // Type C protections are disabled anyways
+	writeData[0] = 0xE4;
+	RAMRegisterWrite(SET_PROT_DSGFET_PROT_A, writeData, 1); // SCD, OCD1, OCD2, and CUV disable DSG FET
+	writeData[0] = 0xE4;
+	RAMRegisterWrite(SET_PROT_DSGFET_PROT_B, writeData, 1); // OTF, OTINT, OTD, and UTINT disable DSG FET
+	writeData[0] = 0x00;
+	RAMRegisterWrite(SET_PROT_DSGFET_PROT_C, writeData, 1); // Type C protections are disabled anyways
+
+	/**
+	 * FET settings registers
+	 */
+	// Enable PDSG, disable body diode protection, enable CHG FET in SLEEP
+	writeData[0] = 0x1E;
 	RAMRegisterWrite(SET_FET_OPTIONS, writeData, 1);
+	format_uint16(writeData, 0x06A4);
+	RAMRegisterWrite(SET_FET_PCHG_STRT_V, writeData, 2); // Min. cell voltage below 1700mV activates PCHG mode
+	format_uint16(writeData, 0x06D6);
+	RAMRegisterWrite(SET_FET_PCHG_STP_V, writeData, 2); // Min. cell voltage above 1750mV deactivates PCHG mode
+	writeData[0] = 0x64;
+	RAMRegisterWrite(SET_FET_PDSG_TO, writeData, 1); // PDSG timeout after 1000ms, enables DSG FET after
+	writeData[0] = 0x64;
+	RAMRegisterWrite(SET_FET_PDSG_STP_DLT, writeData, 1); // Exit PDSG and enable DSG FET when LD equals VBAT+ minus 1000mV
 
-	// Enable protection to be tested: CUV, COV
-	writeData[0] = 0x8C;
-	RAMRegisterWrite(SET_PROT_ENPROT_A, writeData, 1); // Enable protection
-	writeData[0] = 0x14; // 1.012V, cleared above 1.1132V
-	RAMRegisterWrite(PROT_CUV_THLD, writeData, 1);
-	writeData[0] = 0x20; // 1.6192V, cleared below 1.518V
-	RAMRegisterWrite(PROT_COV_THLD, writeData, 1);
+	/**
+	 * Misc. settings
+	 */
+	// Setting MFG Status Init to disable FET Test commands
+	format_uint16(writeData, 0x0050);
+	RAMRegisterWrite(SET_MFG_STATUS_INIT, writeData, 2);
+	// Setting DSG threshold to 100mA and CHG threshold to 50mA
+	format_uint16(writeData, 0x000A);
+	RAMRegisterWrite(SET_CURRTH_DSG_CURRTH, writeData, 2);
+	format_uint16(writeData, 0x0005);
+	RAMRegisterWrite(SET_CURRTH_CHG_CURRTH, writeData, 2);
 
-	// Set calibration gain values for all cell voltages
+	/**
+	 * Cell balancing settings registers
+	 */
+	writeData[0] = 0x0F;
+	RAMRegisterWrite(SET_CLBCFG_CONFIG, writeData, 1); // Exits SLEEP to perform balancing, allow balancing while charging and in relax mode
+	writeData[0] = 0x0A;
+	RAMRegisterWrite(SET_CLBCFG_CB_INTRVL, writeData, 1); // Recalculates which cells to balance every 10 seconds
+	writeData[0] = 0x08;
+	RAMRegisterWrite(SET_CLBCFG_CB_MAX_CLS, writeData, 1); // Allows up to 8 cells to be balanced at once
+	// Min. cell voltage must be at least 2500mV for cell balancing to occur while charging or in relax mode
+	format_uint16(writeData, 0x09C4);
+	RAMRegisterWrite(SET_CLBCFG_CHG_MIN_V, writeData, 2);
+	RAMRegisterWrite(SET_CLBCFG_RLX_MIN_V, writeData, 2);
+
+	/**
+	 * Power registers
+	 */
+	format_uint16(writeData, 0x0960);
+	RAMRegisterWrite(PWR_SHDN_BATT_V, writeData, 2); // If pack voltage falls below 24000mV, AFE enters SHUTDOWN mode
+	format_uint16(writeData, 0x000A);
+	RAMRegisterWrite(PWR_SLP_CURR, writeData, 2); // Current above 10mA will cause device to exit SLEEP mode
+	format_uint16(writeData, 0x0960);
+	RAMRegisterWrite(PWR_SLP_CHG_V_THLD, writeData, 2); // If pack voltage falls below 24000mV, SLEEP mode is blocked when charger detected
+
+	/**
+	 * Protections registers
+	 */
+	writeData[0] = 0x23;
+	RAMRegisterWrite(PROT_CUV_THLD, writeData, 1); // CUV triggered at 1.771V, cleared above 1.8732V
+	writeData[0] = 0x35;
+	RAMRegisterWrite(PROT_COV_THLD, writeData, 1); // COV triggered at 2.7324V, cleared below 2.6312V
+	writeData[0] = 0x08;
+	RAMRegisterWrite(PROT_OCC_THLD, writeData, 1); // OCC triggered at 16A
+	writeData[0] = 0x15;
+	RAMRegisterWrite(PROT_OCD1_THLD, writeData, 1); // OCD1 triggered at 42A
+	writeData[0] = 0x64;
+	RAMRegisterWrite(PROT_OCD1_DLY, writeData, 1); // OCD1 triggered after 340ms delay
+	writeData[0] = 0x19;
+	RAMRegisterWrite(PROT_OCD2_THLD, writeData, 1); // OCD2 triggered at 50A
+	writeData[0] = 0x1C;
+	RAMRegisterWrite(PROT_OCD2_DLY, writeData, 1); // OCD2 triggered after 100ms delay
+	writeData[0] = 0x03;
+	RAMRegisterWrite(PROT_SCD_THLD, writeData, 1); // SCD triggered at 60A
+	RAMRegisterWrite(PROT_SCD_DLY, writeData, 1); // SCD triggered after 30µs delay
+	writeData[0] = 0xEC;
+	RAMRegisterWrite(PROT_UTD_THLD, writeData, 1); // UTD triggered at -20ºC
+	RAMRegisterWrite(PROT_UTC_THLD, writeData, 1); // UTC triggered at -20ºC
+	writeData[0] = 0xF1;
+	RAMRegisterWrite(PROT_UTD_RCVR, writeData, 1); // UTD cleared above -15ºC
+	RAMRegisterWrite(PROT_UTC_RCVR, writeData, 1); // UTC cleared above -15ºC
+
+	/**
+	 * Set calibration gain values for all cell voltages
+	 */
 	for (int i = 0; i < 16; i++) {
 		format_int16(writeData, cellGains[i]);
 		RAMRegisterWrite(CAL_GAIN_CL1 + i*2, writeData, 2);
 	}
 
-	// Configure TS pins
-	writeData[0] = 0x07; // Thermistor temperature, for cell AFETemperature protection
-	RAMRegisterWrite(SET_CONF_TS1_CFG, writeData, 1);
-	RAMRegisterWrite(SET_CONF_TS2_CFG, writeData, 1);
-	writeData[0] = 0x0F; // Thermistor temperature, for FET AFETemperature protection
-	RAMRegisterWrite(SET_CONF_TS3_CFG, writeData, 1);
-
-	// Configure ALERT pin
-	writeData[0] = 0x2A;
-	RAMRegisterWrite(SET_CONF_ALERT_CFG, writeData, 1);
-
-	// Setting MFG Status Init to disable FET Test commands
-	format_uint16(writeData, 0x0050);
-	RAMRegisterWrite(SET_MFG_STATUS_INIT, writeData, 2);
 	// Exit CONFIG_UPDATE mode, disable SLEEP mode, read manufacturing status register again
 	SubCmdNoData(0x0092);
 	SubCmdNoData(0x009A);
