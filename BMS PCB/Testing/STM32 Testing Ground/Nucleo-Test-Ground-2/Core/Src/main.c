@@ -15,6 +15,7 @@ void USART1_Init(void);
 void TIM1_Init(void);
 void TIM2_Init(void);
 void ADC1_Init(void);
+void RTC_Init(void);
 
 uint8_t crc8(uint8_t *data, size_t len);
 
@@ -42,6 +43,7 @@ void TransmitSafetyStatusB(void);
 
 // Other miscellaneous helper functions
 int16_t T4_Acquire(void);
+time_t RTCToUnixTimestamp(RTC_DateTypeDef *date, RTC_TimeTypeDef *time);
 void GetDateTime(char *datetimeStr, size_t size);
 
 void Error_Handler(void);
@@ -60,6 +62,7 @@ SPI_HandleTypeDef hspi1;
 UART_HandleTypeDef huart1;
 TIM_HandleTypeDef htim1;
 ADC_HandleTypeDef hadc1;
+RTC_HandleTypeDef hrtc;
 
 // Global variables - used for ISRs to raise flags
 bool logDataFlag = 0;
@@ -79,6 +82,7 @@ int main(void) {
     TIM1_Init();
     TIM2_Init();
     ADC1_Init();
+    RTC_Init();
 
     // Start the logging timer
     TIM1->CR1 |= TIM_CR1_CEN;
@@ -184,15 +188,17 @@ int main(void) {
 			MCUTemperature = T4_Acquire();
 			temperatures[3] = MCUTemperature;
 
-			TransmitCellVoltages(cellVolts, 17);
-			TransmitTemperatures(temperatures, 4);
-
 			// Read the CC2 current and FET status
 			DirectCmdRead(0x3A, readData, 2);
 			currentRead = (readData[0]) + (readData[1] << 8);
-			TransmitCurrentReading(currentRead);
 			DirectCmdRead(0x7F, readData, 1);
 			fetStatus = readData[0];
+
+			// Transmit logging information
+			TransmitLogAndTimestamp();
+			TransmitCellVoltages(cellVolts, 17);
+			TransmitCurrentReading(currentRead);
+			TransmitTemperatures(temperatures, 4);
 
 			// Disable status LED to indicate data finished being logged
 			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_RESET);
@@ -422,6 +428,9 @@ void TIM2_IRQHandler(void) {
     }
 }
 
+/**
+ * Initializes the ADC1 peripheral in 12-bit resolution
+ */
 void ADC1_Init(void) {
     ADC_ChannelConfTypeDef sConfig = {0};
 
@@ -456,6 +465,47 @@ void ADC1_Init(void) {
         // Channel configuration error
         Error_Handler();
     }
+}
+
+/**
+  * Initializes the RTC peripheral
+  */
+void RTC_Init(void) {
+	RTC_TimeTypeDef sTime = {0};
+	RTC_DateTypeDef sDate = {0};
+
+	// Initialize RTC
+	hrtc.Instance = RTC;
+	hrtc.Init.HourFormat = RTC_HOURFORMAT_24;
+	hrtc.Init.AsynchPrediv = 127;
+	hrtc.Init.SynchPrediv = 255;
+	hrtc.Init.OutPut = RTC_OUTPUT_DISABLE;
+	hrtc.Init.OutPutRemap = RTC_OUTPUT_REMAP_NONE;
+	hrtc.Init.OutPutPolarity = RTC_OUTPUT_POLARITY_HIGH;
+	hrtc.Init.OutPutType = RTC_OUTPUT_TYPE_OPENDRAIN;
+	hrtc.Init.OutPutPullUp = RTC_OUTPUT_PULLUP_NONE;
+	if (HAL_RTC_Init(&hrtc) != HAL_OK) {
+		Error_Handler();
+	}
+
+	// Set initial time
+	sTime.Hours = 0x09;
+	sTime.Minutes = 0x32;
+	sTime.Seconds = 0x00;
+	if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BCD) != HAL_OK)
+	{
+		Error_Handler();
+	}
+
+	// Set initial date
+	sDate.WeekDay = RTC_WEEKDAY_TUESDAY;
+	sDate.Month = RTC_MONTH_DECEMBER;
+	sDate.Date = 0x10;
+	sDate.Year = 0x24; // Year 2024
+	if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BCD) != HAL_OK)
+	{
+		Error_Handler();
+	}
 }
 
 /**
@@ -1169,6 +1219,22 @@ int16_t T4_Acquire(void) {
     return T4;
 }
 
+time_t RTCToUnixTimestamp(RTC_DateTypeDef *date, RTC_TimeTypeDef *time) {
+	struct tm tm_time;
+
+	// Populate the tm structure
+	tm_time.tm_year = date->Year + 100; // Years since 1900
+	tm_time.tm_mon  = date->Month - 1;  // Months since January
+	tm_time.tm_mday = date->Date;       // Day of the month
+	tm_time.tm_hour = time->Hours;
+	tm_time.tm_min  = time->Minutes;
+	tm_time.tm_sec  = time->Seconds;
+	tm_time.tm_isdst = -1;              // No daylight saving time
+
+	// Convert to UNIX timestamp
+	return mktime(&tm_time);
+}
+
 /**
  * Helper function to get the current date and time and format it into a string
  * @param datetimeStr String to store the date & time in
@@ -1186,6 +1252,30 @@ void GetDateTime(char *datetimeStr, size_t size) {
 
 	// Format the time as a string
 	strftime(datetimeStr, size, "%Y-%m-%d %H:%M:%S", timeinfo);
+}
+
+/**
+ * Implementation of _gettimeofday using the STM32's RTC
+ */
+int _gettimeofday(struct timeval *tv, void *tzvp) {
+    RTC_TimeTypeDef sTime;
+    RTC_DateTypeDef sDate;
+
+    // Get the current RTC time and date
+    if (HAL_RTC_GetTime(&hrtc, &sTime, RTC_FORMAT_BIN) != HAL_OK || HAL_RTC_GetDate(&hrtc, &sDate, RTC_FORMAT_BIN) != HAL_OK) {
+        return -1; // Error reading RTC
+    }
+
+    // Convert to UNIX timestamp
+    time_t timestamp = RTCToUnixTimestamp(&sDate, &sTime);
+
+    // Populate the timeval structure
+    if (tv) {
+        tv->tv_sec = timestamp; // Seconds since the Unix epoch
+        tv->tv_usec = 0;       // Microseconds (RTC typically doesn't support this)
+    }
+
+    return 0;
 }
 
 /**
