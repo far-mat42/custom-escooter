@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <stdio.h>
+#include <time.h>
 
 // Function prototypes
 // Initializing peripherals
@@ -12,6 +13,7 @@ void GPIO_Init(void);
 void SPI1_Init(void);
 void USART1_Init(void);
 void TIM1_Init(void);
+void TIM2_Init(void);
 void ADC1_Init(void);
 
 uint8_t crc8(uint8_t *data, size_t len);
@@ -23,19 +25,24 @@ void SubCmdNoData(uint16_t cmd);
 void SubCmdReadData(uint16_t cmd, uint8_t *returnData, uint8_t len);
 void RAMRegisterRead(uint16_t addr, uint8_t *returnData, uint8_t len);
 void RAMRegisterWrite(uint16_t addr, uint8_t *writeData, uint8_t len);
+void RAMRegisterInit(void);
 
 // Helper functions that do the handling for verifying the AFE received a SPI command
 void AFETransmitReadCmd(uint8_t *txBytes, uint8_t *rxBytes, uint8_t arrSize);
 void AFETransmitWriteCmd(uint8_t *txBytes, uint8_t *rxBytes, uint8_t arrSize);
 
-// Other helper functions to transmit the data from the AFE to the UART lines
+// Helper functions to transmit the data from the AFE to the UART lines
+void TransmitLogAndTimestamp(void);
 void TransmitCellVoltages(uint16_t *volts, uint8_t len);
 void TransmitADCReadings(uint32_t *counts, uint8_t len);
+void TransmitCurrentReading(int16_t current);
 void TransmitTemperatures(int16_t *temps, uint8_t len);
 void TransmitSafetyStatusA(void);
 void TransmitSafetyStatusB(void);
 
+// Other miscellaneous helper functions
 int16_t T4_Acquire(void);
+void GetDateTime(char *datetimeStr, size_t size);
 
 void Error_Handler(void);
 
@@ -70,6 +77,7 @@ int main(void) {
     SPI1_Init();
     USART1_Init();
     TIM1_Init();
+    TIM2_Init();
     ADC1_Init();
 
     // Start the logging timer
@@ -87,7 +95,7 @@ int main(void) {
     uint32_t MCUTemperature = 0;
     int16_t AFETemperature = 0;
     int16_t temperatures[4] = {0};
-    uint16_t currentRead = 0;
+    int16_t currentRead = 0;
     uint8_t fetStatus = 0;
     uint8_t cmdAddr = 0;
 
@@ -116,127 +124,8 @@ int main(void) {
 		DirectCmdRead(0x12, readData, 2);
 	} while (!(readData[0] & 0x01));
 
-	/**
-	 * ***********************************************************************************************
-	 * CONFIGURING BQ76952 RAM REGISTERS
-	 * ***********************************************************************************************
-	 */
-
-	/**
-	 * Configuration settings registers
-	 */
-	// Configure TS pins
-	writeData[0] = 0x07; // Thermistor temperature, for cell temperature protection
-	RAMRegisterWrite(SET_CONF_TS1_CFG, writeData, 1);
-	RAMRegisterWrite(SET_CONF_TS2_CFG, writeData, 1);
-	writeData[0] = 0x0F; // Thermistor temperature, for FET temperature protection
-	RAMRegisterWrite(SET_CONF_TS3_CFG, writeData, 1);
-	// Configure ALERT pin
-	writeData[0] = 0x2A;
-	RAMRegisterWrite(SET_CONF_ALERT_CFG, writeData, 1);
-	// Configure DA
-	writeData[0] = 0x06;
-	RAMRegisterWrite(SET_CONF_DA_CFG, writeData, 1);
-
-	/**
-	 * Protection settings registers
-	 */
-	writeData[0] = 0xFC;
-	RAMRegisterWrite(SET_PROT_ENPROT_A, writeData, 1); // Enables SCD, OCD1, OCC, COV, CUV protection
-	writeData[0] = 0xF7;
-	RAMRegisterWrite(SET_PROT_ENPROT_B, writeData, 1); // Enables OTF, OTINT, OTD, OTC, and all UT protection
-	writeData[0] = 0x00;
-	RAMRegisterWrite(SET_PROT_ENPROT_C, writeData, 1); // Disables all special/latch protections
-	writeData[0] = 0x98;
-	RAMRegisterWrite(SET_PROT_CHGFET_PROT_A, writeData, 1); // SCD, OCC, and COV disable CHG FET
-	writeData[0] = 0xD4;
-	RAMRegisterWrite(SET_PROT_CHGFET_PROT_B, writeData, 1); // OTF, OTINT, OTC, and UTINT disable CHG FET
-	writeData[0] = 0x00;
-	RAMRegisterWrite(SET_PROT_CHGFET_PROT_C, writeData, 1); // Type C protections are disabled anyways
-	writeData[0] = 0xE4;
-	RAMRegisterWrite(SET_PROT_DSGFET_PROT_A, writeData, 1); // SCD, OCD1, OCD2, and CUV disable DSG FET
-	writeData[0] = 0xE4;
-	RAMRegisterWrite(SET_PROT_DSGFET_PROT_B, writeData, 1); // OTF, OTINT, OTD, and UTINT disable DSG FET
-	writeData[0] = 0x00;
-	RAMRegisterWrite(SET_PROT_DSGFET_PROT_C, writeData, 1); // Type C protections are disabled anyways
-
-	/**
-	 * FET settings registers
-	 */
-	// Enable PDSG, disable body diode protection, enable CHG FET in SLEEP
-	writeData[0] = 0x1E;
-	RAMRegisterWrite(SET_FET_OPTIONS, writeData, 1);
-	format_uint16(writeData, 0x06A4);
-	RAMRegisterWrite(SET_FET_PCHG_STRT_V, writeData, 2); // Min. cell voltage below 1700mV activates PCHG mode
-	format_uint16(writeData, 0x06D6);
-	RAMRegisterWrite(SET_FET_PCHG_STP_V, writeData, 2); // Min. cell voltage above 1750mV deactivates PCHG mode
-	writeData[0] = 0x64;
-	RAMRegisterWrite(SET_FET_PDSG_TO, writeData, 1); // PDSG timeout after 1000ms, enables DSG FET after
-	writeData[0] = 0x64;
-	RAMRegisterWrite(SET_FET_PDSG_STP_DLT, writeData, 1); // Exit PDSG and enable DSG FET when LD equals VBAT+ minus 1000mV
-
-	/**
-	 * Misc. settings
-	 */
-	// Setting MFG Status Init to disable FET Test commands
-	format_uint16(writeData, 0x0050);
-	RAMRegisterWrite(SET_MFG_STATUS_INIT, writeData, 2);
-	// Setting DSG threshold to 100mA and CHG threshold to 50mA
-	format_uint16(writeData, 0x000A);
-	RAMRegisterWrite(SET_CURRTH_DSG_CURRTH, writeData, 2);
-	format_uint16(writeData, 0x0005);
-	RAMRegisterWrite(SET_CURRTH_CHG_CURRTH, writeData, 2);
-
-	/**
-	 * Cell balancing settings registers
-	 */
-	writeData[0] = 0x0F;
-	RAMRegisterWrite(SET_CLBCFG_CONFIG, writeData, 1); // Exits SLEEP to perform balancing, allow balancing while charging and in relax mode
-	writeData[0] = 0x0A;
-	RAMRegisterWrite(SET_CLBCFG_CB_INTRVL, writeData, 1); // Recalculates which cells to balance every 10 seconds
-	writeData[0] = 0x08;
-	RAMRegisterWrite(SET_CLBCFG_CB_MAX_CLS, writeData, 1); // Allows up to 8 cells to be balanced at once
-	// Min. cell voltage must be at least 2500mV for cell balancing to occur while charging or in relax mode
-	format_uint16(writeData, 0x09C4);
-	RAMRegisterWrite(SET_CLBCFG_CHG_MIN_V, writeData, 2);
-	RAMRegisterWrite(SET_CLBCFG_RLX_MIN_V, writeData, 2);
-
-	/**
-	 * Power registers
-	 */
-	format_uint16(writeData, 0x0960);
-	RAMRegisterWrite(PWR_SHDN_BATT_V, writeData, 2); // If pack voltage falls below 24000mV, AFE enters SHUTDOWN mode
-	format_uint16(writeData, 0x000A);
-	RAMRegisterWrite(PWR_SLP_CURR, writeData, 2); // Current above 10mA will cause device to exit SLEEP mode
-	format_uint16(writeData, 0x0960);
-	RAMRegisterWrite(PWR_SLP_CHG_V_THLD, writeData, 2); // If pack voltage falls below 24000mV, SLEEP mode is blocked when charger detected
-
-	/**
-	 * Protections registers
-	 */
-	writeData[0] = 0x23;
-	RAMRegisterWrite(PROT_CUV_THLD, writeData, 1); // CUV triggered at 1.771V, cleared above 1.8732V
-	writeData[0] = 0x35;
-	RAMRegisterWrite(PROT_COV_THLD, writeData, 1); // COV triggered at 2.7324V, cleared below 2.6312V
-	writeData[0] = 0x08;
-	RAMRegisterWrite(PROT_OCC_THLD, writeData, 1); // OCC triggered at 16A
-	writeData[0] = 0x15;
-	RAMRegisterWrite(PROT_OCD1_THLD, writeData, 1); // OCD1 triggered at 42A
-	writeData[0] = 0x64;
-	RAMRegisterWrite(PROT_OCD1_DLY, writeData, 1); // OCD1 triggered after 340ms delay
-	writeData[0] = 0x19;
-	RAMRegisterWrite(PROT_OCD2_THLD, writeData, 1); // OCD2 triggered at 50A
-	writeData[0] = 0x1C;
-	RAMRegisterWrite(PROT_OCD2_DLY, writeData, 1); // OCD2 triggered after 100ms delay
-	writeData[0] = 0x03;
-	RAMRegisterWrite(PROT_SCD_THLD, writeData, 1); // SCD triggered at 60A
-	RAMRegisterWrite(PROT_SCD_DLY, writeData, 1); // SCD triggered after 30µs delay
-	writeData[0] = 0xEC;
-	RAMRegisterWrite(PROT_UTD_THLD, writeData, 1); // UTD triggered at -20ºC
-	RAMRegisterWrite(PROT_UTC_THLD, writeData, 1); // UTC triggered at -20ºC
-	writeData[0] = 0xF1;
-	RAMRegisterWrite(PROT_UTD_RCVR, writeData, 1); // UTD cleared above -15ºC
-	RAMRegisterWrite(PROT_UTC_RCVR, writeData, 1); // UTC cleared above -15ºC
+	// Program configuration for all AFE registers
+	RAMRegisterInit();
 
 	/**
 	 * Set calibration gain values for all cell voltages
@@ -253,10 +142,11 @@ int main(void) {
 	// Read battery status register
 	DirectCmdRead(0x12, readData, 2);
 
-	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
-	HAL_Delay(250);
-	HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
-	HAL_Delay(750);
+	// Blink status LED a few times to indicate setup is complete
+	for (int i = 0; i < 10; i++) {
+		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
+		HAL_Delay(100);
+	}
 
 	// Clear bits in the alarm registers
 	writeData[0] = 0xFF;
@@ -272,6 +162,8 @@ int main(void) {
     	if (logDataFlag) {
     		logDataFlag = false; // Clear the flag
     		//TODO: Only read measurements if FULLSCAN bit of Alarm Status is set, then clear bit after reading measurements
+    		// Enable status LED to indicate data being logged
+    		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_SET);
     		// Read the cell voltage for all 16 cells and then the pack voltage
 			for (int i = 0; i < 17; i++) {
 				cmdAddr = 0x14 + 2*i;
@@ -298,12 +190,15 @@ int main(void) {
 			// Read the CC2 current and FET status
 			DirectCmdRead(0x3A, readData, 2);
 			currentRead = (readData[0]) + (readData[1] << 8);
+			TransmitCurrentReading(currentRead);
 			DirectCmdRead(0x7F, readData, 1);
 			fetStatus = readData[0];
+
+			// Disable status LED to indicate data finished being logged
+			HAL_GPIO_WritePin(GPIOB, GPIO_PIN_5, GPIO_PIN_RESET);
     	}
 
-    	// Check if flag indicating a fault occurred was raised
-    	// TODO: Instead of relying on the ALERT pin, just poll the SSBC and SSA bits of Alarm Status
+    	// Check if AFE Alarm Status indicates one of the safety status bits has been set
     	if (logAlertsFlag) {
     		logAlertsFlag = false;
 			// Read the Alarm Status register to figure out what's causing the alert
@@ -480,27 +375,51 @@ void USART1_Init(void) {
 void TIM1_Init(void) {
 	RCC->APB2ENR |= RCC_APB2ENR_TIM1EN; // Enable TIM1 clock
 
-	TIM1->PSC = 2000 - 1; // Given 2MHz clock, 2000 cycles for 1ms
-	TIM1->ARR = 2000 - 1; // Generate interrupt every 2000ms (2s)
+	TIM1->PSC = 4000 - 1; // Given 4MHz clock, 4000 cycles for 1ms
+	TIM1->ARR = 5000 - 1; // Generate interrupt every 5000ms (5s)
 
 	TIM1->DIER |= TIM_DIER_UIE; // Enable update interrupt
 
-	NVIC_SetPriority(TIM1_UP_TIM16_IRQn, 0); // Set TIM1 interrupt priority
+	NVIC_SetPriority(TIM1_UP_TIM16_IRQn, 1); // Set TIM1 interrupt priority
 	NVIC_EnableIRQ(TIM1_UP_TIM16_IRQn); // Enable TIM1 interrupt
 
 	TIM1->CR1 |= TIM_CR1_CEN; // Enable TIM1
 }
 
 /**
- * Defining the ISR for the STM32 timers
+ * Initializes the TIM2 peripheral with interrupts enabled
+ */
+void TIM2_Init(void) {
+	RCC->APB1ENR1 |= RCC_APB1ENR1_TIM2EN; // Enable TIM2 clock
+
+	TIM2->PSC = 4000 - 1; // Given 4MHz clock, 4000 cycles for 1ms
+	TIM2->ARR = 500 - 1; // Generate interrupt every 500ms (half second)
+
+	TIM2->DIER |= TIM_DIER_UIE; // Enable update interrupt
+
+	NVIC_SetPriority(TIM2_IRQn, 0); // Set TIM2 interrupt priority
+	NVIC_EnableIRQ(TIM2_IRQn); // Enable TIM2 interrupt
+
+	TIM2->CR1 |= TIM_CR1_CEN; // Enable TIM2
+}
+
+/**
+ * Defining the ISR for the TIM1 timer
  */
 void TIM1_UP_TIM16_IRQHandler(void) {
 	// Check if UIF flag is set for TIM1
 	if (TIM1->SR & TIM_SR_UIF) {
 		logDataFlag = true; // Raise a flag to log data from the AFE
-		logAlertsFlag = true;
 		TIM1->SR &= ~TIM_SR_UIF; // Clear UIF flag
 	}
+}
+
+void TIM2_IRQHandler(void) {
+	// Check if UIF flag is set for TIM2
+    if (TIM2->SR & TIM_SR_UIF) {
+    	logAlertsFlag = true; // Raise a flag to check for safety alerts from the AFE
+        TIM2->SR &= ~TIM_SR_UIF; // Clear the interrupt flag
+    }
 }
 
 void ADC1_Init(void) {
@@ -721,7 +640,6 @@ void RAMRegisterRead(uint16_t addr, uint8_t *returnData, uint8_t len) {
 
 /**
  * Writes the given value in one of the AFE's RAM registers
- * Might remove this function, it's exactly the same as the SubCmd read data function
  * @param addr The register address
  * @param writeData Pointer to the 8-bit integer array for the data to write to the register
  * @param len Number of bytes to write to the AFE's 32-byte data buffer
@@ -789,6 +707,137 @@ void RAMRegisterWrite(uint16_t addr, uint8_t *writeData, uint8_t len) {
 }
 
 /**
+ * Programs all the relevant AFE registers. To be used whenever BMS powers on or AFE enters SHUTDOWN
+ */
+void RAMRegisterInit(void) {
+	// Initializing buffer for writing data to AFE
+	uint8_t writeData[32] = {0};
+
+	/**
+	 * Configuration settings registers
+	 */
+	// Configure TS pins
+	writeData[0] = 0x07; // TS1 & TS2: Thermistor temperature, for cell temperature protection
+	RAMRegisterWrite(SET_CONF_TS1_CFG, writeData, 1);
+	RAMRegisterWrite(SET_CONF_TS2_CFG, writeData, 1);
+	writeData[0] = 0x0F; // TS3: Thermistor temperature, for FET temperature protection
+	RAMRegisterWrite(SET_CONF_TS3_CFG, writeData, 1);
+	// Configure ALERT pin
+	writeData[0] = 0x2A;
+	RAMRegisterWrite(SET_CONF_ALERT_CFG, writeData, 1);
+	// Configure DA
+	writeData[0] = 0x06;
+	RAMRegisterWrite(SET_CONF_DA_CFG, writeData, 1);
+
+	/**
+	 * Protection settings registers
+	 */
+	writeData[0] = 0xFC;
+	RAMRegisterWrite(SET_PROT_ENPROT_A, writeData, 1); // Enables SCD, OCD1, OCC, COV, CUV protection
+	writeData[0] = 0xF7;
+	RAMRegisterWrite(SET_PROT_ENPROT_B, writeData, 1); // Enables OTF, OTINT, OTD, OTC, and all UT protection
+	writeData[0] = 0x00;
+	RAMRegisterWrite(SET_PROT_ENPROT_C, writeData, 1); // Disables all special/latch protections
+	writeData[0] = 0x98;
+	RAMRegisterWrite(SET_PROT_CHGFET_PROT_A, writeData, 1); // SCD, OCC, and COV disable CHG FET
+	writeData[0] = 0xD4;
+	RAMRegisterWrite(SET_PROT_CHGFET_PROT_B, writeData, 1); // OTF, OTINT, OTC, and UTINT disable CHG FET
+	writeData[0] = 0x00;
+	RAMRegisterWrite(SET_PROT_CHGFET_PROT_C, writeData, 1); // Type C protections are disabled anyways
+	writeData[0] = 0xE4;
+	RAMRegisterWrite(SET_PROT_DSGFET_PROT_A, writeData, 1); // SCD, OCD1, OCD2, and CUV disable DSG FET
+	writeData[0] = 0xE4;
+	RAMRegisterWrite(SET_PROT_DSGFET_PROT_B, writeData, 1); // OTF, OTINT, OTD, and UTINT disable DSG FET
+	writeData[0] = 0x00;
+	RAMRegisterWrite(SET_PROT_DSGFET_PROT_C, writeData, 1); // Type C protections are disabled anyways
+
+	/**
+	 * FET settings registers
+	 */
+	writeData[0] = 0x1E;
+	RAMRegisterWrite(SET_FET_OPTIONS, writeData, 1); // Enable PDSG, disable body diode protection, enable CHG FET in SLEEP
+	format_uint16(writeData, 0x06A4);
+	RAMRegisterWrite(SET_FET_PCHG_STRT_V, writeData, 2); // Min. cell voltage below 1700mV activates PCHG mode
+	format_uint16(writeData, 0x06D6);
+	RAMRegisterWrite(SET_FET_PCHG_STP_V, writeData, 2); // Min. cell voltage above 1750mV deactivates PCHG mode
+	writeData[0] = 0x64;
+	RAMRegisterWrite(SET_FET_PDSG_TO, writeData, 1); // PDSG timeout after 1000ms, enables DSG FET after
+	writeData[0] = 0x64;
+	RAMRegisterWrite(SET_FET_PDSG_STP_DLT, writeData, 1); // Exit PDSG and enable DSG FET when LD equals VBAT+ minus 1000mV
+
+	/**
+	 * Misc. settings
+	 */
+	// Setting MFG Status Init to disable FET Test commands
+	format_uint16(writeData, 0x0050);
+	RAMRegisterWrite(SET_MFG_STATUS_INIT, writeData, 2);
+	// Setting DSG threshold to 100mA and CHG threshold to 50mA
+	format_uint16(writeData, 0x000A);
+	RAMRegisterWrite(SET_CURRTH_DSG_CURRTH, writeData, 2);
+	format_uint16(writeData, 0x0005);
+	RAMRegisterWrite(SET_CURRTH_CHG_CURRTH, writeData, 2);
+
+	/**
+	 * Cell balancing settings registers
+	 */
+	writeData[0] = 0x0F;
+	RAMRegisterWrite(SET_CLBCFG_CONFIG, writeData, 1); // Exits SLEEP to perform balancing, allow balancing while charging and in relax mode
+	writeData[0] = 0x0A;
+	RAMRegisterWrite(SET_CLBCFG_CB_INTRVL, writeData, 1); // Recalculates which cells to balance every 10 seconds
+	writeData[0] = 0x08;
+	RAMRegisterWrite(SET_CLBCFG_CB_MAX_CLS, writeData, 1); // Allows up to 8 cells to be balanced at once
+	// Min. cell voltage must be at least 2500mV for cell balancing to occur while charging or in relax mode
+	format_uint16(writeData, 0x09C4);
+	RAMRegisterWrite(SET_CLBCFG_CHG_MIN_V, writeData, 2);
+	RAMRegisterWrite(SET_CLBCFG_RLX_MIN_V, writeData, 2);
+
+	/**
+	 * Power registers
+	 */
+	format_uint16(writeData, 0x0960);
+	RAMRegisterWrite(PWR_SHDN_BATT_V, writeData, 2); // If pack voltage falls below 24000mV, AFE enters SHUTDOWN mode
+	format_uint16(writeData, 0x000A);
+	RAMRegisterWrite(PWR_SLP_CURR, writeData, 2); // Current above 10mA will cause device to exit SLEEP mode
+	format_uint16(writeData, 0x0960);
+	RAMRegisterWrite(PWR_SLP_CHG_V_THLD, writeData, 2); // If pack voltage falls below 24000mV, SLEEP mode is blocked when charger detected
+
+	/**
+	 * Protections registers (testing only)
+	 */
+	writeData[0] = 0x1A;
+	RAMRegisterWrite(PROT_CUV_THLD, writeData, 1); // CUV triggered at 1.265V, cleared above 1.3662V
+	writeData[0] = 0x23;
+	RAMRegisterWrite(PROT_COV_THLD, writeData, 1); // COV triggered at 1.771V, cleared below 1.6698V
+
+	/**
+	 * Protections registers
+	 */
+//	writeData[0] = 0x23;
+//	RAMRegisterWrite(PROT_CUV_THLD, writeData, 1); // CUV triggered at 1.771V, cleared above 1.8732V
+//	writeData[0] = 0x37;
+//	RAMRegisterWrite(PROT_COV_THLD, writeData, 1); // COV triggered at 2.783V, cleared below 2.6818V
+	writeData[0] = 0x08;
+	RAMRegisterWrite(PROT_OCC_THLD, writeData, 1); // OCC triggered at 16A
+	writeData[0] = 0x15;
+	RAMRegisterWrite(PROT_OCD1_THLD, writeData, 1); // OCD1 triggered at 42A
+	writeData[0] = 0x64;
+	RAMRegisterWrite(PROT_OCD1_DLY, writeData, 1); // OCD1 triggered after 340ms delay
+	writeData[0] = 0x19;
+	RAMRegisterWrite(PROT_OCD2_THLD, writeData, 1); // OCD2 triggered at 50A
+	writeData[0] = 0x1C;
+	RAMRegisterWrite(PROT_OCD2_DLY, writeData, 1); // OCD2 triggered after 100ms delay
+	writeData[0] = 0x03;
+	RAMRegisterWrite(PROT_SCD_THLD, writeData, 1); // SCD triggered at 60A
+	RAMRegisterWrite(PROT_SCD_DLY, writeData, 1); // SCD triggered after 30µs delay
+	writeData[0] = 0xEC;
+	RAMRegisterWrite(PROT_UTD_THLD, writeData, 1); // UTD triggered at -20ºC
+	RAMRegisterWrite(PROT_UTC_THLD, writeData, 1); // UTC triggered at -20ºC
+	writeData[0] = 0xF1;
+	RAMRegisterWrite(PROT_UTD_RCVR, writeData, 1); // UTD cleared above -15ºC
+	RAMRegisterWrite(PROT_UTC_RCVR, writeData, 1); // UTC cleared above -15ºC
+}
+
+/**
  * Handles the proper SPI communication procedure with the AFE for a SPI read command
  * @param txBytes Pointer to array containing the data to transmit
  * @param rxBytes Pointer to array containing the data to be received
@@ -845,6 +894,33 @@ void AFETransmitWriteCmd(uint8_t *txBytes, uint8_t *rxBytes, uint8_t arrSize) {
 }
 
 /**
+ * Helper function to begin transmission of logging information with the current timestamp
+ */
+void TransmitLogAndTimestamp(void) {
+	char buffer[512] = {0}; // Initialize buffer to store message
+	char temp[48]; // Temporary buffer for each line
+
+	// Preparing a heading for the data log
+	snprintf(temp, sizeof(temp), "**************************************\n\r");
+	strncat(buffer, temp, sizeof(buffer) - strlen(buffer) - 1);
+	snprintf(temp, sizeof(temp), "************ BMS DATA LOG ************\n\r");
+	strncat(buffer, temp, sizeof(buffer) - strlen(buffer) - 1);
+	snprintf(temp, sizeof(temp), "**************************************\n\r");
+	strncat(buffer, temp, sizeof(buffer) - strlen(buffer) - 1);
+
+	// Logging the timestamp
+	snprintf(temp, sizeof(temp), "Timestamp: ");
+	strncat(buffer, temp, sizeof(buffer) - strlen(buffer) - 1);
+	GetDateTime(temp, sizeof(temp)); // Getting the current date and time
+	strncat(buffer, temp, sizeof(buffer) - strlen(buffer) - 1);
+	snprintf(temp, sizeof(temp), "\n\n\r");
+	strncat(buffer, temp, sizeof(buffer) - strlen(buffer) - 1);
+
+	// Transmit the final message over UART
+	HAL_UART_Transmit(&huart1, (uint8_t*)buffer, strlen(buffer), HAL_MAX_DELAY);
+}
+
+/**
  * Helper function to transmit all the cell voltage readings over UART
  * @param volts Array containing the cell voltage readings
  * @param len Length of the provided array
@@ -853,10 +929,33 @@ void TransmitCellVoltages(uint16_t *volts, uint8_t len) {
 	char buffer[1024] = {0}; // Initialize buffer to store message
 	char temp[32]; // Temporary buffer for each line
 
-	for (int i = 1; i <= len; i++) {
-		// Format the data into a single line
-		snprintf(temp, sizeof(temp), "CV%d: %d mV\n", i, volts[i-1]);
-		// Append the formatted data to the buffer
+	uint8_t lines = 0;
+	uint8_t entriesPerLine = 5;
+
+	// Preparing a heading for the current reading
+	snprintf(temp, sizeof(temp), "******** VOLTAGE ********\n\r");
+	strncat(buffer, temp, sizeof(buffer) - strlen(buffer) - 1);
+
+	// Calculate how many lines to make based on number of voltage readings (8 readings per line max.)
+	if (len % entriesPerLine == 0) lines = len / entriesPerLine;
+	else lines = len / entriesPerLine + 1;
+
+	for (int i = 0; i < lines; i++) {
+		// First write out the cell numbers
+		for (int j = 1; j <= entriesPerLine; j++) {
+			if ((i*entriesPerLine + j) > len) break; // Break once number of voltage readings has been reached
+			snprintf(temp, sizeof(temp), "CV%d\t\t", (i*entriesPerLine + j));
+			strncat(buffer, temp, sizeof(buffer) - strlen(buffer) - 1);
+		}
+		snprintf(temp, sizeof(temp), "\n\r");
+		strncat(buffer, temp, sizeof(buffer) - strlen(buffer) - 1);
+		// On the following line, write out the cell voltage readings
+		for (int j = 1; j <= entriesPerLine; j++) {
+			if ((i*entriesPerLine + j) > len) break; // Break once number of voltage readings has been reached
+			snprintf(temp, sizeof(temp), "%dmV\t\t", volts[i*entriesPerLine + j - 1]);
+			strncat(buffer, temp, sizeof(buffer) - strlen(buffer) - 1);
+		}
+		snprintf(temp, sizeof(temp), "\n\n\r");
 		strncat(buffer, temp, sizeof(buffer) - strlen(buffer) - 1);
 	}
 
@@ -870,7 +969,7 @@ void TransmitADCReadings(uint32_t *counts, uint8_t len) {
 
 	for (int i = 1; i <= len; i++) {
 		// Format the data into a single line
-		snprintf(temp, sizeof(temp), "CV%d: %lu mV\n", i, counts[i-1]);
+		snprintf(temp, sizeof(temp), "CV%d: %lu mV\n\r", i, counts[i-1]);
 		// Append the formatted data to the buffer
 		strncat(buffer, temp, sizeof(buffer) - strlen(buffer) - 1);
 	}
@@ -879,6 +978,34 @@ void TransmitADCReadings(uint32_t *counts, uint8_t len) {
 	HAL_UART_Transmit(&huart1, (uint8_t*)buffer, strlen(buffer), HAL_MAX_DELAY);
 }
 
+/**
+ * Helper function to transmit the battery current reading over UART
+ * @param current CC2 current reading - negative for discharging, positive for charging
+ */
+void TransmitCurrentReading(int16_t current) {
+	char buffer[128] = {0}; // Initialize buffer to store message
+	char temp[32] = {0}; // Temporary buffer for each line
+
+	// Preparing a heading for the current reading
+	snprintf(temp, sizeof(temp), "******** CURRENT ********\n\r");
+	strncat(buffer, temp, sizeof(buffer) - strlen(buffer) - 1);
+
+	// Determine if charging or discharging based on current value
+	if (current > 0) {
+		snprintf(temp, sizeof(temp), "CC2: Charging at %d mA\n\n\r", current*10);
+	}
+	else {
+		snprintf(temp, sizeof(temp), "CC2: Discharging at %d mA\n\n\r", current*(-10));
+	}
+	strncat(buffer, temp, sizeof(buffer) - strlen(buffer) - 1);
+	HAL_UART_Transmit(&huart1, (uint8_t*)buffer, strlen(buffer), HAL_MAX_DELAY);
+}
+
+/**
+ * Helper function to transmit all the temperature readings over UART
+ * @param temps Array containing the temperature readings
+ * @param len Length of the provided array
+ */
 void TransmitTemperatures(int16_t *temps, uint8_t len) {
 	char buffer[1024] = {0}; // Initialize buffer to store message
 	char temp[32]; // Temporary buffer for each line
@@ -888,6 +1015,19 @@ void TransmitTemperatures(int16_t *temps, uint8_t len) {
 	int16_t deg_int = 0;
 	int16_t deg_dec = 0;
 
+	// Preparing a heading for the temperature readings
+	snprintf(temp, sizeof(temp), "******** TEMPERATURE ********\n\r");
+	strncat(buffer, temp, sizeof(buffer) - strlen(buffer) - 1);
+
+	// Tabulating the temperature sensors
+	for (int i = 1; i <= len; i++) {
+		snprintf(temp, sizeof(temp), "TS%d\t\t", i);
+		strncat(buffer, temp, sizeof(buffer) - strlen(buffer) - 1);
+	}
+
+	snprintf(temp, sizeof(temp), "\n\r");
+	strncat(buffer, temp, sizeof(buffer) - strlen(buffer) - 1);
+
 	for (int i = 1; i <= len; i++) {
 		// Convert from Kelvin into Celsius
 		degC = temps[i-1] - 2731;
@@ -896,11 +1036,12 @@ void TransmitTemperatures(int16_t *temps, uint8_t len) {
 		// If temperature is negative, keep the decimal part positive
 		if (degC < 0 && deg_dec != 0) deg_dec = abs(deg_dec);
 
-		// Format the data into a single line
-		snprintf(temp, sizeof(temp), "TS%d: %d.%d C\n", i, deg_int, deg_dec);
-		// Append the formatted data to the buffer
+		snprintf(temp, sizeof(temp), "%d.%dºC\t\t", deg_int, deg_dec);
 		strncat(buffer, temp, sizeof(buffer) - strlen(buffer) - 1);
 	}
+
+	snprintf(temp, sizeof(temp), "\n\n\r");
+	strncat(buffer, temp, sizeof(buffer) - strlen(buffer) - 1);
 
 	// Transmit the final message over UART
 	HAL_UART_Transmit(&huart1, (uint8_t*)buffer, strlen(buffer), HAL_MAX_DELAY);
@@ -918,27 +1059,27 @@ void TransmitSafetyStatusA(void) {
 
 	// Short Circuit Discharge
 	if (statusA[0] & (1 << 7)) {
-		uint8_t msg[] = "SCD fault triggered! Discharging will be disabled for a moment...\n";
+		uint8_t msg[] = "SCD fault triggered! Discharging will be disabled for a moment...\n\r";
 		HAL_UART_Transmit(&huart1, msg, sizeof(msg) - 1, HAL_MAX_DELAY);
 	}
 	// Overcurrent in Discharge 1st Tier
 	if (statusA[0] & (1 << 5)) {
-		uint8_t msg[] = "OCD1 fault triggered! Discharging will be disabled for a moment...\n";
+		uint8_t msg[] = "OCD1 fault triggered! Discharging will be disabled for a moment...\n\r";
 		HAL_UART_Transmit(&huart1, msg, sizeof(msg) - 1, HAL_MAX_DELAY);
 	}
 	// Overcurrent in Charge
 	if (statusA[0] & (1 << 4)) {
-		uint8_t msg[] = "OCC fault triggered! Charging will be disabled for a moment...\n";
+		uint8_t msg[] = "OCC fault triggered! Charging will be disabled for a moment...\n\r";
 		HAL_UART_Transmit(&huart1, msg, sizeof(msg) - 1, HAL_MAX_DELAY);
 	}
 	// Cell Overvoltage
 	if (statusA[0] & (1 << 3)) {
-		uint8_t msg[] = "COV fault triggered! Charging will be disabled until voltage drops sufficiently.\n";
+		uint8_t msg[] = "COV fault triggered! Charging will be disabled until voltage drops sufficiently.\n\r";
 		HAL_UART_Transmit(&huart1, msg, sizeof(msg) - 1, HAL_MAX_DELAY);
 	}
 	// Cell Undervoltage
 	if (statusA[0] & (1 << 2)) {
-		uint8_t msg[] = "CUV fault triggered! Discharging will be disabled until voltage rises sufficiently.\n";
+		uint8_t msg[] = "CUV fault triggered! Discharging will be disabled until voltage rises sufficiently.\n\r";
 		HAL_UART_Transmit(&huart1, msg, sizeof(msg) - 1, HAL_MAX_DELAY);
 	}
 }
@@ -955,41 +1096,45 @@ void TransmitSafetyStatusB(void) {
 
 	// FET Overtemperature
 	if (statusB[0] & (1 << 7)) {
-		uint8_t msg[] = "OTF fault triggered! Discharging will be disabled for a moment...\n";
+		uint8_t msg[] = "OTF fault triggered! Discharging will be disabled for a moment...\n\r";
 		HAL_UART_Transmit(&huart1, msg, sizeof(msg) - 1, HAL_MAX_DELAY);
 	}
 	// Internal Overtemperature
 	if (statusB[0] & (1 << 6)) {
-		uint8_t msg[] = "OTINT fault triggered! All AFE operations will be disabled for a moment...\n";
+		uint8_t msg[] = "OTINT fault triggered! All AFE operations will be disabled for a moment...\n\r";
 		HAL_UART_Transmit(&huart1, msg, sizeof(msg) - 1, HAL_MAX_DELAY);
 	}
 	// Overtemperature in Discharge
 	if (statusB[0] & (1 << 5)) {
-		uint8_t msg[] = "OTD fault triggered! Discharging will be disabled for a moment...\n";
+		uint8_t msg[] = "OTD fault triggered! Discharging will be disabled for a moment...\n\r";
 		HAL_UART_Transmit(&huart1, msg, sizeof(msg) - 1, HAL_MAX_DELAY);
 	}
 	// Overtemperature in Charge
 	if (statusB[0] & (1 << 4)) {
-		uint8_t msg[] = "OTC fault triggered! Charging will be disabled for a moment...\n";
+		uint8_t msg[] = "OTC fault triggered! Charging will be disabled for a moment...\n\r";
 		HAL_UART_Transmit(&huart1, msg, sizeof(msg) - 1, HAL_MAX_DELAY);
 	}
 	// Internal Undertemperature
 	if (statusB[0] & (1 << 2)) {
-		uint8_t msg[] = "UTINT fault triggered! All AFE operations will be disabled for a moment...\n";
+		uint8_t msg[] = "UTINT fault triggered! All AFE operations will be disabled for a moment...\n\r";
 		HAL_UART_Transmit(&huart1, msg, sizeof(msg) - 1, HAL_MAX_DELAY);
 	}
 	// Undertemperature in Discharge
 	if (statusB[0] & (1 << 1)) {
-		uint8_t msg[] = "UTD fault triggered! No operational changes, but prolonged operation is not advised.\n";
+		uint8_t msg[] = "UTD fault triggered! No operational changes, but prolonged operation is not advised.\n\r";
 		HAL_UART_Transmit(&huart1, msg, sizeof(msg) - 1, HAL_MAX_DELAY);
 	}
 	// Undertemperature in Charge
 	if (statusB[0] & 0x01) {
-		uint8_t msg[] = "UTC fault triggered! No operational changes, but prolonged operation is not advised.\n";
+		uint8_t msg[] = "UTC fault triggered! No operational changes, but prolonged operation is not advised.\n\r";
 		HAL_UART_Transmit(&huart1, msg, sizeof(msg) - 1, HAL_MAX_DELAY);
 	}
 }
 
+/**
+ * Measures the thermistor connected to the STM32's ADC and converts the reading to a temperature
+ * @return Temperature of the thermistor in degrees Celsius
+ */
 int16_t T4_Acquire(void) {
     uint32_t adcValue = 0;
     float T4_volt = 0.0;
@@ -1022,6 +1167,25 @@ int16_t T4_Acquire(void) {
     HAL_ADC_Stop(&hadc1);
 
     return T4;
+}
+
+/**
+ * Helper function to get the current date and time and format it into a string
+ * @param datetimeStr String to store the date & time in
+ * @param size Size of the string (char array)
+ */
+void GetDateTime(char *datetimeStr, size_t size) {
+	time_t now;
+	struct tm *timeinfo;
+
+	// Get the current time
+	time(&now);
+
+	// Convert the time to local time structure
+	timeinfo = localtime(&now);
+
+	// Format the time as a string
+	strftime(datetimeStr, size, "%Y-%m-%d %H:%M:%S", timeinfo);
 }
 
 /**

@@ -8,4 +8,4 @@ org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:BMS-Testing\ Debug/activeLaunch
 org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:Nucleo-HAL-Testing\ Debug/activeLaunchMode=run
 org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:Nucleo-Test-Ground\ Debug/activeLaunchMode=run
 org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:Nucleo-Test-Ground\ Debug/activeLaunchTarget=null\:---
-org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:Nucleo-Test-Ground-2\ Debug/activeLaunchMode=debug
+org.eclipse.cdt.dsf.gdb.gdbRemotedescriptorType\:Nucleo-Test-Ground-2\ Debug/activeLaunchMode=run
