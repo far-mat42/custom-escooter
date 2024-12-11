@@ -42,6 +42,7 @@ void TransmitSafetyStatusA(void);
 void TransmitSafetyStatusB(void);
 
 // Other miscellaneous helper functions
+void EnterShutdown(void);
 int16_t T4_Acquire(void);
 time_t RTCToUnixTimestamp(RTC_DateTypeDef *date, RTC_TimeTypeDef *time);
 void GetDateTime(char *datetimeStr, size_t size);
@@ -67,6 +68,8 @@ RTC_HandleTypeDef hrtc;
 // Global variables - used for ISRs to raise flags
 bool logDataFlag = 0;
 bool logAlertsFlag = 0;
+bool shutdownFlag = 0;
+bool wakeUpFlag = 0;
 
 int main(void) {
     // HAL initialization
@@ -158,9 +161,29 @@ int main(void) {
 	DirectCmdWrite(0xE2, writeData, 2);
 
     while (1) {
-    	// Read the control status register
-//    	DirectCmdRead(0x02, readData, 2);
-//    	ctrlStatus = (readData[0]) + (readData[1] << 8);
+    	// Check if flag to shutdown was raised
+    	if (shutdownFlag) {
+    		shutdownFlag = false; // Clear the flag
+    		// Blinking LED to indicate it's entering shutdown
+    		for (int i = 0; i < 6; i++) {
+    			HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
+				HAL_Delay(100);
+    		}
+
+    		EnterShutdown();
+    	}
+
+    	// Check if flag to wake up the AFE was raised
+    	if (wakeUpFlag) {
+    		wakeUpFlag = false; // Clear the flag
+    		// Blinking LED to indicate it's waking up
+			for (int i = 0; i < 6; i++) {
+				HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_5);
+				HAL_Delay(100);
+			}
+			// Waking up the AFE
+    		SubCmdNoData(0x000E);
+    	}
 
     	// Check if flag to log data was raised
     	if (logDataFlag) {
@@ -276,6 +299,7 @@ void GPIO_Init(void) {
     __HAL_RCC_GPIOA_CLK_ENABLE();
     __HAL_RCC_GPIOB_CLK_ENABLE();
     __HAL_RCC_SYSCFG_CLK_ENABLE();
+	RCC->APB1ENR1 |= RCC_APB1ENR1_PWREN; // Enable power interface clock
 
     GPIO_InitTypeDef GPIO_InitStruct = {0};
 
@@ -310,19 +334,54 @@ void GPIO_Init(void) {
 	GPIO_InitStruct.Alternate = GPIO_AF7_USART1; // Alternate function for USART1
 	HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
-	// Configure PA4 (AFE ALERT pin) as an external interrupt
-	GPIO_InitStruct.Pin = GPIO_PIN_4;
-	GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-	GPIO_InitStruct.Pull = GPIO_NOPULL;
-	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
-
-	HAL_NVIC_SetPriority(EXTI4_IRQn, 0, 0);
-	HAL_NVIC_EnableIRQ(EXTI4_IRQn);
+	// [DISCONTINUED] Configure PA4 (AFE ALERT pin) as an external interrupt
+//	GPIO_InitStruct.Pin = GPIO_PIN_4;
+//	GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+//	GPIO_InitStruct.Pull = GPIO_NOPULL;
+//	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+//
+//	HAL_NVIC_SetPriority(EXTI4_IRQn, 0, 0);
+//	HAL_NVIC_EnableIRQ(EXTI4_IRQn);
 
 	// Configure PA1 (T4 pin) as an analog input
 	GPIO_InitStruct.Pin = GPIO_PIN_1;
 	GPIO_InitStruct.Mode = GPIO_MODE_ANALOG;
+	GPIO_InitStruct.Pull = GPIO_NOPULL;
 	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+	// Configure PA2 as an input with an internal pull-up (SYS WKUP)
+	GPIO_InitStruct.Pin = GPIO_PIN_2;
+	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
+	GPIO_InitStruct.Pull = GPIO_PULLUP;
+	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
+
+	// Enable EXTI for PA2
+	SYSCFG->EXTICR[0] |= SYSCFG_EXTICR1_EXTI2_PA; // Map EXTI2 to PA2
+	EXTI->IMR1 |= EXTI_IMR1_IM2; // Unmask interrupt
+	EXTI->RTSR1 |= EXTI_RTSR1_RT2; // Enable rising edge trigger
+	EXTI->FTSR1 |= EXTI_FTSR1_FT2; // Enable falling edge trigger
+
+	// Enable EXTI2 interrupt in NVIC
+	NVIC_SetPriority(EXTI2_IRQn, 0);
+	NVIC_EnableIRQ(EXTI2_IRQn);
+}
+
+// EXTI2 interrupt handler
+void EXTI2_IRQHandler(void)
+{
+	// Check if EXTI2 triggered
+    if (EXTI->PR1 & EXTI_PR1_PIF2) {
+        EXTI->PR1 |= EXTI_PR1_PIF2; // Clear interrupt flag
+
+        if (GPIOA->IDR & GPIO_IDR_ID2) {
+            // PA2 rising edge detected, wake-up handled automatically by EXTI
+        	wakeUpFlag = true; // Raise flag to wake up the AFE
+        }
+        else {
+            // PA2 falling edge detected, raise flag to enter shutdown mode
+        	shutdownFlag = true;
+        }
+    }
 }
 
 // Initializes the SPI1 peripheral in master mode
@@ -767,6 +826,9 @@ void RAMRegisterInit(void) {
 	/**
 	 * Configuration settings registers
 	 */
+	// Power configuration
+	format_uint16(writeData, 0x2D81);
+	RAMRegisterWrite(SET_CONF_PWR, writeData, 2); // Keep AFE's LDOs in the same state when entering DEEPSLEEP
 	// Configure TS pins
 	writeData[0] = 0x07; // TS1 & TS2: Thermistor temperature, for cell temperature protection
 	RAMRegisterWrite(SET_CONF_TS1_CFG, writeData, 1);
@@ -855,18 +917,18 @@ void RAMRegisterInit(void) {
 	/**
 	 * Protections registers (testing only)
 	 */
-	writeData[0] = 0x1A;
-	RAMRegisterWrite(PROT_CUV_THLD, writeData, 1); // CUV triggered at 1.265V, cleared above 1.3662V
-	writeData[0] = 0x23;
-	RAMRegisterWrite(PROT_COV_THLD, writeData, 1); // COV triggered at 1.771V, cleared below 1.6698V
+//	writeData[0] = 0x1A;
+//	RAMRegisterWrite(PROT_CUV_THLD, writeData, 1); // CUV triggered at 1.265V, cleared above 1.3662V
+//	writeData[0] = 0x23;
+//	RAMRegisterWrite(PROT_COV_THLD, writeData, 1); // COV triggered at 1.771V, cleared below 1.6698V
 
 	/**
 	 * Protections registers
 	 */
-//	writeData[0] = 0x23;
-//	RAMRegisterWrite(PROT_CUV_THLD, writeData, 1); // CUV triggered at 1.771V, cleared above 1.8732V
-//	writeData[0] = 0x37;
-//	RAMRegisterWrite(PROT_COV_THLD, writeData, 1); // COV triggered at 2.783V, cleared below 2.6818V
+	writeData[0] = 0x23;
+	RAMRegisterWrite(PROT_CUV_THLD, writeData, 1); // CUV triggered at 1.771V, cleared above 1.8732V
+	writeData[0] = 0x37;
+	RAMRegisterWrite(PROT_COV_THLD, writeData, 1); // COV triggered at 2.783V, cleared below 2.6818V
 	writeData[0] = 0x08;
 	RAMRegisterWrite(PROT_OCC_THLD, writeData, 1); // OCC triggered at 16A
 	writeData[0] = 0x15;
@@ -1199,6 +1261,39 @@ void TransmitSafetyStatusB(void) {
 		uint8_t msg[] = "UTC fault triggered! No operational changes, but prolonged operation is not advised.\n\r";
 		HAL_UART_Transmit(&huart1, msg, sizeof(msg) - 1, HAL_MAX_DELAY);
 	}
+}
+
+/**
+ * Commands the AFE to enter deep-sleep mode, then enters shutdown mode
+ */
+void EnterShutdown(void) {
+	// Sending out a message indicating BMS is shutting down
+	uint8_t msg[] = "Shutting down the BMS...\n\n\r";
+	HAL_UART_Transmit(&huart1, msg, sizeof(msg) - 1, HAL_MAX_DELAY);
+
+	// Send AFE the DEEPSLEEP command twice in a row in order to put it in DEEPSLEEP
+	SubCmdNoData(0x000F);
+	SubCmdNoData(0x000F);
+
+	// Process for putting STM32 into shutdown mode
+	// Clear Wake-Up Flags
+	PWR->SCR |= PWR_SCR_CWUF;
+
+	// Enable pull-down for PB5 (status LED) when in shutdown
+	PWR->CR1 |= PWR_CR1_DBP;
+	PWR->PDCRB |= PWR_PDCRB_PB5;
+	PWR->CR1 &= ~PWR_CR1_DBP;
+
+	// Enable Wake-Up Pin for PA2
+	PWR->CR3 |= PWR_CR3_EWUP2;
+
+	// Set SHUTDOWN mode
+	PWR->CR1 |= PWR_CR1_LPMS_SHUTDOWN;
+
+	// Enter SHUTDOWN mode
+	SCB->SCR |= SCB_SCR_SLEEPDEEP_Msk; // Set DEEPSLEEP bit
+	__DSB(); // Data Synchronization Barrier
+	__WFI(); // Wait For Interrupt (enters SHUTDOWN mode)
 }
 
 /**
