@@ -34,7 +34,7 @@ void AFETransmitWriteCmd(uint8_t *txBytes, uint8_t *rxBytes, uint8_t arrSize);
 
 // Helper functions to transmit the data from the AFE to the UART lines
 void TransmitLogAndTimestamp(void);
-void TransmitCellVoltages(uint16_t *volts, uint8_t len);
+void TransmitCellPackVoltages(uint16_t *volts, uint8_t len);
 void TransmitADCReadings(uint32_t *counts, uint8_t len);
 void TransmitCurrentReading(int16_t current);
 void TransmitTemperatures(int16_t *temps, uint8_t len);
@@ -196,7 +196,7 @@ int main(void) {
 
 			// Transmit logging information
 			TransmitLogAndTimestamp();
-			TransmitCellVoltages(cellVolts, 17);
+			TransmitCellPackVoltages(cellVolts, 17);
 			TransmitCurrentReading(currentRead);
 			TransmitTemperatures(temperatures, 4);
 
@@ -512,6 +512,7 @@ void RTC_Init(void) {
  * Calculates a CRC value according to the polynomial x^8 + x^2 + x + 1
  * @param data Pointer to an array storing the data bytes that will be transmitted
  * @param len Number of bytes that will be transmitted
+ * @return The calculated CRC byte
  */
 uint8_t crc8(uint8_t *data, size_t len) {
     uint8_t crc = 0x00;
@@ -896,6 +897,8 @@ void RAMRegisterInit(void) {
 void AFETransmitReadCmd(uint8_t *txBytes, uint8_t *rxBytes, uint8_t arrSize) {
 	// Continuously transmit the SPI transaction until the AFE has received it
 	bool commReceived = false;
+	uint8_t readBytes[2] = {0};
+	uint8_t crcReceived = 0;
 	while (!commReceived)
 	{
 		// Pull NSS low
@@ -904,8 +907,11 @@ void AFETransmitReadCmd(uint8_t *txBytes, uint8_t *rxBytes, uint8_t arrSize) {
 		HAL_SPI_TransmitReceive(&hspi1, txBytes, rxBytes, arrSize, HAL_MAX_DELAY);
 
 		// For read command, confirm the AFE received the command by checking the address and CRC bytes
-		if (txBytes[0] == rxBytes[0]) commReceived = true;
-		// TODO: implement CRC checking for received data
+//		if (txBytes[0] == rxBytes[0]) commReceived = true;
+		readBytes[0] = rxBytes[0];
+		readBytes[1] = rxBytes[1];
+		crcReceived = crc8(readBytes, 2);
+		if (txBytes[0] == rxBytes[0] && crcReceived == rxBytes[2]) commReceived = true;
 
 		// Pull NSS high and wait for transaction to be processed
 		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_SET);
@@ -972,10 +978,10 @@ void TransmitLogAndTimestamp(void) {
 
 /**
  * Helper function to transmit all the cell voltage readings over UART
- * @param volts Array containing the cell voltage readings
+ * @param volts Array containing the cell and pack voltage readings
  * @param len Length of the provided array
  */
-void TransmitCellVoltages(uint16_t *volts, uint8_t len) {
+void TransmitCellPackVoltages(uint16_t *volts, uint8_t len) {
 	char buffer[1024] = {0}; // Initialize buffer to store message
 	char temp[32]; // Temporary buffer for each line
 
@@ -994,16 +1000,30 @@ void TransmitCellVoltages(uint16_t *volts, uint8_t len) {
 		// First write out the cell numbers
 		for (int j = 1; j <= entriesPerLine; j++) {
 			if ((i*entriesPerLine + j) > len) break; // Break once number of voltage readings has been reached
-			snprintf(temp, sizeof(temp), "CV%d\t\t", (i*entriesPerLine + j));
-			strncat(buffer, temp, sizeof(buffer) - strlen(buffer) - 1);
+			// Different header for the last entry (pack voltage)
+			if ((i*entriesPerLine + j) == len) {
+				snprintf(temp, sizeof(temp), "VBAT\t\t");
+				strncat(buffer, temp, sizeof(buffer) - strlen(buffer) - 1);
+			}
+			else {
+				snprintf(temp, sizeof(temp), "CV%d\t\t", (i*entriesPerLine + j));
+				strncat(buffer, temp, sizeof(buffer) - strlen(buffer) - 1);
+			}
 		}
 		snprintf(temp, sizeof(temp), "\n\r");
 		strncat(buffer, temp, sizeof(buffer) - strlen(buffer) - 1);
 		// On the following line, write out the cell voltage readings
 		for (int j = 1; j <= entriesPerLine; j++) {
 			if ((i*entriesPerLine + j) > len) break; // Break once number of voltage readings has been reached
-			snprintf(temp, sizeof(temp), "%dmV\t\t", volts[i*entriesPerLine + j - 1]);
-			strncat(buffer, temp, sizeof(buffer) - strlen(buffer) - 1);
+			// Alternate handling for data for pack voltage to write it in volts instead of mV
+			if ((i*entriesPerLine + j) == len) {
+				snprintf(temp, sizeof(temp), "%d.%dV\t\t", volts[i*entriesPerLine + j - 1] / 100, volts[i*entriesPerLine + j - 1] % 100);
+				strncat(buffer, temp, sizeof(buffer) - strlen(buffer) - 1);
+			}
+			else {
+				snprintf(temp, sizeof(temp), "%dmV\t\t", volts[i*entriesPerLine + j - 1]);
+				strncat(buffer, temp, sizeof(buffer) - strlen(buffer) - 1);
+			}
 		}
 		snprintf(temp, sizeof(temp), "\n\n\r");
 		strncat(buffer, temp, sizeof(buffer) - strlen(buffer) - 1);
