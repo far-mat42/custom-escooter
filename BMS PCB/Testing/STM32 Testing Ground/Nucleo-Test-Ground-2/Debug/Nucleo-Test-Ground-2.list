@@ -39,13 +39,13 @@ Idx Name          Size      VMA       LMA       File off  Algn
                   CONTENTS, READONLY, DEBUGGING, OCTETS
  17 .debug_macro  0001e9d2  00000000  00000000  00035fbd  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 18 .debug_line   000122be  00000000  00000000  0005498f  2**0
+ 18 .debug_line   000122c2  00000000  00000000  0005498f  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 19 .debug_str    000c6a2f  00000000  00000000  00066c4d  2**0
+ 19 .debug_str    000c6a2f  00000000  00000000  00066c51  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 20 .debug_frame  000056ac  00000000  00000000  0012d67c  2**2
+ 20 .debug_frame  000056ac  00000000  00000000  0012d680  2**2
                   CONTENTS, READONLY, DEBUGGING, OCTETS
- 21 .debug_line_str 000000af  00000000  00000000  00132d28  2**0
+ 21 .debug_line_str 000000af  00000000  00000000  00132d2c  2**0
                   CONTENTS, READONLY, DEBUGGING, OCTETS
 
 Disassembly of section .text:
@@ -2368,6 +2368,8 @@ void GPIO_Init(void) {
  8001744:	f003 fcce 	bl	80050e4 <HAL_GPIO_Init>
 
 	// Configure PA2 as an input with an internal pull-up (SYS WKUP)
+	// TODO: Remove internal pull-up (only used for testing purposes, when switch is actually connected
+	// 		 to the BMS it will assert the pin's state)
 	GPIO_InitStruct.Pin = GPIO_PIN_2;
  8001748:	2304      	movs	r3, #4
  800174a:	60fb      	str	r3, [r7, #12]
@@ -2554,18 +2556,17 @@ void SPI1_Init(void) {
  8001872:	f005 f993 	bl	8006b9c <HAL_SPI_Init>
  8001876:	4603      	mov	r3, r0
  8001878:	2b00      	cmp	r3, #0
- 800187a:	d000      	beq.n	800187e <SPI1_Init+0x7a>
+ 800187a:	d001      	beq.n	8001880 <SPI1_Init+0x7c>
     {
         // Initialization error
-        while (1);
- 800187c:	e7fe      	b.n	800187c <SPI1_Init+0x78>
+        Error_Handler();
+ 800187c:	f001 fd2e 	bl	80032dc <Error_Handler>
     }
 }
- 800187e:	bf00      	nop
- 8001880:	3708      	adds	r7, #8
- 8001882:	46bd      	mov	sp, r7
- 8001884:	bd80      	pop	{r7, pc}
- 8001886:	bf00      	nop
+ 8001880:	bf00      	nop
+ 8001882:	3708      	adds	r7, #8
+ 8001884:	46bd      	mov	sp, r7
+ 8001886:	bd80      	pop	{r7, pc}
  8001888:	40021000 	.word	0x40021000
  800188c:	200000ec 	.word	0x200000ec
  8001890:	40013000 	.word	0x40013000
@@ -2631,18 +2632,17 @@ void USART1_Init(void) {
  80018e6:	f005 fd83 	bl	80073f0 <HAL_UART_Init>
  80018ea:	4603      	mov	r3, r0
  80018ec:	2b00      	cmp	r3, #0
- 80018ee:	d000      	beq.n	80018f2 <USART1_Init+0x5e>
+ 80018ee:	d001      	beq.n	80018f4 <USART1_Init+0x60>
 	{
 		// Initialization error
-		while (1);
- 80018f0:	e7fe      	b.n	80018f0 <USART1_Init+0x5c>
+		Error_Handler();
+ 80018f0:	f001 fcf4 	bl	80032dc <Error_Handler>
 	}
 }
- 80018f2:	bf00      	nop
- 80018f4:	3708      	adds	r7, #8
- 80018f6:	46bd      	mov	sp, r7
- 80018f8:	bd80      	pop	{r7, pc}
- 80018fa:	bf00      	nop
+ 80018f4:	bf00      	nop
+ 80018f6:	3708      	adds	r7, #8
+ 80018f8:	46bd      	mov	sp, r7
+ 80018fa:	bd80      	pop	{r7, pc}
  80018fc:	40021000 	.word	0x40021000
  8001900:	20000150 	.word	0x20000150
  8001904:	40013800 	.word	0x40013800
@@ -3019,7 +3019,7 @@ void RTC_Init(void) {
 	sTime.Seconds = 0x00;
  8001b54:	2300      	movs	r3, #0
  8001b56:	71bb      	strb	r3, [r7, #6]
-	if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BCD) != HAL_OK)
+	if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BCD) != HAL_OK) {
  8001b58:	1d3b      	adds	r3, r7, #4
  8001b5a:	2201      	movs	r2, #1
  8001b5c:	4619      	mov	r1, r3
@@ -3028,7 +3028,6 @@ void RTC_Init(void) {
  8001b64:	4603      	mov	r3, r0
  8001b66:	2b00      	cmp	r3, #0
  8001b68:	d001      	beq.n	8001b6e <RTC_Init+0x82>
-	{
 		Error_Handler();
  8001b6a:	f001 fbb7 	bl	80032dc <Error_Handler>
 	}
@@ -3046,7 +3045,7 @@ void RTC_Init(void) {
 	sDate.Year = 0x24; // Year 2024
  8001b7a:	2324      	movs	r3, #36	; 0x24
  8001b7c:	70fb      	strb	r3, [r7, #3]
-	if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BCD) != HAL_OK)
+	if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BCD) != HAL_OK) {
  8001b7e:	463b      	mov	r3, r7
  8001b80:	2201      	movs	r2, #1
  8001b82:	4619      	mov	r1, r3
@@ -3055,7 +3054,6 @@ void RTC_Init(void) {
  8001b8a:	4603      	mov	r3, r0
  8001b8c:	2b00      	cmp	r3, #0
  8001b8e:	d001      	beq.n	8001b94 <RTC_Init+0xa8>
-	{
 		Error_Handler();
  8001b90:	f001 fba4 	bl	80032dc <Error_Handler>
 	}
@@ -3082,9 +3080,8 @@ uint8_t crc8(uint8_t *data, size_t len) {
     uint8_t crc = 0x00;
  8001bae:	2300      	movs	r3, #0
  8001bb0:	73fb      	strb	r3, [r7, #15]
-    while (len--)
+    while (len--) {
  8001bb2:	e01e      	b.n	8001bf2 <crc8+0x4e>
-    {
         crc ^= *data++;
  8001bb4:	687b      	ldr	r3, [r7, #4]
  8001bb6:	1c5a      	adds	r2, r3, #1
@@ -3093,16 +3090,14 @@ uint8_t crc8(uint8_t *data, size_t len) {
  8001bbc:	7bfb      	ldrb	r3, [r7, #15]
  8001bbe:	4053      	eors	r3, r2
  8001bc0:	73fb      	strb	r3, [r7, #15]
-        for (uint8_t i = 0; i < 8; ++i)
+        for (uint8_t i = 0; i < 8; ++i) {
  8001bc2:	2300      	movs	r3, #0
  8001bc4:	73bb      	strb	r3, [r7, #14]
  8001bc6:	e011      	b.n	8001bec <crc8+0x48>
-        {
-            if (crc & 0x80)
+            if (crc & 0x80) crc = (crc << 1) ^ 0x07; // Polynomial 0x07
  8001bc8:	f997 300f 	ldrsb.w	r3, [r7, #15]
  8001bcc:	2b00      	cmp	r3, #0
  8001bce:	da07      	bge.n	8001be0 <crc8+0x3c>
-                crc = (crc << 1) ^ 0x07; // Polynomial 0x07
  8001bd0:	7bfb      	ldrb	r3, [r7, #15]
  8001bd2:	005b      	lsls	r3, r3, #1
  8001bd4:	b25b      	sxtb	r3, r3
@@ -3110,19 +3105,18 @@ uint8_t crc8(uint8_t *data, size_t len) {
  8001bda:	b25b      	sxtb	r3, r3
  8001bdc:	73fb      	strb	r3, [r7, #15]
  8001bde:	e002      	b.n	8001be6 <crc8+0x42>
-            else
-                crc <<= 1;
+            else crc <<= 1;
  8001be0:	7bfb      	ldrb	r3, [r7, #15]
  8001be2:	005b      	lsls	r3, r3, #1
  8001be4:	73fb      	strb	r3, [r7, #15]
-        for (uint8_t i = 0; i < 8; ++i)
+        for (uint8_t i = 0; i < 8; ++i) {
  8001be6:	7bbb      	ldrb	r3, [r7, #14]
  8001be8:	3301      	adds	r3, #1
  8001bea:	73bb      	strb	r3, [r7, #14]
  8001bec:	7bbb      	ldrb	r3, [r7, #14]
  8001bee:	2b07      	cmp	r3, #7
  8001bf0:	d9ea      	bls.n	8001bc8 <crc8+0x24>
-    while (len--)
+    while (len--) {
  8001bf2:	683b      	ldr	r3, [r7, #0]
  8001bf4:	1e5a      	subs	r2, r3, #1
  8001bf6:	603a      	str	r2, [r7, #0]
@@ -3178,11 +3172,10 @@ void DirectCmdRead(uint8_t cmd, uint8_t *returnData, uint8_t len) {
 //	bool commReceived = false;
 
 	// Increment the command address based on the data length given
-	for (int i = 0; i < len; i++)
+	for (int i = 0; i < len; i++) {
  8001c3c:	2300      	movs	r3, #0
  8001c3e:	617b      	str	r3, [r7, #20]
  8001c40:	e023      	b.n	8001c8a <DirectCmdRead+0x7e>
-	{
 		fullCmd[0] = cmd + i; // Increment the address
  8001c42:	697b      	ldr	r3, [r7, #20]
  8001c44:	b2da      	uxtb	r2, r3
@@ -3220,7 +3213,7 @@ void DirectCmdRead(uint8_t cmd, uint8_t *returnData, uint8_t len) {
  8001c7e:	4413      	add	r3, r2
  8001c80:	7c7a      	ldrb	r2, [r7, #17]
  8001c82:	701a      	strb	r2, [r3, #0]
-	for (int i = 0; i < len; i++)
+	for (int i = 0; i < len; i++) {
  8001c84:	697b      	ldr	r3, [r7, #20]
  8001c86:	3301      	adds	r3, #1
  8001c88:	617b      	str	r3, [r7, #20]
@@ -3648,11 +3641,10 @@ void RAMRegisterWrite(uint16_t addr, uint8_t *writeData, uint8_t len) {
 	uint8_t writeBytes[2] = {0};
  8001f4a:	2300      	movs	r3, #0
  8001f4c:	81bb      	strh	r3, [r7, #12]
-	for (int i = 0; i < len; i++)
+	for (int i = 0; i < len; i++) {
  8001f4e:	2300      	movs	r3, #0
  8001f50:	62fb      	str	r3, [r7, #44]	; 0x2c
  8001f52:	e020      	b.n	8001f96 <RAMRegisterWrite+0xde>
-	{
 		// Increment data buffer address and include the next address byte
 		writeBytes[0] = WRITE_DATA_BUFF_LSB + i;
  8001f54:	6afb      	ldr	r3, [r7, #44]	; 0x2c
@@ -3687,7 +3679,7 @@ void RAMRegisterWrite(uint16_t addr, uint8_t *writeData, uint8_t len) {
  8001f88:	2203      	movs	r2, #3
  8001f8a:	4618      	mov	r0, r3
  8001f8c:	f000 fa70 	bl	8002470 <AFETransmitWriteCmd>
-	for (int i = 0; i < len; i++)
+	for (int i = 0; i < len; i++) {
  8001f90:	6afb      	ldr	r3, [r7, #44]	; 0x2c
  8001f92:	3301      	adds	r3, #1
  8001f94:	62fb      	str	r3, [r7, #44]	; 0x2c
@@ -4292,9 +4284,8 @@ void AFETransmitReadCmd(uint8_t *txBytes, uint8_t *rxBytes, uint8_t arrSize) {
 	uint8_t crcReceived = 0;
  80023e6:	2300      	movs	r3, #0
  80023e8:	75bb      	strb	r3, [r7, #22]
-	while (!commReceived)
+	while (!commReceived) {
  80023ea:	e032      	b.n	8002452 <AFETransmitReadCmd+0x82>
-	{
 		// Pull NSS low
 		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
  80023ec:	2200      	movs	r2, #0
@@ -4313,7 +4304,6 @@ void AFETransmitReadCmd(uint8_t *txBytes, uint8_t *rxBytes, uint8_t arrSize) {
  8002406:	f004 fc6c 	bl	8006ce2 <HAL_SPI_TransmitReceive>
 
 		// For read command, confirm the AFE received the command by checking the address and CRC bytes
-//		if (txBytes[0] == rxBytes[0]) commReceived = true;
 		readBytes[0] = rxBytes[0];
  800240a:	68bb      	ldr	r3, [r7, #8]
  800240c:	781b      	ldrb	r3, [r3, #0]
@@ -4354,7 +4344,7 @@ void AFETransmitReadCmd(uint8_t *txBytes, uint8_t *rxBytes, uint8_t arrSize) {
 		HAL_Delay(1);
  800244c:	2001      	movs	r0, #1
  800244e:	f001 fa3f 	bl	80038d0 <HAL_Delay>
-	while (!commReceived)
+	while (!commReceived) {
  8002452:	7dfb      	ldrb	r3, [r7, #23]
  8002454:	f083 0301 	eor.w	r3, r3, #1
  8002458:	b2db      	uxtb	r3, r3
@@ -4389,9 +4379,8 @@ void AFETransmitWriteCmd(uint8_t *txBytes, uint8_t *rxBytes, uint8_t arrSize) {
 	bool commReceived = false;
  800247e:	2300      	movs	r3, #0
  8002480:	75fb      	strb	r3, [r7, #23]
-	while (!commReceived)
+	while (!commReceived) {
  8002482:	e02e      	b.n	80024e2 <AFETransmitWriteCmd+0x72>
-	{
 		// Pull NSS low
 		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
  8002484:	2200      	movs	r2, #0
@@ -4450,7 +4439,7 @@ void AFETransmitWriteCmd(uint8_t *txBytes, uint8_t *rxBytes, uint8_t arrSize) {
 		HAL_Delay(1);
  80024dc:	2001      	movs	r0, #1
  80024de:	f001 f9f7 	bl	80038d0 <HAL_Delay>
-	while (!commReceived)
+	while (!commReceived) {
  80024e2:	7dfb      	ldrb	r3, [r7, #23]
  80024e4:	f083 0301 	eor.w	r3, r3, #1
  80024e8:	b2db      	uxtb	r3, r3
@@ -6111,7 +6100,7 @@ int _gettimeofday(struct timeval *tv, void *tzvp) {
 080032dc <Error_Handler>:
 
 /**
- * Error handler if a UART transmission error occurs
+ * Error handler if a UART transmission error occurs or error occurs during HAL peripheral initialization
  * TODO: Implement this
  */
 void Error_Handler(void) {
@@ -6123,8 +6112,8 @@ void Error_Handler(void) {
 	...
 
 080032e4 <HAL_GPIO_EXTI_Callback>:
-
 /**
+ * [DISCONTINUED] ALERT pin is no longer implemented in current version
  * Callback function for handling an interrupt from a GPIO pin
  * @param GPIO_Pin The GPIO pin number where an interrupt was received
  */

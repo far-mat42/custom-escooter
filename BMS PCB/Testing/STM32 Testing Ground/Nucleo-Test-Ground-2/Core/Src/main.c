@@ -350,6 +350,8 @@ void GPIO_Init(void) {
 	HAL_GPIO_Init(GPIOA, &GPIO_InitStruct);
 
 	// Configure PA2 as an input with an internal pull-up (SYS WKUP)
+	// TODO: Remove internal pull-up (only used for testing purposes, when switch is actually connected
+	// 		 to the BMS it will assert the pin's state)
 	GPIO_InitStruct.Pin = GPIO_PIN_2;
 	GPIO_InitStruct.Mode = GPIO_MODE_INPUT;
 	GPIO_InitStruct.Pull = GPIO_PULLUP;
@@ -406,7 +408,7 @@ void SPI1_Init(void) {
     if (HAL_SPI_Init(&hspi1) != HAL_OK)
     {
         // Initialization error
-        while (1);
+        Error_Handler();
     }
 }
 
@@ -430,7 +432,7 @@ void USART1_Init(void) {
 	if (HAL_UART_Init(&huart1) != HAL_OK)
 	{
 		// Initialization error
-		while (1);
+		Error_Handler();
 	}
 }
 
@@ -551,8 +553,7 @@ void RTC_Init(void) {
 	sTime.Hours = 0x09;
 	sTime.Minutes = 0x32;
 	sTime.Seconds = 0x00;
-	if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BCD) != HAL_OK)
-	{
+	if (HAL_RTC_SetTime(&hrtc, &sTime, RTC_FORMAT_BCD) != HAL_OK) {
 		Error_Handler();
 	}
 
@@ -561,8 +562,7 @@ void RTC_Init(void) {
 	sDate.Month = RTC_MONTH_DECEMBER;
 	sDate.Date = 0x10;
 	sDate.Year = 0x24; // Year 2024
-	if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BCD) != HAL_OK)
-	{
+	if (HAL_RTC_SetDate(&hrtc, &sDate, RTC_FORMAT_BCD) != HAL_OK) {
 		Error_Handler();
 	}
 }
@@ -575,15 +575,11 @@ void RTC_Init(void) {
  */
 uint8_t crc8(uint8_t *data, size_t len) {
     uint8_t crc = 0x00;
-    while (len--)
-    {
+    while (len--) {
         crc ^= *data++;
-        for (uint8_t i = 0; i < 8; ++i)
-        {
-            if (crc & 0x80)
-                crc = (crc << 1) ^ 0x07; // Polynomial 0x07
-            else
-                crc <<= 1;
+        for (uint8_t i = 0; i < 8; ++i) {
+            if (crc & 0x80) crc = (crc << 1) ^ 0x07; // Polynomial 0x07
+            else crc <<= 1;
         }
     }
     return crc;
@@ -603,8 +599,7 @@ void DirectCmdRead(uint8_t cmd, uint8_t *returnData, uint8_t len) {
 //	bool commReceived = false;
 
 	// Increment the command address based on the data length given
-	for (int i = 0; i < len; i++)
-	{
+	for (int i = 0; i < len; i++) {
 		fullCmd[0] = cmd + i; // Increment the address
 		crcLower = crc8(fullCmd, 2); // Recalculate the CRC
 		// Construct the TX data for the SPI transaction
@@ -774,8 +769,7 @@ void RAMRegisterWrite(uint16_t addr, uint8_t *writeData, uint8_t len) {
 
 	// Write the data provided to the AFE's 32-byte data buffer
 	uint8_t writeBytes[2] = {0};
-	for (int i = 0; i < len; i++)
-	{
+	for (int i = 0; i < len; i++) {
 		// Increment data buffer address and include the next address byte
 		writeBytes[0] = WRITE_DATA_BUFF_LSB + i;
 		writeBytes[1] = writeData[i];
@@ -961,15 +955,13 @@ void AFETransmitReadCmd(uint8_t *txBytes, uint8_t *rxBytes, uint8_t arrSize) {
 	bool commReceived = false;
 	uint8_t readBytes[2] = {0};
 	uint8_t crcReceived = 0;
-	while (!commReceived)
-	{
+	while (!commReceived) {
 		// Pull NSS low
 		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
 		// Transmit data and receive AFE's response
 		HAL_SPI_TransmitReceive(&hspi1, txBytes, rxBytes, arrSize, HAL_MAX_DELAY);
 
 		// For read command, confirm the AFE received the command by checking the address and CRC bytes
-//		if (txBytes[0] == rxBytes[0]) commReceived = true;
 		readBytes[0] = rxBytes[0];
 		readBytes[1] = rxBytes[1];
 		crcReceived = crc8(readBytes, 2);
@@ -991,8 +983,7 @@ void AFETransmitReadCmd(uint8_t *txBytes, uint8_t *rxBytes, uint8_t arrSize) {
 void AFETransmitWriteCmd(uint8_t *txBytes, uint8_t *rxBytes, uint8_t arrSize) {
 	// Continuously transmit the SPI transaction until the AFE has received it
 	bool commReceived = false;
-	while (!commReceived)
-	{
+	while (!commReceived) {
 		// Pull NSS low
 		HAL_GPIO_WritePin(GPIOB, GPIO_PIN_0, GPIO_PIN_RESET);
 		// Transmit data and receive AFE's response
@@ -1394,7 +1385,7 @@ int _gettimeofday(struct timeval *tv, void *tzvp) {
 }
 
 /**
- * Error handler if a UART transmission error occurs
+ * Error handler if a UART transmission error occurs or error occurs during HAL peripheral initialization
  * TODO: Implement this
  */
 void Error_Handler(void) {
@@ -1403,6 +1394,7 @@ void Error_Handler(void) {
 }
 
 /**
+ * [DISCONTINUED] ALERT pin is no longer implemented in current version
  * Callback function for handling an interrupt from a GPIO pin
  * @param GPIO_Pin The GPIO pin number where an interrupt was received
  */
