@@ -1,7 +1,0 @@
-14:35:44 **** Incremental Build of configuration Debug for project LTO-16S-BMS-SW ****
-make -j16 all 
-arm-none-eabi-size  LTO-16S-BMS-SW.elf 
-   text	   data	    bss	    dec	    hex	filename
-  50352	    216	   2328	  52896	   cea0	LTO-16S-BMS-SW.elf
-Finished building: default.size.stdout
- 
