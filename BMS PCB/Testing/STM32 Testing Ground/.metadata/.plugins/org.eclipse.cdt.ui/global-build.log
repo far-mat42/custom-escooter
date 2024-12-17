@@ -1,13 +1,7 @@
-14:24:23 **** Build of configuration Debug for project LTO-16S-BMS-SW ****
+14:35:44 **** Incremental Build of configuration Debug for project LTO-16S-BMS-SW ****
 make -j16 all 
-arm-none-eabi-gcc -o "LTO-16S-BMS-SW.elf" @"objects.list"   -mcpu=cortex-m4 -T"C:\Farris' Files\School\Side Projects\Electric Scooter\custom-escooter\BMS PCB\Testing\STM32 Testing Ground\LTO-16S-BMS-SW\STM32L412K8TX_FLASH.ld" --specs=nosys.specs -Wl,-Map="LTO-16S-BMS-SW.map" -Wl,--gc-sections -static --specs=nano.specs -mfpu=fpv4-sp-d16 -mfloat-abi=hard -mthumb -Wl,--start-group -lc -lm -Wl,--end-group
-Finished building target: LTO-16S-BMS-SW.elf
- 
 arm-none-eabi-size  LTO-16S-BMS-SW.elf 
-arm-none-eabi-objdump -h -S LTO-16S-BMS-SW.elf  > "LTO-16S-BMS-SW.list"
    text	   data	    bss	    dec	    hex	filename
   50352	    216	   2328	  52896	   cea0	LTO-16S-BMS-SW.elf
 Finished building: default.size.stdout
- 
-Finished building: LTO-16S-BMS-SW.list
  

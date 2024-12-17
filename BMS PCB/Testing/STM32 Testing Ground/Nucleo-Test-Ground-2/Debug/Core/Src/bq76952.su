@@ -1,4 +1,0 @@
-../Core/Src/bq76952.c:19:6:format_uint16	16	static
-../Core/Src/bq76952.c:29:6:format_uint32	16	static
-../Core/Src/bq76952.c:41:6:format_int16	16	static
-../Core/Src/bq76952.c:51:6:format_int32	16	static
