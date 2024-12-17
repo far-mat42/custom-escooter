@@ -1,4 +1,4 @@
-<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/22.1.18 Chrome/120.0.6099.199 Electron/28.1.2 Safari/537.36" modified="2024-12-13T02:41:06.202Z" etag="KvLQNVbmneLII6OZkdeV" version="22.1.18" type="device" pages="2">
+<mxfile host="Electron" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/25.0.1 Chrome/128.0.6613.186 Electron/32.2.6 Safari/537.36" version="25.0.1" pages="4">
   <diagram name="Electrical Design" id="I06JD7s5903AaB4Gt75M">
     <mxGraphModel dx="1434" dy="844" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
       <root>
@@ -438,6 +438,64 @@
         </mxCell>
         <mxCell id="o_WEdXrCuiV9T9_FttMw-38" value="No" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=16;" vertex="1" parent="1">
           <mxGeometry x="510" y="725" width="60" height="30" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="Dvxg6oGrGJxfwr5El5ei" name="SPI Data Frame">
+    <mxGraphModel dx="1434" dy="844" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="qDC6cHXTimFhJ3bZQKbw-1" value="SPI Data Frame" style="swimlane;horizontal=0;whiteSpace=wrap;html=1;fontSize=18;strokeWidth=2;" vertex="1" parent="1">
+          <mxGeometry x="357" y="329" width="387" height="192" as="geometry" />
+        </mxCell>
+        <mxCell id="qDC6cHXTimFhJ3bZQKbw-2" value="Register Address&lt;br&gt;&lt;br&gt;(1 Byte)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=18;" vertex="1" parent="qDC6cHXTimFhJ3bZQKbw-1">
+          <mxGeometry x="24" y="1" width="120" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="qDC6cHXTimFhJ3bZQKbw-3" value="Register &lt;br&gt;Data&lt;br&gt;&lt;br&gt;(1 Byte)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=18;" vertex="1" parent="qDC6cHXTimFhJ3bZQKbw-1">
+          <mxGeometry x="145" y="1" width="120" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="qDC6cHXTimFhJ3bZQKbw-4" value="CRC&lt;br&gt;&lt;br&gt;(1 Byte)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=18;" vertex="1" parent="qDC6cHXTimFhJ3bZQKbw-1">
+          <mxGeometry x="266" y="1" width="120" height="190" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+  <diagram id="nHxeOoxcjoONN2hhMAuy" name="Command Data Frames">
+    <mxGraphModel dx="1434" dy="844" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="nnSB5dJWJ_Rs7-ASUeSN-6" value="Direct Command&lt;br&gt;Data Frame" style="swimlane;horizontal=0;whiteSpace=wrap;html=1;fontSize=18;strokeWidth=2;startSize=40;" vertex="1" parent="1">
+          <mxGeometry x="449" y="130" width="202" height="192" as="geometry" />
+        </mxCell>
+        <mxCell id="nnSB5dJWJ_Rs7-ASUeSN-7" value="&lt;b&gt;Command Address&lt;br&gt;&lt;/b&gt;&lt;br&gt;(1 SPI Data Frame)" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=16;" vertex="1" parent="nnSB5dJWJ_Rs7-ASUeSN-6">
+          <mxGeometry x="40" width="160" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="nnSB5dJWJ_Rs7-ASUeSN-11" value="Subcommand&lt;br&gt;Data Frame" style="swimlane;horizontal=0;whiteSpace=wrap;html=1;fontSize=18;strokeWidth=2;startSize=40;" vertex="1" parent="1">
+          <mxGeometry x="409" y="329" width="283" height="192" as="geometry" />
+        </mxCell>
+        <mxCell id="nnSB5dJWJ_Rs7-ASUeSN-12" value="&lt;b&gt;Subcommand Address&lt;br&gt;&lt;/b&gt;&lt;br&gt;(2 SPI Data Frames)&lt;br&gt;&lt;br&gt;&lt;b&gt;Registers:&lt;br&gt;&lt;/b&gt;0x3E-0x3F" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=16;" vertex="1" parent="nnSB5dJWJ_Rs7-ASUeSN-11">
+          <mxGeometry x="40" width="120" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="nnSB5dJWJ_Rs7-ASUeSN-13" value="&lt;b&gt;Subcommand Data&lt;br&gt;&lt;/b&gt;&lt;br&gt;(0 to 32 SPI Data Frames)&lt;br&gt;&lt;br&gt;&lt;b&gt;Registers:&lt;/b&gt;&lt;br&gt;0x40-0x5F" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=16;" vertex="1" parent="nnSB5dJWJ_Rs7-ASUeSN-11">
+          <mxGeometry x="161" y="1" width="120" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="uRTAtxD2oqKAD7jjbwfW-1" value="RAM Access&lt;br&gt;Data Frame" style="swimlane;horizontal=0;whiteSpace=wrap;html=1;fontSize=18;strokeWidth=2;startSize=40;" vertex="1" parent="1">
+          <mxGeometry x="288" y="530" width="525" height="192" as="geometry" />
+        </mxCell>
+        <mxCell id="uRTAtxD2oqKAD7jjbwfW-2" value="&lt;b&gt;RAM Register Address&lt;br&gt;&lt;/b&gt;&lt;br&gt;(2 SPI Data Frames)&lt;br&gt;&lt;br&gt;&lt;b&gt;Registers:&lt;br&gt;&lt;/b&gt;0x3E-0x3F" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=16;" vertex="1" parent="uRTAtxD2oqKAD7jjbwfW-1">
+          <mxGeometry x="40" width="120" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="uRTAtxD2oqKAD7jjbwfW-3" value="&lt;b&gt;RAM Register Data&lt;br&gt;&lt;/b&gt;&lt;br&gt;(1 to 32 SPI Data Frames)&lt;br&gt;&lt;br&gt;&lt;b&gt;Registers:&lt;/b&gt;&lt;br&gt;0x40-0x5F" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#d5e8d4;strokeColor=#82b366;fontSize=16;" vertex="1" parent="uRTAtxD2oqKAD7jjbwfW-1">
+          <mxGeometry x="161" y="1" width="120" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="uRTAtxD2oqKAD7jjbwfW-4" value="&lt;b&gt;Checksum&lt;br&gt;&lt;/b&gt;&lt;br&gt;(1 SPI Data Frame)&lt;br&gt;&lt;br&gt;&lt;b&gt;Register:&lt;/b&gt;&lt;br&gt;0x60" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=16;" vertex="1" parent="uRTAtxD2oqKAD7jjbwfW-1">
+          <mxGeometry x="282" y="1" width="120" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="uRTAtxD2oqKAD7jjbwfW-5" value="&lt;b&gt;Data Length&lt;br&gt;&lt;/b&gt;&lt;br&gt;(1 SPI Data Frame)&lt;br&gt;&lt;br&gt;&lt;b&gt;Register:&lt;/b&gt;&lt;br&gt;0x61" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#ffe6cc;strokeColor=#d79b00;fontSize=16;" vertex="1" parent="uRTAtxD2oqKAD7jjbwfW-1">
+          <mxGeometry x="403" y="1" width="120" height="190" as="geometry" />
         </mxCell>
       </root>
     </mxGraphModel>
