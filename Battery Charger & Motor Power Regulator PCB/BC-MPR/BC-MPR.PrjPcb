@@ -152,6 +152,23 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=AUSLNLLC
 
+[Document7]
+DocumentPath=LV Power.SchDoc
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=HVACNSPG
+
 [ProjectVariant1]
 UniqueId=2ddd08b7-1bb5-495a-b8dd-3cbdd6e82992
 Description=BUILD
@@ -164,12 +181,12 @@ Variation3=Designator=D1C|UniqueId=\TVVOCDKS\ZXSQTGBE|Kind=1|AlternatePart=
 ParamVariationCount=0
 
 [Parameter1]
-Name=Engineer
-Value=Farris Matar
-
-[Parameter2]
 Name=Revision
 Value=1.0
+
+[Parameter2]
+Name=Engineer
+Value=Farris Matar
 
 [Configuration1]
 Name=Sources
@@ -1112,10 +1129,16 @@ UpdateToLatestRevision=1
 PartTypes=0
 ComponentLibIdentifierKind0=Library Name And Type
 ComponentLibraryIdentifier0=Personal_Schematic_Library_2022.SchLib
-ComponentDesignItemID0=NMOS_60V_603A
-ComponentSymbolReference0=NMOS_60V_603A
+ComponentDesignItemID0=LMR16030PDDA
+ComponentSymbolReference0=LMR16030PDDA
 ComponentUpdate0=1
 ComponentIsDeviceSheet0=0
+ComponentLibIdentifierKind1=Library Name And Type
+ComponentLibraryIdentifier1=Personal_Schematic_Library_2022.SchLib
+ComponentDesignItemID1=RES_10kΩ_0603_1%
+ComponentSymbolReference1=RES_10kΩ_0603_1%
+ComponentUpdate1=0
+ComponentIsDeviceSheet1=0
 FullReplace=1
 UpdateDesignatorLock=1
 UpdatePartIDLock=1
@@ -1135,33 +1158,32 @@ ParameterName1=Component Kind
 ParameterUpdate1=1
 ParameterName2=Description
 ParameterUpdate2=1
-ParameterName3=FET Type
+ParameterName3=Library Reference
 ParameterUpdate3=1
-ParameterName4=Id
+ParameterName4=Manufacturer 1
 ParameterUpdate4=1
-ParameterName5=Library Reference
+ParameterName5=Manufacturer Part Number 1
 ParameterUpdate5=1
-ParameterName6=Manufacturer 1
+ParameterName6=Mounting Type
 ParameterUpdate6=1
-ParameterName7=Manufacturer Part Number 1
+ParameterName7=Package
 ParameterUpdate7=1
-ParameterName8=Power Dissipation (Max)
+ParameterName8=Package/Footprint
 ParameterUpdate8=1
 ParameterName9=Supplier 1
 ParameterUpdate9=1
-ParameterName10=Supplier Device Package
+ParameterName10=Supplier Part Number 1
 ParameterUpdate10=1
-ParameterName11=Supplier Part Number 1
+ParameterName11=Value
 ParameterUpdate11=1
-ParameterName12=Vdss
-ParameterUpdate12=1
-ParameterName13=Vgs (Max)
-ParameterUpdate13=1
 ModelTypeGroup0=PCBLIB
 ModelTypeUpdate0=1
 ModelType0=PCBLIB
-ModelName0=VISHAY_PowerPAK-8x8
+ModelName0=RES0603
 ModelUpdate0=1
+ModelType1=PCBLIB
+ModelName1=TI_8-PowerPad-SOIC
+ModelUpdate1=1
 
 [DatabaseUpdateOptions]
 SelectedOnly=0
@@ -1170,7 +1192,20 @@ UpdateToLatestRevision=1
 PartTypes=0
 
 [NetInfos]
-Net1=NetName=GND|NetColor=$00999999
+Net1=NetName=12V|NetColor=$004FA86A
+Net2=NetName=CPACK+|NetColor=$000099FF
+Net3=NetName=GND|NetColor=$00999999
+Net4=NetName=NetC1_2|NetColor=$000099FF
+Net5=NetName=NetC1A_2|NetColor=$00000098
+Net6=NetName=NetC1B_2|NetColor=clRed
+Net7=NetName=NetC1C_2|NetColor=$000099FF
+Net8=NetName=NetC3_2|NetColor=$000099FF
+Net9=NetName=NetC3A_2|NetColor=$000099FF
+Net10=NetName=NetC3B_2|NetColor=$00000098
+Net11=NetName=NetL1_2|NetColor=$004FA86A
+Net12=NetName=VBUS|NetColor=$00000098
+Net13=NetName=VCHG_EXT|NetColor=$000099FF
+Net14=NetName=VPACK+|NetColor=clRed
 
 [Comparison Options]
 ComparisonOptions0=Kind=Net|MinPercent=75|MinMatch=3|ShowMatch=0|UseName=-1|InclAllRules=0
