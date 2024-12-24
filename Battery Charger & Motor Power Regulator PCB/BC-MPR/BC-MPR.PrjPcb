@@ -118,21 +118,58 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=CCNOZGYU
 
+[Document5]
+DocumentPath=Motor Power Switch.SchDoc
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=NGYHTWBE
+
+[Document6]
+DocumentPath=Motor Controller Interface.SchDoc
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=AUSLNLLC
+
 [ProjectVariant1]
 UniqueId=2ddd08b7-1bb5-495a-b8dd-3cbdd6e82992
 Description=BUILD
 AllowFabrication=0
 ParameterCount=0
-VariationCount=0
+VariationCount=3
+Variation1=Designator=D1A|UniqueId=\GNPYBIAM\ZXSQTGBE|Kind=1|AlternatePart=
+Variation2=Designator=D1B|UniqueId=\KCWAALUS\ZXSQTGBE|Kind=1|AlternatePart=
+Variation3=Designator=D1C|UniqueId=\TVVOCDKS\ZXSQTGBE|Kind=1|AlternatePart=
 ParamVariationCount=0
 
 [Parameter1]
-Name=Revision
-Value=1.0
-
-[Parameter2]
 Name=Engineer
 Value=Farris Matar
+
+[Parameter2]
+Name=Revision
+Value=1.0
 
 [Configuration1]
 Name=Sources
@@ -1069,10 +1106,16 @@ NetClassManualEnabled=1
 NetClassSeparateForBusSections=0
 
 [LibraryUpdateOptions]
-SelectedOnly=0
+SelectedOnly=1
 UpdateVariants=1
 UpdateToLatestRevision=1
 PartTypes=0
+ComponentLibIdentifierKind0=Library Name And Type
+ComponentLibraryIdentifier0=Personal_Schematic_Library_2022.SchLib
+ComponentDesignItemID0=NMOS_60V_603A
+ComponentSymbolReference0=NMOS_60V_603A
+ComponentUpdate0=1
+ComponentIsDeviceSheet0=0
 FullReplace=1
 UpdateDesignatorLock=1
 UpdatePartIDLock=1
@@ -1086,6 +1129,39 @@ RemoveParameters=0
 AddModels=1
 RemoveModels=1
 UpdateCurrentModels=1
+ParameterName0=Comment
+ParameterUpdate0=1
+ParameterName1=Component Kind
+ParameterUpdate1=1
+ParameterName2=Description
+ParameterUpdate2=1
+ParameterName3=FET Type
+ParameterUpdate3=1
+ParameterName4=Id
+ParameterUpdate4=1
+ParameterName5=Library Reference
+ParameterUpdate5=1
+ParameterName6=Manufacturer 1
+ParameterUpdate6=1
+ParameterName7=Manufacturer Part Number 1
+ParameterUpdate7=1
+ParameterName8=Power Dissipation (Max)
+ParameterUpdate8=1
+ParameterName9=Supplier 1
+ParameterUpdate9=1
+ParameterName10=Supplier Device Package
+ParameterUpdate10=1
+ParameterName11=Supplier Part Number 1
+ParameterUpdate11=1
+ParameterName12=Vdss
+ParameterUpdate12=1
+ParameterName13=Vgs (Max)
+ParameterUpdate13=1
+ModelTypeGroup0=PCBLIB
+ModelTypeUpdate0=1
+ModelType0=PCBLIB
+ModelName0=VISHAY_PowerPAK-8x8
+ModelUpdate0=1
 
 [DatabaseUpdateOptions]
 SelectedOnly=0
