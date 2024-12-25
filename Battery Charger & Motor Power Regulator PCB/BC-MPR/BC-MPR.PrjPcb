@@ -169,6 +169,23 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=HVACNSPG
 
+[Document8]
+DocumentPath=HV Power Stage.SchDoc
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=SDRGYSSQ
+
 [ProjectVariant1]
 UniqueId=2ddd08b7-1bb5-495a-b8dd-3cbdd6e82992
 Description=BUILD
@@ -181,12 +198,12 @@ Variation3=Designator=D1C|UniqueId=\TVVOCDKS\ZXSQTGBE|Kind=1|AlternatePart=
 ParamVariationCount=0
 
 [Parameter1]
-Name=Revision
-Value=1.0
-
-[Parameter2]
 Name=Engineer
 Value=Farris Matar
+
+[Parameter2]
+Name=Revision
+Value=1.0
 
 [Configuration1]
 Name=Sources
@@ -1193,21 +1210,30 @@ PartTypes=0
 
 [NetInfos]
 Net1=NetName=12V|NetColor=$004FA86A
-Net2=NetName=3V3|NetColor=$00E8864A
-Net3=NetName=CPACK+|NetColor=$000099FF
-Net4=NetName=GND|NetColor=$00999999
-Net5=NetName=NetC1_2|NetColor=$000099FF
-Net6=NetName=NetC17_2|NetColor=$00E8864A
-Net7=NetName=NetC1A_2|NetColor=$00000098
-Net8=NetName=NetC1B_2|NetColor=clRed
-Net9=NetName=NetC1C_2|NetColor=$000099FF
-Net10=NetName=NetC3_2|NetColor=$000099FF
-Net11=NetName=NetC3A_2|NetColor=$000099FF
-Net12=NetName=NetC3B_2|NetColor=$00000098
-Net13=NetName=NetL1_2|NetColor=$004FA86A
-Net14=NetName=VBUS|NetColor=$00000098
-Net15=NetName=VCHG_EXT|NetColor=$000099FF
-Net16=NetName=VPACK+|NetColor=clRed
+Net2=NetName=36V|NetColor=clYellow
+Net3=NetName=3V3|NetColor=$00E8864A
+Net4=NetName=CPACK+|NetColor=$000099FF
+Net5=NetName=GND|NetColor=$00999999
+Net6=NetName=MOTOR_36V|NetColor=clYellow
+Net7=NetName=NetC1_2|NetColor=$00000098
+Net8=NetName=NetC13_2|NetColor=$00000098
+Net9=NetName=NetC17_2|NetColor=$00E8864A
+Net10=NetName=NetC1A_2|NetColor=$00000098
+Net11=NetName=NetC1B_2|NetColor=clRed
+Net12=NetName=NetC1C_2|NetColor=$000099FF
+Net13=NetName=NetC22_1|NetColor=clYellow
+Net14=NetName=NetC3_2|NetColor=$00000098
+Net15=NetName=NetC3A_2|NetColor=$000099FF
+Net16=NetName=NetC3B_2|NetColor=$00000098
+Net17=NetName=NetC6_2|NetColor=clYellow
+Net18=NetName=NetL1_2|NetColor=$004FA86A
+Net19=NetName=VAC|NetColor=clYellow
+Net20=NetName=VAC_R|NetColor=clYellow
+Net21=NetName=VBUS|NetColor=$00000098
+Net22=NetName=VCHG_EXT|NetColor=$000099FF
+Net23=NetName=VPACK+|NetColor=clRed
+Net24=NetName=VSYS|NetColor=$00000098
+Net25=NetName=VSYS_R|NetColor=$00000098
 
 [Comparison Options]
 ComparisonOptions0=Kind=Net|MinPercent=75|MinMatch=3|ShowMatch=0|UseName=-1|InclAllRules=0

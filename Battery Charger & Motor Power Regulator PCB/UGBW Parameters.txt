@@ -1,0 +1,7 @@
+RHPz = 9.167kHz
+UGBW = 3.056kHz
+Rload = 1 (36V @36A)
+Adiv = 1/40
+C1 = 75pF
+gm1 = 2µ
+R1 = 2.8MΩ
