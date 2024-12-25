@@ -1193,19 +1193,21 @@ PartTypes=0
 
 [NetInfos]
 Net1=NetName=12V|NetColor=$004FA86A
-Net2=NetName=CPACK+|NetColor=$000099FF
-Net3=NetName=GND|NetColor=$00999999
-Net4=NetName=NetC1_2|NetColor=$000099FF
-Net5=NetName=NetC1A_2|NetColor=$00000098
-Net6=NetName=NetC1B_2|NetColor=clRed
-Net7=NetName=NetC1C_2|NetColor=$000099FF
-Net8=NetName=NetC3_2|NetColor=$000099FF
-Net9=NetName=NetC3A_2|NetColor=$000099FF
-Net10=NetName=NetC3B_2|NetColor=$00000098
-Net11=NetName=NetL1_2|NetColor=$004FA86A
-Net12=NetName=VBUS|NetColor=$00000098
-Net13=NetName=VCHG_EXT|NetColor=$000099FF
-Net14=NetName=VPACK+|NetColor=clRed
+Net2=NetName=3V3|NetColor=$00E8864A
+Net3=NetName=CPACK+|NetColor=$000099FF
+Net4=NetName=GND|NetColor=$00999999
+Net5=NetName=NetC1_2|NetColor=$000099FF
+Net6=NetName=NetC17_2|NetColor=$00E8864A
+Net7=NetName=NetC1A_2|NetColor=$00000098
+Net8=NetName=NetC1B_2|NetColor=clRed
+Net9=NetName=NetC1C_2|NetColor=$000099FF
+Net10=NetName=NetC3_2|NetColor=$000099FF
+Net11=NetName=NetC3A_2|NetColor=$000099FF
+Net12=NetName=NetC3B_2|NetColor=$00000098
+Net13=NetName=NetL1_2|NetColor=$004FA86A
+Net14=NetName=VBUS|NetColor=$00000098
+Net15=NetName=VCHG_EXT|NetColor=$000099FF
+Net16=NetName=VPACK+|NetColor=clRed
 
 [Comparison Options]
 ComparisonOptions0=Kind=Net|MinPercent=75|MinMatch=3|ShowMatch=0|UseName=-1|InclAllRules=0
