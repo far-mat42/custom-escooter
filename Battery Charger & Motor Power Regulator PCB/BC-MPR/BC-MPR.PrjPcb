@@ -85,6 +85,23 @@ GenerateClassCluster=0
 DocumentUniqueId=DTXTIUXS
 
 [Document3]
+DocumentPath=BMS Interface.SchDoc
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=TYJAIGEK
+
+[Document4]
 DocumentPath=Top.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -101,7 +118,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=MVDQXXAO
 
-[Document4]
+[Document5]
 DocumentPath=Ideal Diode.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -118,7 +135,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=CCNOZGYU
 
-[Document5]
+[Document6]
 DocumentPath=Motor Power Switch.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -135,7 +152,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=NGYHTWBE
 
-[Document6]
+[Document7]
 DocumentPath=Motor Controller Interface.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -152,7 +169,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=AUSLNLLC
 
-[Document7]
+[Document8]
 DocumentPath=LV Power.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -169,7 +186,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=HVACNSPG
 
-[Document8]
+[Document9]
 DocumentPath=HV Power Stage.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -186,7 +203,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=SDRGYSSQ
 
-[Document9]
+[Document10]
 DocumentPath=BC-MPR.BomDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -203,25 +220,8 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document10]
-DocumentPath=Motor Controller Interface.Harness
-AnnotationEnabled=1
-AnnotateStartValue=1
-AnnotationIndexControlEnabled=0
-AnnotateSuffix=
-AnnotateScope=All
-AnnotateOrder=-1
-DoLibraryUpdate=1
-DoDatabaseUpdate=1
-ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=0
-ClassGenNCAutoScope=None
-DItemRevisionGUID=
-GenerateClassCluster=0
-DocumentUniqueId=
-
 [Document11]
-DocumentPath=Top.Harness
+DocumentPath=Motor Controller Interface.Harness
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
@@ -324,6 +324,74 @@ DocumentUniqueId=
 
 [Document17]
 DocumentPath=STM32 MCU.Harness
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=
+
+[Document18]
+DocumentPath=Control Interface Board.SchDoc
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=PMXSZNXA
+
+[Document19]
+DocumentPath=BMS Interface.Harness
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=
+
+[Document20]
+DocumentPath=External Supply Interface.SchDoc
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=ZXMOHBMR
+
+[Document21]
+DocumentPath=Control Interface Board.Harness
 AnnotationEnabled=1
 AnnotateStartValue=1
 AnnotationIndexControlEnabled=0
