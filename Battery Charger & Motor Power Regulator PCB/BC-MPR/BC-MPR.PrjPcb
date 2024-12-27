@@ -13,7 +13,7 @@ TemplateLocationPath=
 PinSwapBy_Netlabel=1
 PinSwapBy_Pin=1
 AllowPortNetNames=0
-AllowSheetEntryNetNames=1
+AllowSheetEntryNetNames=0
 AppendSheetNumberToLocalNets=0
 NetlistSinglePinNets=0
 DefaultConfiguration=Sources
@@ -344,16 +344,10 @@ UniqueId=2ddd08b7-1bb5-495a-b8dd-3cbdd6e82992
 Description=BUILD
 AllowFabrication=0
 ParameterCount=0
-VariationCount=9
+VariationCount=3
 Variation1=Designator=D1A|UniqueId=\GNPYBIAM\ZXSQTGBE|Kind=1|AlternatePart=
 Variation2=Designator=D1B|UniqueId=\KCWAALUS\ZXSQTGBE|Kind=1|AlternatePart=
 Variation3=Designator=D1C|UniqueId=\TVVOCDKS\ZXSQTGBE|Kind=1|AlternatePart=
-Variation4=Designator=Y1|UniqueId=\PZTTIYDH\UHFZTGPE|Kind=1|AlternatePart=
-Variation5=Designator=C53|UniqueId=\PZTTIYDH\USPVLODG|Kind=1|AlternatePart=
-Variation6=Designator=C54|UniqueId=\PZTTIYDH\FURCRJMX|Kind=1|AlternatePart=
-Variation7=Designator=Y2|UniqueId=\PZTTIYDH\YWUXICFO|Kind=1|AlternatePart=
-Variation8=Designator=C51|UniqueId=\PZTTIYDH\CNXFKTKA|Kind=1|AlternatePart=
-Variation9=Designator=C52|UniqueId=\PZTTIYDH\TLALNSKY|Kind=1|AlternatePart=
 ParamVariationCount=0
 
 [Parameter1]
@@ -1260,15 +1254,15 @@ Type154=0
 
 [ERC Connection Matrix]
 L1=NNNNNNNNNNNWNNNWW
-L2=NNWNNNNWWWNWNWNWN
-L3=NWEENEEEENEWNEEWN
+L2=NNNNNNNWNNNWNWNWN
+L3=NNEENEEEENEWNEEWN
 L4=NNENNNWEENNWNENWN
 L5=NNNNNNNNNNNNNNNNN
 L6=NNENNNNEENNWNENWN
 L7=NNEWNNWEENNWNENWN
 L8=NWEENEENNNENNEENN
-L9=NWEENEENENEWNEEWW
-L10=NWNNNNNNNNEWNNEWN
+L9=NNEENEENENEWNEEWW
+L10=NNNNNNNNNNEWNNEWN
 L11=NNENNNNEEENWNENWN
 L12=WWWWNWWNWWWNWWWNN
 L13=NNNNNNNNNNNWNNNWW
@@ -1305,16 +1299,10 @@ UpdateToLatestRevision=1
 PartTypes=0
 ComponentLibIdentifierKind0=Library Name And Type
 ComponentLibraryIdentifier0=Personal_Schematic_Library_2022.SchLib
-ComponentDesignItemID0=LMR16030PDDA
-ComponentSymbolReference0=LMR16030PDDA
+ComponentDesignItemID0=LM74502DDFR
+ComponentSymbolReference0=LM74502DDFR
 ComponentUpdate0=1
 ComponentIsDeviceSheet0=0
-ComponentLibIdentifierKind1=Library Name And Type
-ComponentLibraryIdentifier1=Personal_Schematic_Library_2022.SchLib
-ComponentDesignItemID1=RES_10kΩ_0603_1%
-ComponentSymbolReference1=RES_10kΩ_0603_1%
-ComponentUpdate1=0
-ComponentIsDeviceSheet1=0
 FullReplace=1
 UpdateDesignatorLock=1
 UpdatePartIDLock=1
@@ -1340,26 +1328,17 @@ ParameterName4=Manufacturer 1
 ParameterUpdate4=1
 ParameterName5=Manufacturer Part Number 1
 ParameterUpdate5=1
-ParameterName6=Mounting Type
+ParameterName6=Package/Footprint
 ParameterUpdate6=1
-ParameterName7=Package
+ParameterName7=Supplier 1
 ParameterUpdate7=1
-ParameterName8=Package/Footprint
+ParameterName8=Supplier Part Number 1
 ParameterUpdate8=1
-ParameterName9=Supplier 1
-ParameterUpdate9=1
-ParameterName10=Supplier Part Number 1
-ParameterUpdate10=1
-ParameterName11=Value
-ParameterUpdate11=1
 ModelTypeGroup0=PCBLIB
 ModelTypeUpdate0=1
 ModelType0=PCBLIB
-ModelName0=RES0603
+ModelName0=TI_SOT23-8
 ModelUpdate0=1
-ModelType1=PCBLIB
-ModelName1=TI_8-PowerPad-SOIC
-ModelUpdate1=1
 
 [DatabaseUpdateOptions]
 SelectedOnly=0
