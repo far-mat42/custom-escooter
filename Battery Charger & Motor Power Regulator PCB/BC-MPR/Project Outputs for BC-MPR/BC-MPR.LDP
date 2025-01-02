@@ -1,0 +1,3 @@
+Layer Pairs Export File for PCB: C:\Farris' Files\School\Side Projects\Electric Scooter\custom-escooter\Battery Charger & Motor Power Regulator PCB\BC-MPR\BC-MPR.PcbDoc
+LayersSetName=Top_Bot_Thru_Holes|DrillFile=bc-mpr.txt|DrillLayers=gtl,g1,g2,g3,g4,gbl
+LayersSetName=Top_Bot_Rect_Holes|DrillFile=bc-mpr-rectholes.txt|DrillLayers=gtl,g1,g2,g3,g4,gbl
