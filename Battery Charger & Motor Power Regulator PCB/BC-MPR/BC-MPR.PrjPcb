@@ -486,6 +486,10 @@ Variation2=Designator=D1B|UniqueId=\KCWAALUS\ZXSQTGBE|Kind=1|AlternatePart=
 Variation3=Designator=D1C|UniqueId=\TVVOCDKS\ZXSQTGBE|Kind=1|AlternatePart=
 ParamVariationCount=0
 
+[GeneratedDocument1]
+DocumentPath=Project Outputs for BC-MPR\Design Rule Check - BC-MPR.html
+DItemRevisionGUID=
+
 [Parameter1]
 Name=Engineer
 Value=Farris Matar
