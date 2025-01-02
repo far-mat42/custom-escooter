@@ -1,7 +1,7 @@
 Protel Design System Design Rule Check
 PCB File : C:\Farris' Files\School\Side Projects\Electric Scooter\custom-escooter\Battery Charger & Motor Power Regulator PCB\BC-MPR\BC-MPR.PcbDoc
-Date     : 2025-01-01
-Time     : 7:20:52 PM
+Date     : 2025-01-02
+Time     : 5:49:35 PM
 
 Processing Rule : Clearance Constraint (Gap=0.2mm) (OnLayer('L3 - Sig / PWR') Or IsVia Or IsThruPin),(OnLayer('L3 - Sig / PWR'))
 Rule Violations :0
@@ -15,49 +15,27 @@ Rule Violations :0
 Processing Rule : Clearance Constraint (Gap=0.2mm) (OnLayer('L1 - Primary') Or IsVia Or IsThruPin),(OnLayer('L1 - Primary') Or IsVia Or IsThruPin)
 Rule Violations :0
 
-Processing Rule : Clearance Constraint (Gap=0.2mm) (OnLayer('L4 - GND') Or IsVia Or IsThruPin),(OnLayer('L4 - GND'))
+Processing Rule : Clearance Constraint (Gap=0.2mm) (OnLayer('L5 - GND') Or IsVia Or IsThruPin),(OnLayer('L5 - GND'))
 Rule Violations :0
 
-Processing Rule : Clearance Constraint (Gap=0.2mm) (OnLayer('L5 - GND') Or IsVia Or IsThruPin),(OnLayer('L4 - GND'))
+Processing Rule : Clearance Constraint (Gap=0.5mm) (InNetClass('HV')),(All)
+Rule Violations :0
+
+Processing Rule : Clearance Constraint (Gap=0.2mm) (OnLayer('L4 - GND') Or IsVia Or IsThruPin),(OnLayer('L4 - GND'))
 Rule Violations :0
 
 Processing Rule : Clearance Constraint (Gap=0mm) (HasFootprint('NET_TIE')),(HasFootprint('NET_TIE'))
 Rule Violations :0
 
-Processing Rule : Short-Circuit Constraint (Allowed=Yes) (InNet('CELL_V0')),(InNet('VBAT-'))
-Rule Violations :0
-
 Processing Rule : Short-Circuit Constraint (Allowed=No) (All),(All)
 Rule Violations :0
 
+Processing Rule : Short-Circuit Constraint (Allowed=Yes) (InNet('CELL_V0')),(InNet('VBAT-'))
+Rule Violations :0
+
 Processing Rule : Un-Routed Net Constraint ( (All) )
-   Violation between Un-Routed Net Constraint: Net VSYS Between Via (26.1mm,43.1mm) from L1 - Primary to L6 - Secondary And Pad C32-1(30.25mm,58.75mm) on L1 - Primary 
-   Violation between Un-Routed Net Constraint: Net VAC Between Pad C42-2(82.425mm,34.4mm) on L1 - Primary And Pad R35-2(85.05mm,36mm) on L1 - Primary 
-   Violation between Un-Routed Net Constraint: Net 3V3 Between Pad J11-2(121.43mm,4.73mm) on Multi-Layer And Pad J11-1(121.43mm,7.27mm) on Multi-Layer 
-   Violation between Un-Routed Net Constraint: Net 3V3 Between Pad J11-1(121.43mm,7.27mm) on Multi-Layer And Track (122.5mm,20.8mm)(122.9mm,20.4mm) on L1 - Primary 
-   Violation between Un-Routed Net Constraint: Net 12V Between Pad J5-1(169mm,40.15mm) on Multi-Layer And Pad TP18-1(385.249mm,164mm) on L1 - Primary 
-   Violation between Un-Routed Net Constraint: Net 12V Between Via (75.95mm,23.95mm) from L1 - Primary to L6 - Secondary And Pad J5-1(169mm,40.15mm) on Multi-Layer 
-   Violation between Un-Routed Net Constraint: Net 12V Between Pad L1-2(37.5mm,18.975mm) on L1 - Primary And Via (47.5mm,22mm) from L1 - Primary to L6 - Secondary 
-   Violation between Un-Routed Net Constraint: Net 3V3 Between Pad R54-1(138.7mm,23.5mm) on L1 - Primary And Via (142.8mm,28.7mm) from L1 - Primary to L6 - Secondary 
-   Violation between Un-Routed Net Constraint: Net 3V3 Between Via (142.8mm,32.5mm) from L1 - Primary to L6 - Secondary And Pad TP19-1(286.5mm,164mm) on L1 - Primary 
-   Violation between Un-Routed Net Constraint: Net VAC Between Track (153.6mm,86.175mm)(153.775mm,86mm) on L1 - Primary And Pad TP20-1(225.999mm,167.25mm) on L1 - Primary 
-   Violation between Un-Routed Net Constraint: Net VSYS Between Via (37.55mm,96.65mm) from L1 - Primary to L6 - Secondary And Pad TP21-1(219.249mm,167.25mm) on L1 - Primary 
-   Violation between Un-Routed Net Constraint: Net GND Between Pad TP22-1(200mm,145.25mm) on L1 - Primary And Pad TP23-1(207.25mm,145.25mm) on L1 - Primary 
-   Violation between Un-Routed Net Constraint: Net GND Between Via (169.5mm,89mm) from L1 - Primary to L6 - Secondary And Pad TP22-1(200mm,145.25mm) on L1 - Primary 
-   Violation between Un-Routed Net Constraint: Net GND Between Pad TP23-1(207.25mm,145.25mm) on L1 - Primary And Pad TP24-1(214.75mm,145.25mm) on L1 - Primary 
-   Violation between Un-Routed Net Constraint: Net GND Between Pad TP24-1(214.75mm,145.25mm) on L1 - Primary And Pad TP25-1(222mm,145.25mm) on L1 - Primary 
-   Violation between Un-Routed Net Constraint: Net GND Between Pad TP25-1(222mm,145.25mm) on L1 - Primary And Pad TP26-1(229.5mm,145.25mm) on L1 - Primary 
-   Violation between Un-Routed Net Constraint: Net GND Between Pad TP26-1(229.5mm,145.25mm) on L1 - Primary And Pad TP27-1(236.75mm,145.25mm) on L1 - Primary 
    Violation between Un-Routed Net Constraint: Net 3V3 Between Pad U6-13(125mm,26mm) on L1 - Primary And Pad U6-1(125mm,32mm) on L1 - Primary 
-   Violation between Un-Routed Net Constraint: Net 3V3 Between Track (123.3mm,20mm)(123.3mm,20.1mm) on L1 - Primary And Via (128.05mm,18.8mm) from L1 - Primary to L6 - Secondary 
-   Violation between Un-Routed Net Constraint: Net 3V3 Between Via (62mm,21mm) from L1 - Primary to L6 - Secondary And Via (119.5mm,24.1mm) from L1 - Primary to L6 - Secondary 
-   Violation between Un-Routed Net Constraint: Net 3V3 Between Via (128.05mm,18.8mm) from L1 - Primary to L6 - Secondary And Via (136.3mm,18.8mm) from L1 - Primary to L6 - Secondary 
-   Violation between Un-Routed Net Constraint: Net 3V3 Between Via (134.05mm,40.3mm) from L1 - Primary to L6 - Secondary And Via (137.75mm,34.7mm) from L1 - Primary to L6 - Secondary 
-   Violation between Un-Routed Net Constraint: Net 3V3 Between Via (137.75mm,34.7mm) from L1 - Primary to L6 - Secondary And Via (142.8mm,32.5mm) from L1 - Primary to L6 - Secondary 
-   Violation between Un-Routed Net Constraint: Net 3V3 Between Via (142.8mm,28.7mm) from L1 - Primary to L6 - Secondary And Via (142.8mm,32.5mm) from L1 - Primary to L6 - Secondary 
-   Violation between Un-Routed Net Constraint: Net VSYS Between Via (31.1mm,92.6mm) from L1 - Primary to L6 - Secondary And Via (37.55mm,96.65mm) from L1 - Primary to L6 - Secondary 
-   Violation between Un-Routed Net Constraint: Net 12V Between Via (51.5mm,22mm) from L1 - Primary to L6 - Secondary And Via (75.95mm,23.95mm) from L1 - Primary to L6 - Secondary 
-Rule Violations :26
+Rule Violations :1
 
 Processing Rule : Modified Polygon (Allow modified: No), (Allow shelved: No)
 Rule Violations :0
@@ -75,8 +53,8 @@ Processing Rule : Minimum Annular Ring (Minimum=0.076mm) (All)
 Rule Violations :0
 
 Processing Rule : Hole Size Constraint (Min=0.2mm) (Max=6.3mm) (All)
-   Violation between Hole Size Constraint: (8mm > 6.3mm) Pad L3-1(93.85mm,60.35mm) on Multi-Layer Actual Rectangular Hole Width = 8mm
-   Violation between Hole Size Constraint: (8mm > 6.3mm) Pad L3-2(66.15mm,74.65mm) on Multi-Layer Actual Rectangular Hole Width = 8mm
+   Violation between Hole Size Constraint: (8.5mm > 6.3mm) Pad L3-1(93.85mm,60.35mm) on Multi-Layer Actual Slot Hole Width = 8.5mm
+   Violation between Hole Size Constraint: (8.5mm > 6.3mm) Pad L3-2(66.15mm,74.65mm) on Multi-Layer Actual Slot Hole Width = 8.5mm
 Rule Violations :2
 
 Processing Rule : Hole To Hole Clearance (Gap=0.25mm) (All),(All)
@@ -89,135 +67,23 @@ Processing Rule : Silk To Solder Mask (Clearance=0.102mm) (IsPad),(All)
    Violation between Silk To Solder Mask Clearance Constraint: (Collision < 0.102mm) Between Arc (30.3mm,32.4mm) on Top Overlay And Pad U3-9(28.5mm,31mm) on L1 - Primary [Top Overlay] to [Top Solder] clearance [0mm]
    Violation between Silk To Solder Mask Clearance Constraint: (0.094mm < 0.102mm) Between Pad C8-2(32mm,30.2mm) on L1 - Primary And Text "L1" (32.16mm,28.84mm) on Top Overlay [Top Overlay] to [Top Solder] clearance [0.094mm]
    Violation between Silk To Solder Mask Clearance Constraint: (Collision < 0.102mm) Between Pad R26-1(126.62mm,68.75mm) on L1 - Primary And Text "C22" (126.565mm,65.281mm) on Top Overlay [Top Overlay] to [Top Solder] clearance [0mm]
-Rule Violations :3
+   Violation between Silk To Solder Mask Clearance Constraint: (0.08mm < 0.102mm) Between Pad TP25-1(55.75mm,30.5mm) on L1 - Primary And Text "R13" (57.658mm,28.293mm) on Top Overlay [Top Overlay] to [Top Solder] clearance [0.08mm]
+   Violation between Silk To Solder Mask Clearance Constraint: (Collision < 0.102mm) Between Pad TP25-1(55.75mm,30.5mm) on L1 - Primary And Text "R14" (56.16mm,28.265mm) on Top Overlay [Top Overlay] to [Top Solder] clearance [0mm]
+Rule Violations :5
 
 Processing Rule : Silk to Silk (Clearance=0mm) (All),(All)
 Rule Violations :0
 
 Processing Rule : Net Antennae (Tolerance=0mm) (All)
-   Violation between Net Antennae: Via (119.5mm,24.1mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (121mm,24.1mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (122.97mm,43.7mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (123.8mm,21.7mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (123mm,42.3mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (124.9mm,23.2mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (126.5mm,42.4mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (127.1mm,25.7mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (127.6mm,26.9mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (127.6mm,28.2mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (127.9mm,42.4mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (129.2mm,32.3mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (129.9mm,37.5mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (130.5mm,20.2mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (131.05mm,38.4mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (131.2mm,24.5mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (131.2mm,25.8mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (131.9mm,20.2mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (133.4mm,31mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (134.05mm,40.3mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (134.4mm,31mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (135.2mm,23.3mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (138.8mm,28.5mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (138.8mm,29.5mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (141.042mm,89.5mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (141.7mm,47mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (142.3mm,14.7mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (142.8mm,28.7mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (142.8mm,32.5mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (145.7mm,28.8mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (145.7mm,30mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (146.4mm,47mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (148.6mm,14.3mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (149.8mm,14.3mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (151.5mm,83.2mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (153.7mm,71.8mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (156.6mm,85.9mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (17.4mm,83.5mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (17mm,17.8mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (17mm,20.8mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (22.4mm,33.1mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (24.4mm,34.1mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (25.1mm,38.6mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (25.1mm,39.4mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (25.1mm,41.3mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (25.1mm,42.2mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (25.1mm,43.1mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (25.5mm,11mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (25.5mm,12.5mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (26.1mm,38.6mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (26.1mm,39.4mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (26.1mm,41.3mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (26.1mm,42.2mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (26.1mm,43.1mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (27mm,11mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (27mm,12.5mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (28.5mm,11mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (28.5mm,12.5mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (30.2mm,90.45mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (30mm,11mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (30mm,12.5mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (31.5mm,11mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (31.5mm,12.5mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (37.55mm,96.65mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (48.5mm,22mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (49.5mm,22mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (50.5mm,22mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (51.5mm,22mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (55mm,39.6mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (60mm,19mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (60mm,20mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (61mm,19mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (61mm,20mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (61mm,21mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (62mm,19mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (62mm,20mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (62mm,21mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (66.1mm,11.7mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (66.1mm,14.5mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (66.2mm,18.2mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (66.2mm,19.4mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (70.15mm,25.4mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (70.9mm,28.7mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (75.95mm,23.95mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (78.2mm,30mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (80.884mm,40.349mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (80mm,40mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (81.5mm,34.1mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (81.5mm,34.8mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (83.3mm,31mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (92.2mm,45.1mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (93.6mm,45.1mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (93.7mm,24.8mm) from L1 - Primary to L6 - Secondary 
-   Violation between Net Antennae: Via (94.794mm,23.994mm) from L1 - Primary to L6 - Secondary 
-Rule Violations :94
+Rule Violations :0
 
 Processing Rule : Board Clearance Constraint (Gap=0mm) (All)
-   Violation between Board Outline Clearance(Outline Edge): (Collision < 0.5mm) Between Board Edge And Pad TP18-1(385.249mm,164mm) on L1 - Primary 
-   Violation between Board Outline Clearance(Outline Edge): (Collision < 0.5mm) Between Board Edge And Pad TP19-1(286.5mm,164mm) on L1 - Primary 
-   Violation between Board Outline Clearance(Outline Edge): (Collision < 0.5mm) Between Board Edge And Pad TP20-1(225.999mm,167.25mm) on L1 - Primary 
-   Violation between Board Outline Clearance(Outline Edge): (Collision < 0.5mm) Between Board Edge And Pad TP21-1(219.249mm,167.25mm) on L1 - Primary 
-   Violation between Board Outline Clearance(Outline Edge): (Collision < 0.5mm) Between Board Edge And Pad TP22-1(200mm,145.25mm) on L1 - Primary 
-   Violation between Board Outline Clearance(Outline Edge): (Collision < 0.5mm) Between Board Edge And Pad TP23-1(207.25mm,145.25mm) on L1 - Primary 
-   Violation between Board Outline Clearance(Outline Edge): (Collision < 0.5mm) Between Board Edge And Pad TP24-1(214.75mm,145.25mm) on L1 - Primary 
-   Violation between Board Outline Clearance(Outline Edge): (Collision < 0.5mm) Between Board Edge And Pad TP25-1(222mm,145.25mm) on L1 - Primary 
-   Violation between Board Outline Clearance(Outline Edge): (Collision < 0.5mm) Between Board Edge And Pad TP26-1(229.5mm,145.25mm) on L1 - Primary 
-   Violation between Board Outline Clearance(Outline Edge): (Collision < 0.5mm) Between Board Edge And Pad TP27-1(236.75mm,145.25mm) on L1 - Primary 
-   Violation between Board Outline Clearance(Outline Edge): (Collision < 0.5mm) Between Board Edge And Text "TP18" (384.165mm,166.497mm) on Top Overlay 
-   Violation between Board Outline Clearance(Outline Edge): (Collision < 0.5mm) Between Board Edge And Text "TP19" (285.435mm,166.472mm) on Top Overlay 
-   Violation between Board Outline Clearance(Outline Edge): (Collision < 0.5mm) Between Board Edge And Text "TP20" (224.917mm,169.748mm) on Top Overlay 
-   Violation between Board Outline Clearance(Outline Edge): (Collision < 0.5mm) Between Board Edge And Text "TP21" (218.186mm,169.723mm) on Top Overlay 
-   Violation between Board Outline Clearance(Outline Edge): (Collision < 0.5mm) Between Board Edge And Text "TP22" (198.923mm,147.726mm) on Top Overlay 
-   Violation between Board Outline Clearance(Outline Edge): (Collision < 0.5mm) Between Board Edge And Text "TP23" (206.187mm,147.752mm) on Top Overlay 
-   Violation between Board Outline Clearance(Outline Edge): (Collision < 0.5mm) Between Board Edge And Text "TP24" (213.68mm,147.726mm) on Top Overlay 
-   Violation between Board Outline Clearance(Outline Edge): (Collision < 0.5mm) Between Board Edge And Text "TP25" (220.919mm,147.752mm) on Top Overlay 
-   Violation between Board Outline Clearance(Outline Edge): (Collision < 0.5mm) Between Board Edge And Text "TP26" (228.412mm,147.752mm) on Top Overlay 
-   Violation between Board Outline Clearance(Outline Edge): (Collision < 0.5mm) Between Board Edge And Text "TP27" (235.677mm,147.726mm) on Top Overlay 
-Rule Violations :20
+Rule Violations :0
 
 Processing Rule : Height Constraint (Min=0mm) (Max=1816.048mm) (Prefered=12.7mm) (All)
 Rule Violations :0
 
 
-Violations Detected : 145
+Violations Detected : 8
 Waived Violations : 0
 Time Elapsed        : 00:00:01
