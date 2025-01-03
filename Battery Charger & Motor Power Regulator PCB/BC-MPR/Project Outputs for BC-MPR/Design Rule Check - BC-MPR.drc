@@ -1,7 +1,7 @@
 Protel Design System Design Rule Check
 PCB File : C:\Farris' Files\School\Side Projects\Electric Scooter\custom-escooter\Battery Charger & Motor Power Regulator PCB\BC-MPR\BC-MPR.PcbDoc
-Date     : 2025-01-02
-Time     : 8:59:28 PM
+Date     : 2025-01-03
+Time     : 12:36:18 AM
 
 Processing Rule : Clearance Constraint (Gap=0.2mm) (OnLayer('L3 - Sig / PWR') Or IsVia Or IsThruPin),(OnLayer('L3 - Sig / PWR'))
 Rule Violations :0
@@ -80,4 +80,4 @@ Rule Violations :0
 
 Violations Detected : 2
 Waived Violations : 0
-Time Elapsed        : 00:00:01
+Time Elapsed        : 00:00:30

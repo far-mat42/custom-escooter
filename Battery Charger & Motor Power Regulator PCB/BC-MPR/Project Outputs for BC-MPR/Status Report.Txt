@@ -1,8 +1,8 @@
 Output: NC Drill Files
 Type  : NC Drill
 From  : Project [BC-MPR.PrjPcb]
-   Generated File[BC-MPR.TXT]
-   Generated File[BC-MPR-RectHoles.TXT]
+   Generated File[BC-MPR-RoundHoles.TXT]
+   Generated File[BC-MPR-SlotHoles.TXT]
    Generated File[BC-MPR.LDP]
    Generated File[BC-MPR.DRR]
 
@@ -10,4 +10,4 @@ From  : Project [BC-MPR.PrjPcb]
 Files Generated   : 4
 Documents Printed : 0
 
-Finished Output Generation At 8:03:58 PM On 2025-01-01
+Finished Output Generation At 12:38:24 AM On 2025-01-03

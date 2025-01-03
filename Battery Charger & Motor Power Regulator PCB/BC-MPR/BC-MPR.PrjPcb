@@ -491,86 +491,94 @@ DocumentPath=Project Outputs for BC-MPR\BC-MPR-RectHoles.TXT
 DItemRevisionGUID=
 
 [GeneratedDocument2]
-DocumentPath=Project Outputs for BC-MPR\BC-MPR.DRR
+DocumentPath=Project Outputs for BC-MPR\BC-MPR-RoundHoles.TXT
 DItemRevisionGUID=
 
 [GeneratedDocument3]
-DocumentPath=Project Outputs for BC-MPR\BC-MPR.EXTREP
+DocumentPath=Project Outputs for BC-MPR\BC-MPR-SlotHoles.TXT
 DItemRevisionGUID=
 
 [GeneratedDocument4]
-DocumentPath=Project Outputs for BC-MPR\BC-MPR.G1
+DocumentPath=Project Outputs for BC-MPR\BC-MPR.DRR
 DItemRevisionGUID=
 
 [GeneratedDocument5]
-DocumentPath=Project Outputs for BC-MPR\BC-MPR.G2
+DocumentPath=Project Outputs for BC-MPR\BC-MPR.EXTREP
 DItemRevisionGUID=
 
 [GeneratedDocument6]
-DocumentPath=Project Outputs for BC-MPR\BC-MPR.G3
+DocumentPath=Project Outputs for BC-MPR\BC-MPR.G1
 DItemRevisionGUID=
 
 [GeneratedDocument7]
-DocumentPath=Project Outputs for BC-MPR\BC-MPR.G4
+DocumentPath=Project Outputs for BC-MPR\BC-MPR.G2
 DItemRevisionGUID=
 
 [GeneratedDocument8]
-DocumentPath=Project Outputs for BC-MPR\BC-MPR.GBL
+DocumentPath=Project Outputs for BC-MPR\BC-MPR.G3
 DItemRevisionGUID=
 
 [GeneratedDocument9]
-DocumentPath=Project Outputs for BC-MPR\BC-MPR.GBO
+DocumentPath=Project Outputs for BC-MPR\BC-MPR.G4
 DItemRevisionGUID=
 
 [GeneratedDocument10]
-DocumentPath=Project Outputs for BC-MPR\BC-MPR.GBP
+DocumentPath=Project Outputs for BC-MPR\BC-MPR.GBL
 DItemRevisionGUID=
 
 [GeneratedDocument11]
-DocumentPath=Project Outputs for BC-MPR\BC-MPR.GBS
+DocumentPath=Project Outputs for BC-MPR\BC-MPR.GBO
 DItemRevisionGUID=
 
 [GeneratedDocument12]
-DocumentPath=Project Outputs for BC-MPR\BC-MPR.GM
+DocumentPath=Project Outputs for BC-MPR\BC-MPR.GBP
 DItemRevisionGUID=
 
 [GeneratedDocument13]
-DocumentPath=Project Outputs for BC-MPR\BC-MPR.GM1
+DocumentPath=Project Outputs for BC-MPR\BC-MPR.GBS
 DItemRevisionGUID=
 
 [GeneratedDocument14]
-DocumentPath=Project Outputs for BC-MPR\BC-MPR.GTL
+DocumentPath=Project Outputs for BC-MPR\BC-MPR.GM
 DItemRevisionGUID=
 
 [GeneratedDocument15]
-DocumentPath=Project Outputs for BC-MPR\BC-MPR.GTO
+DocumentPath=Project Outputs for BC-MPR\BC-MPR.GM1
 DItemRevisionGUID=
 
 [GeneratedDocument16]
-DocumentPath=Project Outputs for BC-MPR\BC-MPR.GTP
+DocumentPath=Project Outputs for BC-MPR\BC-MPR.GTL
 DItemRevisionGUID=
 
 [GeneratedDocument17]
-DocumentPath=Project Outputs for BC-MPR\BC-MPR.GTS
+DocumentPath=Project Outputs for BC-MPR\BC-MPR.GTO
 DItemRevisionGUID=
 
 [GeneratedDocument18]
-DocumentPath=Project Outputs for BC-MPR\BC-MPR.LDP
+DocumentPath=Project Outputs for BC-MPR\BC-MPR.GTP
 DItemRevisionGUID=
 
 [GeneratedDocument19]
-DocumentPath=Project Outputs for BC-MPR\BC-MPR.REP
+DocumentPath=Project Outputs for BC-MPR\BC-MPR.GTS
 DItemRevisionGUID=
 
 [GeneratedDocument20]
-DocumentPath=Project Outputs for BC-MPR\BC-MPR.RUL
+DocumentPath=Project Outputs for BC-MPR\BC-MPR.LDP
 DItemRevisionGUID=
 
 [GeneratedDocument21]
-DocumentPath=Project Outputs for BC-MPR\BC-MPR.TXT
+DocumentPath=Project Outputs for BC-MPR\BC-MPR.REP
 DItemRevisionGUID=
 
 [GeneratedDocument22]
+DocumentPath=Project Outputs for BC-MPR\BC-MPR.RUL
+DItemRevisionGUID=
+
+[GeneratedDocument23]
+DocumentPath=Project Outputs for BC-MPR\BC-MPR.TXT
+DItemRevisionGUID=
+
+[GeneratedDocument24]
 DocumentPath=Project Outputs for BC-MPR\Design Rule Check - BC-MPR.html
 DItemRevisionGUID=
 
