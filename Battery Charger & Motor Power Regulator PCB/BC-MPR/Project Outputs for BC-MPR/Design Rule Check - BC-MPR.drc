@@ -1,7 +1,7 @@
 Protel Design System Design Rule Check
 PCB File : C:\Farris' Files\School\Side Projects\Electric Scooter\custom-escooter\Battery Charger & Motor Power Regulator PCB\BC-MPR\BC-MPR.PcbDoc
 Date     : 2025-01-02
-Time     : 5:49:35 PM
+Time     : 7:20:53 PM
 
 Processing Rule : Clearance Constraint (Gap=0.2mm) (OnLayer('L3 - Sig / PWR') Or IsVia Or IsThruPin),(OnLayer('L3 - Sig / PWR'))
 Rule Violations :0
@@ -34,8 +34,7 @@ Processing Rule : Short-Circuit Constraint (Allowed=Yes) (InNet('CELL_V0')),(InN
 Rule Violations :0
 
 Processing Rule : Un-Routed Net Constraint ( (All) )
-   Violation between Un-Routed Net Constraint: Net 3V3 Between Pad U6-13(125mm,26mm) on L1 - Primary And Pad U6-1(125mm,32mm) on L1 - Primary 
-Rule Violations :1
+Rule Violations :0
 
 Processing Rule : Modified Polygon (Allow modified: No), (Allow shelved: No)
 Rule Violations :0
@@ -53,8 +52,8 @@ Processing Rule : Minimum Annular Ring (Minimum=0.076mm) (All)
 Rule Violations :0
 
 Processing Rule : Hole Size Constraint (Min=0.2mm) (Max=6.3mm) (All)
-   Violation between Hole Size Constraint: (8.5mm > 6.3mm) Pad L3-1(93.85mm,60.35mm) on Multi-Layer Actual Slot Hole Width = 8.5mm
-   Violation between Hole Size Constraint: (8.5mm > 6.3mm) Pad L3-2(66.15mm,74.65mm) on Multi-Layer Actual Slot Hole Width = 8.5mm
+   Violation between Hole Size Constraint: (8.5mm > 6.3mm) Pad L3-1(93.85mm,59.85mm) on Multi-Layer Actual Slot Hole Width = 8.5mm
+   Violation between Hole Size Constraint: (8.5mm > 6.3mm) Pad L3-2(66.15mm,74.15mm) on Multi-Layer Actual Slot Hole Width = 8.5mm
 Rule Violations :2
 
 Processing Rule : Hole To Hole Clearance (Gap=0.25mm) (All),(All)
@@ -64,12 +63,7 @@ Processing Rule : Minimum Solder Mask Sliver (Gap=0.1mm) (All),(All)
 Rule Violations :0
 
 Processing Rule : Silk To Solder Mask (Clearance=0.102mm) (IsPad),(All)
-   Violation between Silk To Solder Mask Clearance Constraint: (Collision < 0.102mm) Between Arc (30.3mm,32.4mm) on Top Overlay And Pad U3-9(28.5mm,31mm) on L1 - Primary [Top Overlay] to [Top Solder] clearance [0mm]
-   Violation between Silk To Solder Mask Clearance Constraint: (0.094mm < 0.102mm) Between Pad C8-2(32mm,30.2mm) on L1 - Primary And Text "L1" (32.16mm,28.84mm) on Top Overlay [Top Overlay] to [Top Solder] clearance [0.094mm]
-   Violation between Silk To Solder Mask Clearance Constraint: (Collision < 0.102mm) Between Pad R26-1(126.62mm,68.75mm) on L1 - Primary And Text "C22" (126.565mm,65.281mm) on Top Overlay [Top Overlay] to [Top Solder] clearance [0mm]
-   Violation between Silk To Solder Mask Clearance Constraint: (0.08mm < 0.102mm) Between Pad TP25-1(55.75mm,30.5mm) on L1 - Primary And Text "R13" (57.658mm,28.293mm) on Top Overlay [Top Overlay] to [Top Solder] clearance [0.08mm]
-   Violation between Silk To Solder Mask Clearance Constraint: (Collision < 0.102mm) Between Pad TP25-1(55.75mm,30.5mm) on L1 - Primary And Text "R14" (56.16mm,28.265mm) on Top Overlay [Top Overlay] to [Top Solder] clearance [0mm]
-Rule Violations :5
+Rule Violations :0
 
 Processing Rule : Silk to Silk (Clearance=0mm) (All),(All)
 Rule Violations :0
@@ -84,6 +78,6 @@ Processing Rule : Height Constraint (Min=0mm) (Max=1816.048mm) (Prefered=12.7mm)
 Rule Violations :0
 
 
-Violations Detected : 8
+Violations Detected : 2
 Waived Violations : 0
 Time Elapsed        : 00:00:01
