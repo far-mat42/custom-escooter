@@ -1,4 +1,5 @@
-# Custom Lithium-Titanate (LTO) Battery Pack and Battery Management System (BMS) Design Whitepaper
+![Title Photo](https://github.com/user-attachments/assets/f25604ed-ffee-4ee7-9c4c-09e9fbd8e98d)
+# Custom Lithium-Titanate (LTO) Battery Pack and Battery Management System (BMS)
 
 **Prepared by:** Farris Matar  
 **Date:** December 17, 2024
@@ -52,6 +53,8 @@ This project is part of a larger overall objective to assemble an e-scooter with
 The battery and battery management system (BMS) were the first components to be designed for the e-scooter. The specifications above were used to guide the defining requirements of these components.  
 At this stage, the only other component to be selected was the motor. The motor intended for use in the e-scooter is a 36V, 720W brushless DC motor. Since the motor will consume the most power by far compared to any other component in the e-scooter, it was important to have these parameters to further define this project’s requirements.
 
+---
+
 ## 2. Project Overview
 The battery’s role in the e-scooter is to store energy to be supplied for the motor and other electronic components when the e-scooter is being driven. The BMS’s role is to act as a layer of protection for the battery, constantly monitoring the voltage, current, temperature, and other metrics for both telemetry purposes and to activate protections that will disable battery charging and/or discharging when appropriate.
 
@@ -72,6 +75,37 @@ A summary of the main requirements for the battery is provided in Table 2.1 belo
 In addition to the specifications above, a battery chemistry that was relatively stable and safe to use was prioritized. After careful consideration, the battery chemistry selected was **lithium titanate (LTO)**. Lithium titanate is known for being more safe and thermally stable compared to other lithium-ion battery chemistries. Additionally, it is capable of very high charging and discharging rates, which are appropriate given the high power consumption of the e-scooter and the benefit of having a shorter charge time. LTO batteries also have excellent low-temperature discharging capabilities, typically being able to retain over 80% capacity at -30ºC.
 
 The major downside compared to other chemistries is the energy density – for the same capacity, LTO batteries will typically be heavier and larger than their counterparts using other chemistries. Although this isn’t ideal for an e-scooter, it was accepted as a necessary tradeoff for its safety and high performance in the required specifications.  
-For the specific cells to be used to build the battery, the **Toshiba SCiB 20Ah** cells were chosen. These cells have a nominal voltage of 2.3V, meaning with a **16s1p battery pack**, the total capacity would be approximately **736 Wh**. The energy density of the Toshiba SCiB cells were also higher than most commercially available LTO cells, reducing the weight disadvantage.
+For the specific cells to be used to build the battery, the [Toshiba SCiB 20Ah](https://www.global.toshiba/ww/products-solutions/battery/scib/product/cell/high-energy.html) cells were chosen. These cells have a nominal voltage of 2.3V, meaning with a 16s1p battery pack, the total capacity would be approximately 736 Wh. The energy density of the Toshiba SCiB cells were also higher than most commercially available LTO cells, reducing the weight disadvantage.
+
+## 2.3 BMS Requirements
+
+A summary of the main requirements for the BMS is provided in Table 2.2 below.
+
+*Table 2.2: Requirements for the BMS PCB*
+
+| Requirement | Reasoning |
+|-------------|----------|
+| BMS PCB and component ratings are sufficiently high to support the voltage, current, cell count, and temperature range the battery will operate with | This is self-explanatory – the BMS should not limit the battery from achieving its required specifications. |
+| BMS is capable of measuring cell voltages, battery current, and battery temperature with less than 1% error. | 1% error ensures sufficient accuracy for the BMS to report the battery’s status and specify when to enable protections. |
+| BMS is capable of performing cell balancing, supporting at least 500mA of balancing current. | Given the fairly high capacity requirement, a decently high balancing current should be used to ensure the final stage of charging does not take excessively long in the event of unbalanced cell voltages. |
+| BMS will send telemetry about battery voltage, current, and temperature over UART | UART was selected for its simple connection and reliability over medium-length cables. Additionally, if signal integrity becomes an issue due to cable length, it can be improved easily by converting it into a differential protocol such as RS422 through a pair of transceivers. |
+
+## 2.4 BMS Component Selection
+
+The two key components that would guide the BMS PCB design were the analog front-end (AFE) and the microcontroller unit (MCU).
+
+### 2.4.1 AFE Selection: TI BQ76952
+
+The AFE’s purpose is to provide high-accuracy and precision measurements of the cell voltages, charging/discharging current, and battery temperature. An AFE can be given additional control in the BMS, such as controlling the charging and discharging MOSFETs and the cell balancing MOSFETs based on its measurements.
+
+For this BMS, the [TI BQ76952 AFE](https://www.ti.com/product/BQ76952) was selected. It uses 24-bit ADCs for measuring voltages, temperatures (via external thermistors), and current, reporting excellent accuracy under test conditions. It also offers a full suite of protections including over/undervoltage, over/undercurrent during both charge and discharge, and over/undertemperature, in addition to supporting autonomous cell-balancing. TI also provides extensive documentation in its [technical reference manual](https://www.ti.com/lit/ug/sluuby2b/sluuby2b) on how to configure the AFE, providing an extensive variety of options based on the configuration of the battery and the level of control desired for the AFE in terms of operation and protection. All of these features provided good confidence in the BQ76952 allowing the BMS to achieve all the specified requirements.
+
+### 2.4.2 MCU Selection: STM32L412K8T6
+
+The MCU’s primary role is to program and communicate with the BQ76952 over I2C or SPI, as well as summarize and report information on the battery status given by the BQ76952 on a UART channel. These requirements are fairly simple and plenty of microcontrollers would have been able to accomplish them, however the STM32L412K8T6 was chosen for 2 specific reasons. The first is that STM’s microcontrollers are very commonly used both in industry and by hobbyists, providing plenty of reference material to assist with programming and debugging it for use on the BMS. The second is for its extremely low power consumption. The STM32L4 series of microcontrollers are capable of operating with very low operating current consumption (in the range of a few hundred microamps), as well as allowing several modes of operation for reducing the current draw of the MCU down to tens of nanoamps. This is perfect for minimizing the power consumed from the battery while the e-scooter is not in use.
 
 ---
+
+## 3 BMS PCB Design
+
+
