@@ -140,7 +140,7 @@ The fourth thermistor is instead connected to one of the MCU’s 12-bit ADC inpu
 A photo of the finished BMS PCBA is shown in Figure 3.2 below. Large sections of copper were dedicated to the main charge and discharge paths to ensure the PCB would be capable of conducting the high currents required by the design. The outer layers were built with 2oz copper weight to further improve the performance of the PCB, as well as provide plenty of thermal mass connected to the FETs to reduce the temperature rise at higher currents.
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/26ec2f11-c3d6-43f4-90e5-3c05f754f8bb" alt="BMS PCB" width="600">
+  <img src="https://github.com/user-attachments/assets/02d533ea-69aa-425a-b14c-b10eabbb43a2" alt="BMS PCB" width="600">
 </p>
 
 <p align="center"><i>Figure 3.2: A fully assembled BMS PCBA</i></p> 
@@ -199,7 +199,7 @@ The BQ76952 acts as a SPI slave and communicates in one of 3 ways. The first is 
 
 <p align="center"><i>Figure 5.2: Data frames for the direct commands, subcommands, and RAM access communications with the BQ76952</i></p>
 
-The STM32 was programmed to send and receive SPI messages according to the specified data frames, calculating the CRC for each SPI data frame as well as the checksum for RAM access communications. To validate the communication between the STM32 and BQ76952, Saleae’s Logic 8 logic analyzer was used to analyze the SPI communication (https://www.saleae.com/). The Saleae was connected to the BMS as shown in Figure 5.3, with the clips easily connecting to the SPI breakout headers on the BMS.
+The STM32 was programmed to send and receive SPI messages according to the specified data frames, calculating the CRC for each SPI data frame as well as the checksum for RAM access communications. To validate the communication between the STM32 and BQ76952, Saleae’s Logic 8 logic analyzer was used to analyze the SPI communication ([https://www.saleae.com/](https://www.saleae.com/)). The Saleae was connected to the BMS as shown in Figure 5.3, with the clips easily connecting to the SPI breakout headers on the BMS.
 
 <p align="center">
   <img src="https://github.com/user-attachments/assets/81eebbf7-cc6b-4176-9e90-14f1600a7676" alt="Saleae Connection" width="500">
