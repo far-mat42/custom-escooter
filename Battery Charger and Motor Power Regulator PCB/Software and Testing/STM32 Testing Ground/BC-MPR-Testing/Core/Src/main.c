@@ -31,6 +31,52 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+// BQ25756 I2C and register addresses
+#define BQ25756_ADDR 			0x68 << 1
+
+#define BQ25756_CHG_VLIM 			0x00
+#define BQ25756_CHG_ILIM			0x02
+#define BQ25756_INP_DPM_ILIM		0x06
+#define BQ25756_INP_DPM_VLIM		0x08
+#define BQ25756_INP_REV_ILIM		0x0A
+#define BQ25756_INP_REV_VLIM		0x0C
+#define BQ25756_PCHG_ILIM			0x10
+#define BQ25756_CHG_ITERM			0x12
+#define BQ25756_PCHG_TERM_CTRL		0x14
+#define BQ25756_TIM_CTRL			0x15
+#define BQ25756_3STG_CHG_CTRL		0x16
+#define BQ25756_CHGR_CTRL			0x17
+#define BQ25756_PIN_CTRL			0x18
+#define BQ25756_PWR_REV_CTRL		0x19
+#define BQ25756_MPPT_CTRL			0x1A
+#define BQ25756_TS_CHG_THR_CTRL		0x1B
+#define BQ25756_TS_CHG_RGN_CTRL		0x1C
+#define BQ25756_TS_REV_THR_CTRL		0x1D
+#define BQ25756_REV_UV_CTRL			0x1E
+#define BQ25756_VAC_MPP_DET			0x1F
+#define BQ25756_CHGR_STAT1			0x21
+#define BQ25756_CHGR_STAT2			0x22
+#define BQ25756_CHGR_STAT3			0x23
+#define BQ25756_FLT_STAT			0x24
+#define BQ25756_CHGR_FLAG1			0x25
+#define BQ25756_CHGR_FLAG2			0x26
+#define BQ25756_FLT_FLAG			0x27
+#define BQ25756_CHGR_MSK1			0x28
+#define BQ25756_CHGR_MSK2			0x29
+#define BQ25756_FLT_MSK				0x2A
+#define BQ25756_ADC_CTRL			0x2B
+#define BQ25756_ADC_CH_CTRL			0x2C
+#define BQ25756_IAC_ADC				0x2D
+#define BQ25756_IBAT_ADC			0x2F
+#define BQ25756_VAC_ADC				0x31
+#define BQ25756_VBAT_ADC			0x33
+#define BQ25756_TS_ADC				0x37
+#define BQ25756_VFB_ADC				0x39
+#define BQ25756_GDRV_STR_CTRL		0x3B
+#define BQ25756_GDRV_DT_CTRL		0x3C
+#define BQ25756_PART_INFO			0x3D
+#define BQ25756_REV_IBAT_DSG		0x62
+
 
 /* USER CODE END PD */
 
@@ -64,7 +110,11 @@ static void MX_USART2_UART_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+int _write(int file, char *data, int len) {
+    // Redirect printf to UART
+    HAL_UART_Transmit(&huart2, (uint8_t*)data, len, HAL_MAX_DELAY);
+    return len;
+}
 /* USER CODE END 0 */
 
 /**
@@ -84,6 +134,15 @@ int main(void)
   HAL_Init();
 
   /* USER CODE BEGIN Init */
+  // Arrays for I2C communication
+  uint8_t txData[3] = {0};
+  uint8_t rxData[16] = {0};
+
+  // Variables for storing read values from ADCs
+  int32_t busCurrentADC = 0;
+  int32_t battCurrentADC = 0;
+  uint16_t busVoltageADC = 0;
+  uint16_t battVoltageADC = 0;
 
   /* USER CODE END Init */
 
@@ -101,13 +160,121 @@ int main(void)
   MX_USART1_UART_Init();
   MX_USART2_UART_Init();
   /* USER CODE BEGIN 2 */
+  /********* Configuring the BQ25756 registers *********/
+  // Charge voltage limit: FB limit set to 1.532V
+  txData[0] = BQ25756_CHG_VLIM;
+  txData[1] = 0x0E;
+  txData[2] = 0x00;
+  HAL_I2C_Master_Transmit(&hi2c1, BQ25756_ADDR, txData, 3, HAL_MAX_DELAY);
+
+  // Charge current limit: Set to 15A (6000mA with 5mΩ resistor = 15000mA with 2mΩ resistor)
+  txData[0] = BQ25756_CHG_ILIM;
+  txData[1] = 0xE0;
+  txData[2] = 0x01;
+  HAL_I2C_Master_Transmit(&hi2c1, BQ25756_ADDR, txData, 3, HAL_MAX_DELAY);
+
+  // Input current DPM limit: Set to 25A (10000mA with 5mΩ resistor = 25000mA with 2mΩ resistor)
+  txData[0] = BQ25756_INP_DPM_ILIM;
+  txData[1] = 0x20;
+  txData[2] = 0x03;
+  HAL_I2C_Master_Transmit(&hi2c1, BQ25756_ADDR, txData, 3, HAL_MAX_DELAY);
+
+  // Input voltage DPM limit: Set to 48V
+  txData[0] = BQ25756_INP_DPM_VLIM;
+  txData[1] = 0x80;
+  txData[2] = 0x25;
+  HAL_I2C_Master_Transmit(&hi2c1, BQ25756_ADDR, txData, 3, HAL_MAX_DELAY);
+
+  // Reverse mode input current limit: Set to 36A (14400mA with 5mΩ resistor = 36000mA with 2mΩ resistor)
+  txData[0] = BQ25756_INP_REV_ILIM;
+  txData[1] = 0x80;
+  txData[2] = 0x04;
+  HAL_I2C_Master_Transmit(&hi2c1, BQ25756_ADDR, txData, 3, HAL_MAX_DELAY);
+
+  // Reverse mode input voltage regulation: Set to 36V
+  txData[0] = BQ25756_INP_REV_VLIM;
+  txData[1] = 0x20;
+  txData[2] = 0x1C;
+  HAL_I2C_Master_Transmit(&hi2c1, BQ25756_ADDR, txData, 3, HAL_MAX_DELAY);
+
+  // Precharge current limit: Set to 3A (1200mA with 5mΩ resistor = 3000mA with 2mΩ resistor)
+  txData[0] = BQ25756_PCHG_ILIM;
+  txData[1] = 0x60;
+  txData[2] = 0x00;
+  HAL_I2C_Master_Transmit(&hi2c1, BQ25756_ADDR, txData, 3, HAL_MAX_DELAY);
+
+  // Pin configurations: Disable ICHG, ILIM_HIZ pins
+  txData[0] = BQ25756_PIN_CTRL;
+  txData[1] = 0x00;
+  HAL_I2C_Master_Transmit(&hi2c1, BQ25756_ADDR, txData, 2, HAL_MAX_DELAY);
+
+  // Power path and reverse mode control: Enable reverse mode (regulate VAC)
+  txData[0] = BQ25756_PWR_REV_CTRL;
+  txData[1] = 0x21;
+  HAL_I2C_Master_Transmit(&hi2c1, BQ25756_ADDR, txData, 2, HAL_MAX_DELAY);
+
+  // TS charging threshold control: Set thresholds as -10ºC COLD, 5ºC COOL, 50ºC WARM, 60ºC HOT
+  txData[0] = BQ25756_TS_CHG_THR_CTRL;
+  txData[1] = 0xA0;
+  HAL_I2C_Master_Transmit(&hi2c1, BQ25756_ADDR, txData, 2, HAL_MAX_DELAY);
+
+  // TS charging region behavior: Ignore TS pin for charging control
+  txData[0] = BQ25756_TS_CHG_RGN_CTRL;
+  txData[1] = 0x5A;
+  HAL_I2C_Master_Transmit(&hi2c1, BQ25756_ADDR, txData, 2, HAL_MAX_DELAY);
+
+  // ADC control: Enable ADC in one-shot mode, 15-bit effective resolution (24ms sample time)
+  txData[0] = BQ25756_ADC_CTRL;
+  txData[1] = 0xC0;
+  HAL_I2C_Master_Transmit(&hi2c1, BQ25756_ADDR, txData, 2, HAL_MAX_DELAY);
+
+  // ADC channel control: Enable all ADC channels
+  txData[0] = BQ25756_ADC_CH_CTRL;
+  txData[1] = 0x00;
+  HAL_I2C_Master_Transmit(&hi2c1, BQ25756_ADDR, txData, 2, HAL_MAX_DELAY);
+
+  // Reverse mode battery discharge: Disable fast transient response
+  txData[0] = BQ25756_REV_IBAT_DSG;
+  txData[1] = 0x00;
+  HAL_I2C_Master_Transmit(&hi2c1, BQ25756_ADDR, txData, 2, HAL_MAX_DELAY);
 
   /* USER CODE END 2 */
-
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
   {
+	  // 1 second delay between all ADC reads
+	  HAL_Delay(1000);
+
+	  // Reset watchdog, trigger ADC readings
+	  txData[0] = BQ25756_CHGR_CTRL;
+	  txData[1] = 0xE9;
+	  HAL_I2C_Master_Transmit(&hi2c1, BQ25756_ADDR, txData, 2, HAL_MAX_DELAY);
+
+	  txData[0] = BQ25756_ADC_CH_CTRL;
+	  txData[1] = 0x00;
+	  HAL_I2C_Master_Transmit(&hi2c1, BQ25756_ADDR, txData, 2, HAL_MAX_DELAY);
+
+	  HAL_Delay(200); // Give time for ADC conversion to finish
+
+	  // Read all reported ADC readings
+	  txData[0] = BQ25756_IAC_ADC;
+	  HAL_I2C_Master_Transmit(&hi2c1, BQ25756_ADDR, txData, 1, HAL_MAX_DELAY);
+	  HAL_I2C_Master_Receive(&hi2c1, BQ25756_ADDR, rxData, 8, HAL_MAX_DELAY);
+
+	  // Convert readings based on bit step
+	  busCurrentADC = (rxData[0] | (rxData[1] << 8))*2; // 0.8mA bit-step with 5mΩ resistor = 2mA bit-step with 2mΩ resistor
+	  battCurrentADC = (rxData[2] | (rxData[3] << 8))*5; // 2mA bit-step with 5mΩ resistor = 5mA bit-step with 2mΩ resistor
+	  busVoltageADC = (rxData[4] | (rxData[5] << 8))*2; // 2mV bit-step
+	  battVoltageADC = (rxData[6] | (rxData[7] << 8))*2; // 2mV bit-step
+
+	  // Broadcast ADC readings to UART
+	  printf("\n*********************** BQ25756 ADC READINGS ***********************\r\n");
+	  printf("Measured bus current: %ld mA\r\n", busCurrentADC);
+	  printf("Measured battery current: %ld mA\r\n", battCurrentADC);
+	  printf("Measured bus voltage: %d mV\r\n", busVoltageADC);
+	  printf("Measured battery voltage: %d mV\r\n", battVoltageADC);
+
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
