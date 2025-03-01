@@ -32,7 +32,7 @@
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
 // BQ25756 I2C and register addresses
-#define BQ25756_ADDR 			0x68 << 1
+#define BQ25756_ADDR 			0x6B << 1
 
 #define BQ25756_CHG_VLIM 			0x00
 #define BQ25756_CHG_ILIM			0x02
@@ -239,6 +239,7 @@ int main(void)
   HAL_I2C_Master_Transmit(&hi2c1, BQ25756_ADDR, txData, 2, HAL_MAX_DELAY);
 
   /* USER CODE END 2 */
+
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */
   while (1)
