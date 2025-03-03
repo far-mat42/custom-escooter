@@ -139,10 +139,21 @@ int main(void)
   uint8_t rxData[16] = {0};
 
   // Variables for storing read values from ADCs
-  int32_t busCurrentADC = 0;
-  int32_t battCurrentADC = 0;
+  int16_t busCurrentADC = 0;
+  int16_t battCurrentADC = 0;
   uint16_t busVoltageADC = 0;
   uint16_t battVoltageADC = 0;
+
+  // 32-bit variables to avoid overflow when converting bit-step of ADCs to actual values
+  int32_t busCurrent32 = 0;
+  int32_t battCurrent32 = 0;
+  uint32_t busVoltage32 = 0;
+  uint32_t battVoltage32 = 0;
+
+  uint8_t chgStatus1 = 0;
+  uint8_t chgStatus2 = 0;
+  uint8_t chgStatus3 = 0;
+  uint8_t fltStatus = 0;
 
   /* USER CODE END Init */
 
@@ -203,14 +214,19 @@ int main(void)
   txData[2] = 0x00;
   HAL_I2C_Master_Transmit(&hi2c1, BQ25756_ADDR, txData, 3, HAL_MAX_DELAY);
 
+  // Timer Control: Disable watchdog
+  txData[0] = BQ25756_TIM_CTRL;
+  txData[1] = 0x0D;
+  HAL_I2C_Master_Transmit(&hi2c1, BQ25756_ADDR, txData, 2, HAL_MAX_DELAY);
+
+  // Charger Control: Disable charging
+  txData[0] = BQ25756_CHGR_CTRL;
+  txData[1] = 0xD0;
+  HAL_I2C_Master_Transmit(&hi2c1, BQ25756_ADDR, txData, 2, HAL_MAX_DELAY);
+
   // Pin configurations: Disable ICHG, ILIM_HIZ pins
   txData[0] = BQ25756_PIN_CTRL;
   txData[1] = 0x00;
-  HAL_I2C_Master_Transmit(&hi2c1, BQ25756_ADDR, txData, 2, HAL_MAX_DELAY);
-
-  // Power path and reverse mode control: Enable reverse mode (regulate VAC)
-  txData[0] = BQ25756_PWR_REV_CTRL;
-  txData[1] = 0x21;
   HAL_I2C_Master_Transmit(&hi2c1, BQ25756_ADDR, txData, 2, HAL_MAX_DELAY);
 
   // TS charging threshold control: Set thresholds as -10ºC COLD, 5ºC COOL, 50ºC WARM, 60ºC HOT
@@ -221,6 +237,11 @@ int main(void)
   // TS charging region behavior: Ignore TS pin for charging control
   txData[0] = BQ25756_TS_CHG_RGN_CTRL;
   txData[1] = 0x5A;
+  HAL_I2C_Master_Transmit(&hi2c1, BQ25756_ADDR, txData, 2, HAL_MAX_DELAY);
+
+  // Reverse undervoltage control: Fix UVP at 3.3V
+  txData[0] = BQ25756_REV_UV_CTRL;
+  txData[1] = 0x20;
   HAL_I2C_Master_Transmit(&hi2c1, BQ25756_ADDR, txData, 2, HAL_MAX_DELAY);
 
   // ADC control: Enable ADC in one-shot mode, 15-bit effective resolution (24ms sample time)
@@ -247,14 +268,23 @@ int main(void)
 	  // 1 second delay between all ADC reads
 	  HAL_Delay(1000);
 
+	  // Power path and reverse mode control: Enable reverse mode (regulate VAC)
+	  txData[0] = BQ25756_PWR_REV_CTRL;
+	  txData[1] = 0x01; // TODO: Check if enabling IAC load changes anything
+	  HAL_I2C_Master_Transmit(&hi2c1, BQ25756_ADDR, txData, 2, HAL_MAX_DELAY);
+
 	  // Reset watchdog, trigger ADC readings
 	  txData[0] = BQ25756_CHGR_CTRL;
 	  txData[1] = 0xE9;
-	  HAL_I2C_Master_Transmit(&hi2c1, BQ25756_ADDR, txData, 2, HAL_MAX_DELAY);
+//	  HAL_I2C_Master_Transmit(&hi2c1, BQ25756_ADDR, txData, 2, HAL_MAX_DELAY);
 
-	  txData[0] = BQ25756_ADC_CH_CTRL;
-	  txData[1] = 0x00;
+	  txData[0] = BQ25756_ADC_CTRL;
+	  txData[1] = 0xC0;
 	  HAL_I2C_Master_Transmit(&hi2c1, BQ25756_ADDR, txData, 2, HAL_MAX_DELAY);
+//
+//	  txData[0] = BQ25756_ADC_CH_CTRL;
+//	  txData[1] = 0x00;
+//	  HAL_I2C_Master_Transmit(&hi2c1, BQ25756_ADDR, txData, 2, HAL_MAX_DELAY);
 
 	  HAL_Delay(200); // Give time for ADC conversion to finish
 
@@ -263,18 +293,48 @@ int main(void)
 	  HAL_I2C_Master_Transmit(&hi2c1, BQ25756_ADDR, txData, 1, HAL_MAX_DELAY);
 	  HAL_I2C_Master_Receive(&hi2c1, BQ25756_ADDR, rxData, 8, HAL_MAX_DELAY);
 
-	  // Convert readings based on bit step
-	  busCurrentADC = (rxData[0] | (rxData[1] << 8))*2; // 0.8mA bit-step with 5mΩ resistor = 2mA bit-step with 2mΩ resistor
-	  battCurrentADC = (rxData[2] | (rxData[3] << 8))*5; // 2mA bit-step with 5mΩ resistor = 5mA bit-step with 2mΩ resistor
-	  busVoltageADC = (rxData[4] | (rxData[5] << 8))*2; // 2mV bit-step
-	  battVoltageADC = (rxData[6] | (rxData[7] << 8))*2; // 2mV bit-step
+	  // Convert ADC readings based on bit step
+	  // IBUS: 0.8mA bit-step with 5mΩ resistor = 2mA bit-step with 2mΩ resistor
+	  busCurrentADC = (rxData[0] | (rxData[1] << 8));
+	  busCurrent32 = 0;
+	  for (int i = 0; i < 2; i++) {busCurrent32 += busCurrentADC;}
+
+	  // IBAT: 2mA bit-step with 5mΩ resistor = 5mA bit-step with 2mΩ resistor
+	  battCurrentADC = (rxData[2] | (rxData[3] << 8));
+	  battCurrent32 = 0;
+	  for (int i = 0; i < 5; i++) {battCurrent32 += battCurrentADC;}
+
+	  // VBUS: 2mV bit-step
+	  busVoltageADC = (rxData[4] | (rxData[5] << 8));
+	  busVoltage32 = 0;
+	  for (int i = 0; i < 2; i++) {busVoltage32 += busVoltageADC;}
+	  // VBAT: 2mV bit-step
+	  battVoltageADC = (rxData[6] | (rxData[7] << 8)); // 2mV bit-step
+	  battVoltage32 = 0;
+	  for (int i = 0; i < 2; i++) {battVoltage32 += battVoltageADC;}
+
+	  // Read all statuses and faults
+	  txData[0] = BQ25756_CHGR_STAT1;
+	  HAL_I2C_Master_Transmit(&hi2c1, BQ25756_ADDR, txData, 1, HAL_MAX_DELAY);
+	  HAL_I2C_Master_Receive(&hi2c1, BQ25756_ADDR, rxData, 4, HAL_MAX_DELAY);
+
+	  // Store readings
+	  chgStatus1 = rxData[0];
+	  chgStatus2 = rxData[1];
+	  chgStatus3 = rxData[2];
+	  fltStatus = rxData[3];
 
 	  // Broadcast ADC readings to UART
 	  printf("\n*********************** BQ25756 ADC READINGS ***********************\r\n");
-	  printf("Measured bus current: %ld mA\r\n", busCurrentADC);
-	  printf("Measured battery current: %ld mA\r\n", battCurrentADC);
-	  printf("Measured bus voltage: %d mV\r\n", busVoltageADC);
-	  printf("Measured battery voltage: %d mV\r\n", battVoltageADC);
+	  printf("Measured bus current: %ld mA\r\n", busCurrent32);
+	  printf("Measured battery current: %ld mA\r\n", battCurrent32);
+	  printf("Measured bus voltage: %ld mV\r\n", busVoltage32);
+	  printf("Measured battery voltage: %ld mV\r\n", battVoltage32);
+
+	  // Broadcast any detected faults
+	  if (fltStatus & (1 << 1)) {
+		  printf("Detected fault: DRV_SUP not OK\r\n");
+	  }
 
     /* USER CODE END WHILE */
 
