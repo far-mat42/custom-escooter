@@ -21,7 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include <stdio.h>
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -259,6 +259,11 @@ int main(void)
   txData[1] = 0x00;
   HAL_I2C_Master_Transmit(&hi2c1, BQ25756_ADDR, txData, 2, HAL_MAX_DELAY);
 
+  // Power path and reverse mode control: Enable reverse mode (regulate VAC)
+  txData[0] = BQ25756_PWR_REV_CTRL;
+  txData[1] = 0x01; // TODO: Check if enabling IAC load changes anything
+  HAL_I2C_Master_Transmit(&hi2c1, BQ25756_ADDR, txData, 2, HAL_MAX_DELAY);
+
   /* USER CODE END 2 */
 
   /* Infinite loop */
@@ -267,11 +272,6 @@ int main(void)
   {
 	  // 1 second delay between all ADC reads
 	  HAL_Delay(1000);
-
-	  // Power path and reverse mode control: Enable reverse mode (regulate VAC)
-	  txData[0] = BQ25756_PWR_REV_CTRL;
-	  txData[1] = 0x01; // TODO: Check if enabling IAC load changes anything
-	  HAL_I2C_Master_Transmit(&hi2c1, BQ25756_ADDR, txData, 2, HAL_MAX_DELAY);
 
 	  // Reset watchdog, trigger ADC readings
 	  txData[0] = BQ25756_CHGR_CTRL;
