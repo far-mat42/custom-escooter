@@ -925,8 +925,8 @@ void RAMRegisterInit(void) {
 	RAMRegisterWrite(PROT_COV_THLD, writeData, 1); // COV triggered at 2.783V, cleared below 2.6818V
 	writeData[0] = 0x08;
 	RAMRegisterWrite(PROT_OCC_THLD, writeData, 1); // OCC triggered at 16A
-	writeData[0] = 0x15;
-	RAMRegisterWrite(PROT_OCD1_THLD, writeData, 1); // OCD1 triggered at 42A
+	writeData[0] = 0x17;
+	RAMRegisterWrite(PROT_OCD1_THLD, writeData, 1); // OCD1 triggered at 46A
 	writeData[0] = 0x64;
 	RAMRegisterWrite(PROT_OCD1_DLY, writeData, 1); // OCD1 triggered after 340ms delay
 	writeData[0] = 0x19;
