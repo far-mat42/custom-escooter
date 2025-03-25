@@ -187,10 +187,10 @@ int main(void)
   txData[2] = 0x03;
   HAL_I2C_Master_Transmit(&hi2c1, BQ25756_ADDR, txData, 3, HAL_MAX_DELAY);
 
-  // Input voltage DPM limit: Set to 48V
+  // Input voltage DPM limit: Set to 24V
   txData[0] = BQ25756_INP_DPM_VLIM;
-  txData[1] = 0x80;
-  txData[2] = 0x25;
+  txData[1] = 0xC0;
+  txData[2] = 0x12;
   HAL_I2C_Master_Transmit(&hi2c1, BQ25756_ADDR, txData, 3, HAL_MAX_DELAY);
 
   // Reverse mode input current limit: Set to 36A (14400mA with 5mΩ resistor = 36000mA with 2mΩ resistor)
