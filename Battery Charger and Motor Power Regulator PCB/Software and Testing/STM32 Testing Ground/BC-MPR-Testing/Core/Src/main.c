@@ -86,6 +86,8 @@
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
+ADC_HandleTypeDef hadc1;
+
 I2C_HandleTypeDef hi2c1;
 
 TIM_HandleTypeDef htim1;
@@ -94,7 +96,7 @@ UART_HandleTypeDef huart1;
 UART_HandleTypeDef huart2;
 
 /* USER CODE BEGIN PV */
-
+uint8_t currentDutyCycle = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -104,8 +106,11 @@ static void MX_I2C1_Init(void);
 static void MX_TIM1_Init(void);
 static void MX_USART1_UART_Init(void);
 static void MX_USART2_UART_Init(void);
+static void MX_ADC1_Init(void);
 /* USER CODE BEGIN PFP */
-
+uint16_t ReadThrottle();
+uint8_t GetHallSector();
+void SetCommutation(uint8_t sector, uint8_t duty);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -170,6 +175,7 @@ int main(void)
   MX_TIM1_Init();
   MX_USART1_UART_Init();
   MX_USART2_UART_Init();
+  MX_ADC1_Init();
   /* USER CODE BEGIN 2 */
   /********* Configuring the BQ25756 registers *********/
   // Charge voltage limit: FB limit set to 1.532V
@@ -242,7 +248,7 @@ int main(void)
   // Reverse undervoltage control: Fix UVP at 3.3V
   txData[0] = BQ25756_REV_UV_CTRL;
   txData[1] = 0x20;
-  HAL_I2C_Master_Transmit(&hi2c1, BQ25756_ADDR, txData, 2, HAL_MAX_DELAY);
+//  HAL_I2C_Master_Transmit(&hi2c1, BQ25756_ADDR, txData, 2, HAL_MAX_DELAY);
 
   // ADC control: Enable ADC in one-shot mode, 15-bit effective resolution (24ms sample time)
   txData[0] = BQ25756_ADC_CTRL;
@@ -326,14 +332,51 @@ int main(void)
 
 	  // Broadcast ADC readings to UART
 	  printf("\n*********************** BQ25756 ADC READINGS ***********************\r\n");
-	  printf("Measured bus current: %ld mA\r\n", busCurrent32);
-	  printf("Measured battery current: %ld mA\r\n", battCurrent32);
-	  printf("Measured bus voltage: %ld mV\r\n", busVoltage32);
-	  printf("Measured battery voltage: %ld mV\r\n", battVoltage32);
+	  printf("I_BUS: %ld mA \t", busCurrent32);
+	  printf("I_BATT: %ld mA \t", battCurrent32);
+	  printf("V_BUS: %ld mV \t", busVoltage32);
+	  printf("V_BATT: %ld mV\r\n", battVoltage32);
+
+	  // Broadcast current status
+	  printf("Current BQ25756 status: ");
+	  if (chgStatus1 & (1 << 6)) {
+		  printf("In input current regulation mode; ");
+	  }
+	  if (chgStatus1 & (1 << 5)) {
+		  printf("In input voltage regulation mode; ");
+	  }
+	  if (chgStatus2 & (1 << 7)) {
+		  printf("Input power good; ");
+	  }
+	  if (chgStatus3 & (1 << 3)) {
+		  printf("CV Timer expired; ");
+	  }
+	  if (chgStatus3 & (1 << 2)) {
+		  printf("Converter Reverse Mode On;");
+	  }
+	  printf("\r\n");
 
 	  // Broadcast any detected faults
 	  if (fltStatus & (1 << 1)) {
 		  printf("Detected fault: DRV_SUP not OK\r\n");
+	  }
+	  if (fltStatus & (1 << 2)) {
+		  printf("Detected fault: Charge safety timer expired\r\n");
+	  }
+	  if (fltStatus & (1 << 3)) {
+		  printf("Detected fault: Thermal shutdown active\r\n");
+	  }
+	  if (fltStatus & (1 << 4)) {
+		  printf("Detected fault: Battery overvoltage fault\r\n");
+	  }
+	  if (fltStatus & (1 << 5)) {
+		  printf("Detected fault: Battery overcurrent fault\r\n");
+	  }
+	  if (fltStatus & (1 << 6)) {
+		  printf("Detected fault: Input overvoltage fault\r\n");
+	  }
+	  if (fltStatus & (1 << 7)) {
+		  printf("Detected fault: Input undervoltage fault\r\n");
 	  }
 
     /* USER CODE END WHILE */
@@ -383,6 +426,64 @@ void SystemClock_Config(void)
   {
     Error_Handler();
   }
+}
+
+/**
+  * @brief ADC1 Initialization Function
+  * @param None
+  * @retval None
+  */
+static void MX_ADC1_Init(void)
+{
+
+  /* USER CODE BEGIN ADC1_Init 0 */
+
+  /* USER CODE END ADC1_Init 0 */
+
+  ADC_ChannelConfTypeDef sConfig = {0};
+
+  /* USER CODE BEGIN ADC1_Init 1 */
+
+  /* USER CODE END ADC1_Init 1 */
+
+  /** Common config
+  */
+  hadc1.Instance = ADC1;
+  hadc1.Init.ClockPrescaler = ADC_CLOCK_ASYNC_DIV1;
+  hadc1.Init.Resolution = ADC_RESOLUTION_8B;
+  hadc1.Init.DataAlign = ADC_DATAALIGN_RIGHT;
+  hadc1.Init.ScanConvMode = ADC_SCAN_DISABLE;
+  hadc1.Init.EOCSelection = ADC_EOC_SINGLE_CONV;
+  hadc1.Init.LowPowerAutoWait = DISABLE;
+  hadc1.Init.ContinuousConvMode = DISABLE;
+  hadc1.Init.NbrOfConversion = 1;
+  hadc1.Init.DiscontinuousConvMode = DISABLE;
+  hadc1.Init.ExternalTrigConv = ADC_SOFTWARE_START;
+  hadc1.Init.ExternalTrigConvEdge = ADC_EXTERNALTRIGCONVEDGE_NONE;
+  hadc1.Init.DMAContinuousRequests = DISABLE;
+  hadc1.Init.Overrun = ADC_OVR_DATA_PRESERVED;
+  hadc1.Init.OversamplingMode = DISABLE;
+  if (HAL_ADC_Init(&hadc1) != HAL_OK)
+  {
+    Error_Handler();
+  }
+
+  /** Configure Regular Channel
+  */
+  sConfig.Channel = ADC_CHANNEL_9;
+  sConfig.Rank = ADC_REGULAR_RANK_1;
+  sConfig.SamplingTime = ADC_SAMPLETIME_2CYCLES_5;
+  sConfig.SingleDiff = ADC_SINGLE_ENDED;
+  sConfig.OffsetNumber = ADC_OFFSET_NONE;
+  sConfig.Offset = 0;
+  if (HAL_ADC_ConfigChannel(&hadc1, &sConfig) != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* USER CODE BEGIN ADC1_Init 2 */
+
+  /* USER CODE END ADC1_Init 2 */
+
 }
 
 /**
@@ -598,6 +699,7 @@ static void MX_USART2_UART_Init(void)
   */
 static void MX_GPIO_Init(void)
 {
+  GPIO_InitTypeDef GPIO_InitStruct = {0};
 /* USER CODE BEGIN MX_GPIO_Init_1 */
 /* USER CODE END MX_GPIO_Init_1 */
 
@@ -607,11 +709,139 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
 
+  /*Configure GPIO pins : PC1 PC2 PC3 */
+  GPIO_InitStruct.Pin = GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3;
+  GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
+
+  /* EXTI interrupt init*/
+  HAL_NVIC_SetPriority(EXTI1_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI1_IRQn);
+
+  HAL_NVIC_SetPriority(EXTI2_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI2_IRQn);
+
+  HAL_NVIC_SetPriority(EXTI3_IRQn, 0, 0);
+  HAL_NVIC_EnableIRQ(EXTI3_IRQn);
+
 /* USER CODE BEGIN MX_GPIO_Init_2 */
 /* USER CODE END MX_GPIO_Init_2 */
 }
 
 /* USER CODE BEGIN 4 */
+/**
+ * Defining ISR for change in state in any of the hall effect sensors
+ */
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+    // Respond to any Hall sensor pin change
+    if (GPIO_Pin == GPIO_PIN_1 || GPIO_Pin == GPIO_PIN_2 || GPIO_Pin == GPIO_PIN_3) {
+        uint8_t sector = GetHallSector();
+        SetCommutation(sector, currentDutyCycle);
+    }
+}
+
+/**
+ * Reads the ADC input for the throttle
+ * @return Value between 0-255, representing throttle
+ */
+uint16_t ReadThrottle() {
+    HAL_ADC_Start(&hadc1);
+    HAL_ADC_PollForConversion(&hadc1, HAL_MAX_DELAY);
+    return HAL_ADC_GetValue(&hadc1);
+}
+
+/**
+ * Reads the hall effect sensor inputs
+ * @return 3-bit integer representing, from MSB to LSB, hall A, B, C
+ */
+uint8_t GetHallSector() {
+    uint8_t hallA = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_1);
+    uint8_t hallB = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_2);
+    uint8_t hallC = HAL_GPIO_ReadPin(GPIOC, GPIO_PIN_3);
+    return (hallA << 2) | (hallB << 1) | hallC;
+}
+
+/**
+ * Sets the gate driver outputs based on the hall effect sensors and duty cycle
+ * @param sector 3-bit integer representing, from MSB to LSB, hall A, B, C
+ * @param duty Duty cycle to use, from 0% to 100%
+ */
+void SetCommutation(uint8_t sector, uint8_t duty) {
+	// Clamp duty to between 20 and 100
+	if (duty < 20) duty = 20;
+	if (duty > 100) duty = 100;
+	// Calculate PWM COMPARE value based on TIM1 settings
+    uint32_t ARR = __HAL_TIM_GET_AUTORELOAD(&htim1);
+    uint32_t compare = (ARR * duty) / 100;
+
+    // Set duty cycle for all PWM channels
+    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_1, compare);
+    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_2, compare);
+    __HAL_TIM_SET_COMPARE(&htim1, TIM_CHANNEL_3, compare);
+
+    // Enable/disable appropriate gate inputs based on sensor inputs
+    // TIM1 CH1, CH2, CH3 driving phases A, B, C respectively
+    switch (sector) {
+        case 0b101: // Sector 1: A+ B-
+            HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);  		// A+ PWM
+            HAL_TIMEx_PWMN_Stop(&htim1, TIM_CHANNEL_1); 	// A- floating
+            HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_2);   		// B+ floating
+            HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_2);	// B- PWM
+            HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_3);   		// C+ floating
+            HAL_TIMEx_PWMN_Stop(&htim1, TIM_CHANNEL_3); 	// C- floating
+            break;
+        case 0b100: // Sector 2: A+ C-
+            HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_1);  		// A+ PWM
+            HAL_TIMEx_PWMN_Stop(&htim1, TIM_CHANNEL_1); 	// A- floating
+            HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_2);   		// B+ floating
+            HAL_TIMEx_PWMN_Stop(&htim1, TIM_CHANNEL_2);		// B- floating
+            HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_3);   		// C+ floating
+            HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_3); 	// C- PWM
+            break;
+        case 0b110: // Sector 3: B+ C-
+            HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_1);  		// A+ floating
+            HAL_TIMEx_PWMN_Stop(&htim1, TIM_CHANNEL_1); 	// A- floating
+            HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);		// B+ PWM
+            HAL_TIMEx_PWMN_Stop(&htim1, TIM_CHANNEL_2);		// B- floating
+            HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_3);   		// C+ floating
+            HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_3); 	// C- PWM
+            break;
+        case 0b010: // Sector 4: B+ A-
+            HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_1);  		// A+ floating
+            HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_1); 	// A- PWM
+            HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_2);   	// B+ PWM
+            HAL_TIMEx_PWMN_Stop(&htim1, TIM_CHANNEL_2);		// B- floating
+            HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_3);   		// C+ floating
+            HAL_TIMEx_PWMN_Stop(&htim1, TIM_CHANNEL_3); 	// C- floating
+            break;
+        case 0b011: // Sector 5: C+ A-
+            HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_1);		// A+ floating
+            HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_1);	// A- PWM
+            HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_2);		// B+ floating
+            HAL_TIMEx_PWMN_Stop(&htim1, TIM_CHANNEL_2);		// B- floating
+            HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);		// C+ PWM
+            HAL_TIMEx_PWMN_Stop(&htim1, TIM_CHANNEL_3); 	// C- floating
+            break;
+        case 0b001: // Sector 6: C+ B-
+            HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_1);  		// A+ floating
+            HAL_TIMEx_PWMN_Stop(&htim1, TIM_CHANNEL_1); 	// A- floating
+            HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_2);   		// B+ floating
+            HAL_TIMEx_PWMN_Start(&htim1, TIM_CHANNEL_2);	// B- PWM
+            HAL_TIM_PWM_Start(&htim1, TIM_CHANNEL_3);		// C+ PWM
+            HAL_TIMEx_PWMN_Stop(&htim1, TIM_CHANNEL_3); 	// C- floating
+            break;
+        default:
+            // Invalid state: disable all gate inputs
+            HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_1);
+            HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_2);
+            HAL_TIM_PWM_Stop(&htim1, TIM_CHANNEL_3);
+            HAL_TIMEx_PWMN_Stop(&htim1, TIM_CHANNEL_1);
+            HAL_TIMEx_PWMN_Stop(&htim1, TIM_CHANNEL_2);
+            HAL_TIMEx_PWMN_Stop(&htim1, TIM_CHANNEL_3);
+            break;
+    }
+}
 
 /* USER CODE END 4 */
 
