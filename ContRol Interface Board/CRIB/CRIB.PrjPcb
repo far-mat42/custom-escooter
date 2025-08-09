@@ -356,6 +356,74 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=FYGWMAIT
 
+[Document19]
+DocumentPath=Real Time Clock.SchDoc
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=GYSKXQJT
+
+[Document20]
+DocumentPath=Real Time Clock.Harness
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=
+
+[Document21]
+DocumentPath=SD Card Interface.SchDoc
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=YNMPHCIJ
+
+[Document22]
+DocumentPath=SD Card Interface.Harness
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=
+
 [ProjectVariant1]
 UniqueId=3f9153f4-0ba8-42e0-af48-e72658e2d8ed
 Description=BUILD
@@ -1284,15 +1352,15 @@ Type163=1
 
 [ERC Connection Matrix]
 L1=NNNNNNNNNNNWNNNWW
-L2=NNWNNNNWWWNWNWNWN
-L3=NWEENEEEENEWNEEWN
+L2=NNNNNNNWNNNWNWNWN
+L3=NNEENEEEENEWNEEWN
 L4=NNENNNWEENNWNENWN
 L5=NNNNNNNNNNNNNNNNN
 L6=NNENNNNEENNWNENWN
 L7=NNEWNNWEENNWNENWN
 L8=NWEENEENEEENNEENN
-L9=NWEENEEEENEWNEEWW
-L10=NWNNNNNENNEWNNEWN
+L9=NNEENEEEENEWNEEWW
+L10=NNNNNNNENNEWNNEWN
 L11=NNENNNNEEENWNENWN
 L12=WWWWNWWNWWWNWWWNN
 L13=NNNNNNNNNNNWNNNWW
@@ -1387,14 +1455,16 @@ Net1=NetName=12V|NetColor=$004FA86A
 Net2=NetName=3V3|NetColor=$00E8864A
 Net3=NetName=5V_SYS|NetColor=$00000098
 Net4=NetName=5V0|NetColor=clRed
-Net5=NetName=5V1|NetColor=clRed
-Net6=NetName=5V4|NetColor=clRed
-Net7=NetName=GND|NetColor=$00999999
-Net8=NetName=NetC1_2|NetColor=clRed
-Net9=NetName=NetC2_2|NetColor=$000099FF
-Net10=NetName=NetC4_2|NetColor=$000099FF
-Net11=NetName=NetJ2_1|NetColor=$004FA86A
-Net12=NetName=VBAT_3V5|NetColor=$000099FF
+Net5=NetName=5V0L|NetColor=$00D6A7B4
+Net6=NetName=5V1|NetColor=clRed
+Net7=NetName=5V4|NetColor=clRed
+Net8=NetName=GND|NetColor=$00999999
+Net9=NetName=NetC1_2|NetColor=clRed
+Net10=NetName=NetC2_2|NetColor=$000099FF
+Net11=NetName=NetC29_2|NetColor=$00D6A7B4
+Net12=NetName=NetC4_2|NetColor=$000099FF
+Net13=NetName=NetJ2_1|NetColor=$004FA86A
+Net14=NetName=VBAT_3V5|NetColor=$000099FF
 
 [Comparison Options]
 ComparisonOptions0=Kind=Net|MinPercent=75|MinMatch=3|ShowMatch=0|UseName=-1|InclAllRules=0
