@@ -1,6 +1,6 @@
-<mxfile host="Electron" modified="2025-07-31T00:58:14.471Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/22.1.18 Chrome/120.0.6099.199 Electron/28.1.2 Safari/537.36" etag="VWO2qeXdSK8bj2huhTpX" version="22.1.18" type="device">
+<mxfile host="Electron" modified="2025-08-18T00:48:41.111Z" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/22.1.18 Chrome/120.0.6099.199 Electron/28.1.2 Safari/537.36" etag="dPcod-pxI2E4RtTQaCqI" version="22.1.18" type="device">
   <diagram name="Page-1" id="DU1WIyxH42wrOqtbVyOI">
-    <mxGraphModel dx="478" dy="281" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
+    <mxGraphModel dx="1434" dy="844" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
       <root>
         <mxCell id="0" />
         <mxCell id="1" parent="0" />
@@ -143,7 +143,7 @@
             <mxPoint x="5" as="offset" />
           </mxGeometry>
         </mxCell>
-        <mxCell id="sAeIsuw2qAjUhxFN0VYT-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;" edge="1" parent="1" source="OFXTIT4xApqQ2Ra7HmwU-5" target="OFXTIT4xApqQ2Ra7HmwU-28">
+        <mxCell id="sAeIsuw2qAjUhxFN0VYT-1" style="edgeStyle=orthogonalEdgeStyle;rounded=0;orthogonalLoop=1;jettySize=auto;html=1;exitX=0.25;exitY=1;exitDx=0;exitDy=0;entryX=0.75;entryY=0;entryDx=0;entryDy=0;" parent="1" source="OFXTIT4xApqQ2Ra7HmwU-5" target="OFXTIT4xApqQ2Ra7HmwU-28" edge="1">
           <mxGeometry relative="1" as="geometry">
             <Array as="points">
               <mxPoint x="515" y="570" />
@@ -151,7 +151,7 @@
             </Array>
           </mxGeometry>
         </mxCell>
-        <mxCell id="sAeIsuw2qAjUhxFN0VYT-2" value="SPI" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" vertex="1" connectable="0" parent="sAeIsuw2qAjUhxFN0VYT-1">
+        <mxCell id="sAeIsuw2qAjUhxFN0VYT-2" value="SPI" style="edgeLabel;html=1;align=center;verticalAlign=middle;resizable=0;points=[];" parent="sAeIsuw2qAjUhxFN0VYT-1" vertex="1" connectable="0">
           <mxGeometry x="-0.9213" y="-1" relative="1" as="geometry">
             <mxPoint as="offset" />
           </mxGeometry>
@@ -248,7 +248,7 @@
           </mxGeometry>
         </mxCell>
         <mxCell id="OFXTIT4xApqQ2Ra7HmwU-59" value="ADC (5V Range)" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#dae8fc;strokeColor=#6c8ebf;fontSize=16;" parent="1" vertex="1">
-          <mxGeometry x="650" y="250" width="80" height="52" as="geometry" />
+          <mxGeometry x="650" y="252" width="80" height="52" as="geometry" />
         </mxCell>
         <mxCell id="OFXTIT4xApqQ2Ra7HmwU-64" value="BC-MPR UART" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff2cc;strokeColor=#d6b656;fontSize=16;" parent="1" vertex="1">
           <mxGeometry x="950" y="438" width="120" height="32" as="geometry" />

@@ -1397,8 +1397,8 @@ UpdateToLatestRevision=1
 PartTypes=0
 ComponentLibIdentifierKind0=Library Name And Type
 ComponentLibraryIdentifier0=Personal_Schematic_Library_2022.SchLib
-ComponentDesignItemID0=IND_10uH_1.3A
-ComponentSymbolReference0=IND_10uH_1.3A
+ComponentDesignItemID0=CON_AMPHENOL_SD
+ComponentSymbolReference0=CON_AMPHENOL_SD
 ComponentUpdate0=1
 ComponentIsDeviceSheet0=0
 FullReplace=1
@@ -1418,30 +1418,24 @@ ParameterName0=Comment
 ParameterUpdate0=1
 ParameterName1=Component Kind
 ParameterUpdate1=1
-ParameterName2=Current Rating
+ParameterName2=Description
 ParameterUpdate2=1
-ParameterName3=Description
+ParameterName3=Library Reference
 ParameterUpdate3=1
-ParameterName4=Library Reference
+ParameterName4=Manufacturer 1
 ParameterUpdate4=1
-ParameterName5=Manufacturer 1
+ParameterName5=Manufacturer Part Number 1
 ParameterUpdate5=1
-ParameterName6=Manufacturer Part Number 1
+ParameterName6=Package/Footprint
 ParameterUpdate6=1
-ParameterName7=Mounting Type
+ParameterName7=Supplier 1
 ParameterUpdate7=1
-ParameterName8=Package/Footprint
+ParameterName8=Supplier Part Number 1
 ParameterUpdate8=1
-ParameterName9=Supplier 1
-ParameterUpdate9=1
-ParameterName10=Supplier Part Number 1
-ParameterUpdate10=1
-ParameterName11=Value
-ParameterUpdate11=1
 ModelTypeGroup0=PCBLIB
 ModelTypeUpdate0=1
 ModelType0=PCBLIB
-ModelName0=IND_ABRACON_ASPI4030S
+ModelName0=AMPHENOL_SD_CON
 ModelUpdate0=1
 
 [DatabaseUpdateOptions]
@@ -1453,18 +1447,19 @@ PartTypes=0
 [NetInfos]
 Net1=NetName=12V|NetColor=$004FA86A
 Net2=NetName=3V3|NetColor=$00E8864A
-Net3=NetName=5V_SYS|NetColor=$00000098
-Net4=NetName=5V0|NetColor=clRed
-Net5=NetName=5V0L|NetColor=$00D6A7B4
-Net6=NetName=5V1|NetColor=clRed
-Net7=NetName=5V4|NetColor=clRed
-Net8=NetName=GND|NetColor=$00999999
-Net9=NetName=NetC1_2|NetColor=clRed
-Net10=NetName=NetC2_2|NetColor=$000099FF
-Net11=NetName=NetC29_2|NetColor=$00D6A7B4
-Net12=NetName=NetC4_2|NetColor=$000099FF
-Net13=NetName=NetJ2_1|NetColor=$004FA86A
-Net14=NetName=VBAT_3V5|NetColor=$000099FF
+Net3=NetName=3V3L|NetColor=$00AFA576
+Net4=NetName=5V_SYS|NetColor=$00000098
+Net5=NetName=5V0|NetColor=clRed
+Net6=NetName=5V0L|NetColor=$00D6A7B4
+Net7=NetName=5V1|NetColor=clRed
+Net8=NetName=5V4|NetColor=clRed
+Net9=NetName=GND|NetColor=$00999999
+Net10=NetName=NetC1_2|NetColor=clRed
+Net11=NetName=NetC2_2|NetColor=$000099FF
+Net12=NetName=NetC29_2|NetColor=$00D6A7B4
+Net13=NetName=NetC4_2|NetColor=$000099FF
+Net14=NetName=NetJ2_1|NetColor=$004FA86A
+Net15=NetName=VBAT_3V5|NetColor=$000099FF
 
 [Comparison Options]
 ComparisonOptions0=Kind=Net|MinPercent=75|MinMatch=3|ShowMatch=0|UseName=-1|InclAllRules=0
