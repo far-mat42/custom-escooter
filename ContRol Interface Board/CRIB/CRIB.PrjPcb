@@ -509,6 +509,23 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
+[Document28]
+DocumentPath=Lithium Battery UVP Switch.SchDoc
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=ROMKZYUS
+
 [ProjectVariant1]
 UniqueId=3f9153f4-0ba8-42e0-af48-e72658e2d8ed
 Description=BUILD
@@ -1935,8 +1952,10 @@ Net12=NetName=NetC29_2|NetColor=$00D6A7B4
 Net13=NetName=NetC4_2|NetColor=$000099FF
 Net14=NetName=NetJ2_1|NetColor=$004FA86A
 Net15=NetName=NetQ2_3|NetColor=$00E8864A
-Net16=NetName=SD_VCC|NetColor=$00E8864A
-Net17=NetName=VBAT_3V5|NetColor=$000099FF
+Net16=NetName=NetQ4_3|NetColor=$000099FF
+Net17=NetName=SD_VCC|NetColor=$00E8864A
+Net18=NetName=VBAT_3V5|NetColor=$000099FF
+Net19=NetName=VBAT_DSG|NetColor=$000099FF
 
 [Comparison Options]
 ComparisonOptions0=Kind=Net|MinPercent=75|MinMatch=3|ShowMatch=0|UseName=-1|InclAllRules=0
