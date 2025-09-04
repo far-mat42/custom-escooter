@@ -1,0 +1,9 @@
+* C:\Farris Files\School\Side Projects\Electric Scooter\custom-escooter\ContRol Interface Board\Draft1.asc
+V1 N002 0 PULSE(0 3.3 0.05 1n 1n 50m 0.1 5)
+R1 N003 N002 1k
+C1 N003 0 0.1µ
+R2 N001 N003 10k
+V2 N001 0 3.3
+.tran 1s
+.backanno
+.end
