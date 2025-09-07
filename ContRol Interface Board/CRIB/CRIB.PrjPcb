@@ -22,7 +22,7 @@ DefaultPcbProtel=1
 DefaultPcbPcad=0
 ReorderDocumentsOnCompile=1
 NameNetsHierarchically=0
-PowerPortNamesTakePriority=0
+PowerPortNamesTakePriority=1
 AutoSheetNumbering=1
 AutoCrossReferences=1
 NewIndexingOfSheetSymbols=1
@@ -610,6 +610,23 @@ ClassGenNCAutoScope=None
 DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
+
+[Document34]
+DocumentPath=CRIB.PcbDoc
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=RASRCEAO
 
 [ProjectVariant1]
 UniqueId=3f9153f4-0ba8-42e0-af48-e72658e2d8ed
@@ -2031,16 +2048,19 @@ Net6=NetName=5V0L|NetColor=$00D6A7B4
 Net7=NetName=5V1|NetColor=clRed
 Net8=NetName=5V4|NetColor=clRed
 Net9=NetName=GND|NetColor=$00999999
-Net10=NetName=NetC1_2|NetColor=clRed
-Net11=NetName=NetC2_2|NetColor=$000099FF
-Net12=NetName=NetC29_2|NetColor=$00D6A7B4
-Net13=NetName=NetC4_2|NetColor=$000099FF
-Net14=NetName=NetJ2_1|NetColor=$004FA86A
-Net15=NetName=NetQ2_3|NetColor=$00E8864A
-Net16=NetName=NetQ4_3|NetColor=$000099FF
-Net17=NetName=SD_VCC|NetColor=$00E8864A
-Net18=NetName=VBAT_3V5|NetColor=$000099FF
-Net19=NetName=VBAT_DSG|NetColor=$000099FF
+Net10=NetName=N00000|NetColor=$000099FF
+Net11=NetName=NetC1_2|NetColor=clRed
+Net12=NetName=NetC2_2|NetColor=$000099FF
+Net13=NetName=NetC29_2|NetColor=$00D6A7B4
+Net14=NetName=NetC4_2|NetColor=$000099FF
+Net15=NetName=NetJ2_1|NetColor=$004FA86A
+Net16=NetName=NetQ2_3|NetColor=$00E8864A
+Net17=NetName=NetQ4_2|NetColor=$000099FF
+Net18=NetName=NetQ4_3|NetColor=$000099FF
+Net19=NetName=SD_VCC|NetColor=$00E8864A
+Net20=NetName=VBAT_3V5|NetColor=$000099FF
+Net21=NetName=VBAT_3V6|NetColor=$000099FF
+Net22=NetName=VBAT_DSG|NetColor=$000099FF
 
 [Comparison Options]
 ComparisonOptions0=Kind=Net|MinPercent=75|MinMatch=3|ShowMatch=0|UseName=-1|InclAllRules=0
