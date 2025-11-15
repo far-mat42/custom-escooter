@@ -44,7 +44,7 @@ CrossRefPorts=0
 CrossRefCrossSheets=1
 CrossRefSheetEntries=0
 CrossRefFollowFromMainSettings=1
-CurrentVariant=BUILD
+CurrentVariant=JLC ASSY
 
 [Preferences]
 PrefsVaultGUID=
@@ -634,6 +634,30 @@ Description=BUILD
 AllowFabrication=0
 ParameterCount=0
 VariationCount=0
+ParamVariationCount=0
+
+[ProjectVariant2]
+UniqueId=9683b8bf-5766-4667-a613-5c506c80b1bc
+Description=JLC ASSY
+AllowFabrication=0
+ParameterCount=0
+VariationCount=16
+Variation1=Designator=J19|UniqueId=\SOKJIPVQ\CMGNIEUZ|Kind=1|AlternatePart=
+Variation2=Designator=J18|UniqueId=\SOKJIPVQ\AOCMRXYZ|Kind=1|AlternatePart=
+Variation3=Designator=J5|UniqueId=\UCPARETY\MPERAAOT|Kind=1|AlternatePart=
+Variation4=Designator=J6|UniqueId=\HTOAPOQQ\TZIVTGOZ|Kind=1|AlternatePart=
+Variation5=Designator=J4|UniqueId=\UCPARETY\IJCPHGMQ|Kind=1|AlternatePart=
+Variation6=Designator=J2|UniqueId=\TSPJRRLG\ROMNBVSN|Kind=1|AlternatePart=
+Variation7=Designator=J3|UniqueId=\TSPJRRLG\NCNTUXMX|Kind=1|AlternatePart=
+Variation8=Designator=J7|UniqueId=\PIICRGLO\MARCSSEQ|Kind=1|AlternatePart=
+Variation9=Designator=J8|UniqueId=\HYPXLMMG\APZKOTCG|Kind=1|AlternatePart=
+Variation10=Designator=J9|UniqueId=\EKKBDFDG\WVOTOTXQ|Kind=1|AlternatePart=
+Variation11=Designator=J11|UniqueId=\PZTTIYDH\GWSJLIHF\OQGWGDDN|Kind=1|AlternatePart=
+Variation12=Designator=J12|UniqueId=\AHJPOBJB\FORRGUDE|Kind=1|AlternatePart=
+Variation13=Designator=J13|UniqueId=\AHJPOBJB\RJIWNTOW|Kind=1|AlternatePart=
+Variation14=Designator=J14|UniqueId=\SOKJIPVQ\ONOTEWAL|Kind=1|AlternatePart=
+Variation15=Designator=J15|UniqueId=\SOKJIPVQ\HDHOYTCD|Kind=1|AlternatePart=
+Variation16=Designator=J16|UniqueId=\SOKJIPVQ\PFZYYZOY|Kind=1|AlternatePart=
 ParamVariationCount=0
 
 [GeneratedDocument1]

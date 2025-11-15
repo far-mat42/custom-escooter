@@ -1,7 +1,7 @@
 Protel Design System Design Rule Check
 PCB File : C:\Farris Files\School\Side Projects\Electric Scooter\custom-escooter\ContRol Interface Board\CRIB\CRIB.PcbDoc
-Date     : 2025-11-09
-Time     : 5:43:10 PM
+Date     : 2025-11-15
+Time     : 5:37:35 PM
 
 Processing Rule : Clearance Constraint (Gap=0.5mm) (HasFootprint('MOUNTING_HOLE_3mm')),(All)
 Rule Violations :0
@@ -66,4 +66,4 @@ Rule Violations :0
 
 Violations Detected : 0
 Waived Violations : 0
-Time Elapsed        : 00:00:01
+Time Elapsed        : 00:00:00
