@@ -658,7 +658,7 @@ UniqueId=9683b8bf-5766-4667-a613-5c506c80b1bc
 Description=JLC ASSY
 AllowFabrication=0
 ParameterCount=0
-VariationCount=19
+VariationCount=20
 Variation1=Designator=J19|UniqueId=\SOKJIPVQ\CMGNIEUZ|Kind=1|AlternatePart=
 Variation2=Designator=J18|UniqueId=\SOKJIPVQ\AOCMRXYZ|Kind=1|AlternatePart=
 Variation3=Designator=J5|UniqueId=\UCPARETY\MPERAAOT|Kind=1|AlternatePart=
@@ -678,6 +678,7 @@ Variation16=Designator=J16|UniqueId=\SOKJIPVQ\PFZYYZOY|Kind=1|AlternatePart=
 Variation17=Designator=L2|UniqueId=\MFODTAAV\HILVXBAL|Kind=1|AlternatePart=
 Variation18=Designator=L3|UniqueId=\JHIUAITT\WQDLOHAH|Kind=1|AlternatePart=
 Variation19=Designator=L1|UniqueId=\MFODTAAV\WJWEYDMF|Kind=1|AlternatePart=
+Variation20=Designator=Y2|UniqueId=\PZTTIYDH\GWSJLIHF\XTXHITKH|Kind=1|AlternatePart=
 ParamVariationCount=0
 
 [GeneratedDocument1]
@@ -758,6 +759,10 @@ DItemRevisionGUID=
 
 [GeneratedDocument20]
 DocumentPath=Project Outputs for CRIB\Design Rule Check - CRIB.html
+DItemRevisionGUID=
+
+[GeneratedDocument21]
+DocumentPath=Project Outputs for CRIB\Pick Place for CRIB(JLC ASSY).csv
 DItemRevisionGUID=
 
 [Configuration1]
@@ -992,6 +997,10 @@ OutputName2=Generates pick and place files
 OutputDocumentPath2=
 OutputVariantName2=[No Variations]
 OutputDefault2=0
+Configuration2_Name1=ForceUpdateSettings
+Configuration2_Item1=False
+Configuration2_Name2=OutputConfigurationParameter1
+Configuration2_Item2=Record=PickPlaceView|Units=Metric|GenerateCSVFormat=True|GenerateTextFormat=False|ShowUnits=False|Separator=.|ExcludeFilterParam=False|IncludeVariations=False|IncludeStandardNoBOM=True|Filter= |FilterActive=False|YFlip=False|DifferentFootprints=False|Column#1=Name:Designator,Fixed:True,Metric:False,Visible:True,Sort:Ascending,SortIndex:0,Position:0|Column#2=Name:Comment,Fixed:True,Metric:False,Visible:False,Sort:None,Position:1|Column#3=Name:Layer,Fixed:True,Metric:False,Visible:True,Sort:None,Position:6|Column#4=Name:Footprint,Fixed:True,Metric:False,Visible:False,Sort:None,Position:2|Column#5=Name:Footprint Description,Fixed:True,Metric:False,Visible:False,Sort:None,Position:3|Column#6=Name:Center-X,Fixed:True,Metric:True,Visible:True,Sort:None,Position:4|Column#7=Name:Center-Y,Fixed:True,Metric:True,Visible:True,Sort:None,Position:5|Column#8=Name:Rotation,Fixed:True,Metric:False,Visible:True,Sort:None,Position:7|Column#9=Name:Description,Fixed:True,Metric:False,Visible:False,Sort:None,Position:8|Column#10=Name:ComponentKind,Fixed:True,Metric:False,Visible:False,Sort:None,Position:9|Column#11=Name:Height,Fixed:True,Metric:True,Visible:False,Sort:None,Position:10|Column#12=Name:Ref-X,Fixed:True,Metric:True,Visible:False,Sort:None,Position:11|Column#13=Name:Ref-Y,Fixed:True,Metric:True,Visible:False,Sort:None,Position:12|Column#14=Name:Pad-X,Fixed:True,Metric:True,Visible:False,Sort:None,Position:13|Column#15=Name:Pad-Y,Fixed:True,Metric:True,Visible:False,Sort:None,Position:14|Column#16=Name:Variation,Fixed:True,Metric:False,Visible:False,Sort:None,Position:15|Column#17=Name:Supplier Part Number 1,Fixed:False,Metric:False,Visible:False,Sort:None,Position:42,Type:0|Column#18=Name:Pitch,Fixed:False,Metric:False,Visible:False,Sort:None,Position:37,Type:0|Column#19=Name:Inductance,Fixed:False,Metric:False,Visible:False,Sort:None,Position:23,Type:0|Column#20=Name:Manufacturer,Fixed:False,Metric:False,Visible:False,Sort:None,Position:27,Type:0|Column#21=Name:Rated DC Voltage (URdc),Fixed:False,Metric:False,Visible:False,Sort:None,Position:39,Type:0|Column#22=Name:Orientation,Fixed:False,Metric:False,Visible:False,Sort:None,Position:33,Type:0|Column#23=Name:Manufacturer 1,Fixed:False,Metric:False,Visible:False,Sort:None,Position:28,Type:0|Column#24=Name:Current Rating,Fixed:False,Metric:False,Visible:False,Sort:None,Position:17,Type:0|Column#25=Name:Package/Footprint,Fixed:False,Metric:False,Visible:False,Sort:None,Position:36,Type:0|Column#26=Name:Frequency,Fixed:False,Metric:False,Visible:False,Sort:None,Position:22,Type:0|Column#27=Name:Power,Fixed:False,Metric:False,Visible:False,Sort:None,Position:38,Type:0|Column#28=Name:Inductance Tolerance,Fixed:False,Metric:False,Visible:False,Sort:None,Position:24,Type:0|Column#29=Name:Load Capacitance,Fixed:False,Metric:False,Visible:False,Sort:None,Position:26,Type:0|Column#30=Name:Family,Fixed:False,Metric:False,Visible:False,Sort:None,Position:20,Type:0|Column#31=Name:DC Resistance (DCR),Fixed:False,Metric:False,Visible:False,Sort:None,Position:18,Type:0|Column#32=Name:Temperature Characteristics Code,Fixed:False,Metric:False,Visible:False,Sort:None,Position:43,Type:0|Column#33=Name:Package,Fixed:False,Metric:False,Visible:False,Sort:None,Position:35,Type:0|Column#34=Name:Value,Fixed:False,Metric:False,Visible:False,Sort:None,Position:45,Type:0|Column#35=Name:Capacitance,Fixed:False,Metric:False,Visible:False,Sort:None,Position:16,Type:0|Column#36=Name:Dielectric,Fixed:False,Metric:False,Visible:False,Sort:None,Position:19,Type:0|Column#37=Name:Manufacturer Part Number 1,Fixed:False,Metric:False,Visible:False,Sort:None,Position:30,Type:0|Column#38=Name:Output Current,Fixed:False,Metric:False,Visible:False,Sort:None,Position:34,Type:0|Column#39=Name:Forward Voltage Drop,Fixed:False,Metric:False,Visible:False,Sort:None,Position:21,Type:0|Column#40=Name:Saturation Current,Fixed:False,Metric:False,Visible:False,Sort:None,Position:40,Type:0|Column#41=Name:Voltage Rating,Fixed:False,Metric:False,Visible:False,Sort:None,Position:46,Type:0|Column#42=Name:Mounting Type,Fixed:False,Metric:False,Visible:False,Sort:None,Position:31,Type:0|Column#43=Name:Input Voltage (Max),Fixed:False,Metric:False,Visible:False,Sort:None,Position:25,Type:0|Column#44=Name:Supplier 1,Fixed:False,Metric:False,Visible:False,Sort:None,Position:41,Type:0|Column#45=Name:Tolerance,Fixed:False,Metric:False,Visible:False,Sort:None,Position:44,Type:0|Column#46=Name:Operating Temperature,Fixed:False,Metric:False,Visible:False,Sort:None,Position:32,Type:0|Column#47=Name:Manufacturer Part Number,Fixed:False,Metric:False,Visible:False,Sort:None,Position:29,Type:0|DocumentPath=C:\Farris Files\School\Side Projects\Electric Scooter\custom-escooter\ContRol Interface Board\CRIB\CRIB.PcbDoc
 OutputType3=Test Points For Assembly
 OutputName3=Test Point Report
 OutputDocumentPath3=
@@ -1081,7 +1090,7 @@ OutputDefault12=0
 Configuration12_Name1=ForceUpdateSettings
 Configuration12_Item1=False
 Configuration12_Name2=OutputConfigurationParameter1
-Configuration12_Item2=AddToAllLayerClasses.Set= |AddToAllPlots.Set=SerializeLayerHash.Version~2,ClassName~TPlotLayerStateArray|BoardID=RASRCEAO|CentrePlots=False|DrillDrawingSymbol=GraphicsSymbol|DrillDrawingSymbolSize=500000|EmbeddedApertures=True|FilmBorderSize=10000000|FilmXSize=200000000|FilmYSize=160000000|FlashAllFills=False|FlashPadShapes=True|G54OnApertureChange=False|GenerateDRCRulesFile=False|GenerateDRCRulesFile=False|GenerateReliefShapes=True|GenerateReports=True|GerberUnit=Imperial|GerberUnit=Imperial|IncludeUnconnectedMidLayerPads=True|LayerClassesMirror.Set= |LayerClassesPlot.Set= |LeadingAndTrailingZeroesMode=SuppressLeadingZeroes|MaxApertureSize=2500000|MergePadAndRegion=False|MinusApertureTolerance=50|MinusApertureTolerance=50|Mirror.Set=SerializeLayerHash.Version~2,ClassName~TPlotLayerStateArray|MirrorDrillDrawingPlots=False|MirrorDrillGuidePlots=False|NoRegularPolygons=False|NumberOfDecimals=5|NumberOfDecimals=5|OptimizeChangeLocationCommands=True|OptimizeChangeLocationCommands=True|OriginPosition=Relative|OutputFormat=Different|Panelize=False|Plot.Set=SerializeLayerHash.Version~2,ClassName~TPlotLayerStateArray,16777217~1,16777218~1,16777219~1,16842751~1,16973830~1,16973831~1,16973834~1,16973835~1,16973832~1,16973833~1,16908289~1|PlotBoardProfile=True|PlotBoardProfileFileName= |PlotPositivePlaneLayers=False|PlotUsedDrillDrawingLayerPairs=False|PlotUsedDrillGuideLayerPairs=False|PlusApertureTolerance=50|PlusApertureTolerance=50|Record=GerberView|SoftwareArcs=False|Sorted=False|Sorted=False|UncheckPlotDrillDrawingLayerPair0_Backdrill=False|UncheckPlotDrillDrawingLayerPair0_Checked=False|UncheckPlotDrillDrawingLayerPair0_DrillType=Regular|UncheckPlotDrillDrawingLayerPair0_FileName= |UncheckPlotDrillDrawingLayerPair0_HighLayer=Bottom Layer|UncheckPlotDrillDrawingLayerPair0_LowLayer=Top Layer|UncheckPlotDrillGuideLayerPair0_Backdrill=False|UncheckPlotDrillGuideLayerPair0_Checked=False|UncheckPlotDrillGuideLayerPair0_DrillType=Regular|UncheckPlotDrillGuideLayerPair0_FileName= |UncheckPlotDrillGuideLayerPair0_HighLayer=Bottom Layer|UncheckPlotDrillGuideLayerPair0_LowLayer=Top Layer|DocumentPath=C:\Farris Files\School\Side Projects\Electric Scooter\custom-escooter\ContRol Interface Board\CRIB\CRIB.PcbDoc
+Configuration12_Item2=AddToAllLayerClasses.Set= |AddToAllPlots.Set=SerializeLayerHash.Version~2,ClassName~TPlotLayerStateArray|BoardID=RASRCEAO|CentrePlots=False|DrillDrawingSymbol=GraphicsSymbol|DrillDrawingSymbolSize=500000|EmbeddedApertures=True|FilmBorderSize=10000000|FilmXSize=200000000|FilmYSize=160000000|FlashAllFills=False|FlashPadShapes=True|G54OnApertureChange=False|GenerateDRCRulesFile=False|GenerateDRCRulesFile=False|GenerateReliefShapes=True|GenerateReports=True|GerberUnit=Imperial|GerberUnit=Imperial|IncludeUnconnectedMidLayerPads=True|LayerClassesMirror.Set= |LayerClassesPlot.Set= |LeadingAndTrailingZeroesMode=SuppressLeadingZeroes|MaxApertureSize=2500000|MergePadAndRegion=False|MinusApertureTolerance=50|MinusApertureTolerance=50|Mirror.Set=SerializeLayerHash.Version~2,ClassName~TPlotLayerStateArray|MirrorDrillDrawingPlots=False|MirrorDrillGuidePlots=False|NoRegularPolygons=False|NumberOfDecimals=5|NumberOfDecimals=5|OptimizeChangeLocationCommands=True|OptimizeChangeLocationCommands=True|OriginPosition=Relative|OutputFormat=Different|Panelize=False|Plot.Set=SerializeLayerHash.Version~2,ClassName~TPlotLayerStateArray,16777217~1,16777218~1,16777219~1,16842751~1,16973830~1,16973831~1,16973834~1,16973835~1,16973832~1,16973833~1|PlotBoardProfile=True|PlotBoardProfileFileName= |PlotPositivePlaneLayers=False|PlotUsedDrillDrawingLayerPairs=False|PlotUsedDrillGuideLayerPairs=False|PlusApertureTolerance=50|PlusApertureTolerance=50|Record=GerberView|SoftwareArcs=False|Sorted=False|Sorted=False|UncheckPlotDrillDrawingLayerPair0_Backdrill=False|UncheckPlotDrillDrawingLayerPair0_Checked=False|UncheckPlotDrillDrawingLayerPair0_DrillType=Regular|UncheckPlotDrillDrawingLayerPair0_FileName= |UncheckPlotDrillDrawingLayerPair0_HighLayer=Bottom Layer|UncheckPlotDrillDrawingLayerPair0_LowLayer=Top Layer|UncheckPlotDrillGuideLayerPair0_Backdrill=False|UncheckPlotDrillGuideLayerPair0_Checked=False|UncheckPlotDrillGuideLayerPair0_DrillType=Regular|UncheckPlotDrillGuideLayerPair0_FileName= |UncheckPlotDrillGuideLayerPair0_HighLayer=Bottom Layer|UncheckPlotDrillGuideLayerPair0_LowLayer=Top Layer|DocumentPath=C:\Farris Files\School\Side Projects\Electric Scooter\custom-escooter\ContRol Interface Board\CRIB\CRIB.PcbDoc
 
 [OutputGroup6]
 Name=Report Outputs
@@ -1733,8 +1742,8 @@ UpdateToLatestRevision=1
 PartTypes=0
 ComponentLibIdentifierKind0=Library Name And Type
 ComponentLibraryIdentifier0=Personal_Schematic_Library_2022.SchLib
-ComponentDesignItemID0=CRYSTAL_8MHZ_8PF
-ComponentSymbolReference0=CRYSTAL_8MHZ_8PF
+ComponentDesignItemID0=BQ25170JDSGR
+ComponentSymbolReference0=BQ25170JDSGR
 ComponentUpdate0=1
 ComponentIsDeviceSheet0=0
 FullReplace=1
@@ -1756,28 +1765,22 @@ ParameterName1=Component Kind
 ParameterUpdate1=1
 ParameterName2=Description
 ParameterUpdate2=1
-ParameterName3=Frequency
+ParameterName3=Library Reference
 ParameterUpdate3=1
-ParameterName4=Library Reference
+ParameterName4=Manufacturer 1
 ParameterUpdate4=1
-ParameterName5=Load Capacitance
+ParameterName5=Manufacturer Part Number 1
 ParameterUpdate5=1
-ParameterName6=Manufacturer 1
+ParameterName6=Package/Footprint
 ParameterUpdate6=1
-ParameterName7=Manufacturer Part Number 1
+ParameterName7=Supplier 1
 ParameterUpdate7=1
-ParameterName8=Mounting Type
+ParameterName8=Supplier Part Number 1
 ParameterUpdate8=1
-ParameterName9=Package/Footprint
-ParameterUpdate9=1
-ParameterName10=Supplier 1
-ParameterUpdate10=1
-ParameterName11=Supplier Part Number 1
-ParameterUpdate11=1
 ModelTypeGroup0=PCBLIB
 ModelTypeUpdate0=1
 ModelType0=PCBLIB
-ModelName0=XTAL_WURTH_830059082
+ModelName0=TI_8-WSON
 ModelUpdate0=1
 
 [DatabaseUpdateOptions]
