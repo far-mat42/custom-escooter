@@ -1,7 +1,7 @@
 Protel Design System Design Rule Check
 PCB File : C:\Farris Files\School\Side Projects\Electric Scooter\custom-escooter\ContRol Interface Board\CRIB\CRIB.PcbDoc
-Date     : 2025-11-15
-Time     : 5:37:35 PM
+Date     : 2025-11-16
+Time     : 1:45:21 PM
 
 Processing Rule : Clearance Constraint (Gap=0.5mm) (HasFootprint('MOUNTING_HOLE_3mm')),(All)
 Rule Violations :0
@@ -25,6 +25,9 @@ Processing Rule : Width Constraint (Min=0.16mm) (Max=1816.048mm) (Preferred=0.2m
 Rule Violations :0
 
 Processing Rule : Routing Topology Rule(Topology=Shortest) (All)
+Rule Violations :0
+
+Processing Rule : Differential Pairs Uncoupled Length using the Gap Constraints (Min=0.102mm) (Max=0.102mm) (Prefered=0.102mm)  and Width Constraints (Min=0.102mm) (Max=1816.048mm) (Prefered=0.102mm) (All)
 Rule Violations :0
 
 Processing Rule : Power Plane Connect Rule(Direct Connect )(Expansion=0.508mm) (Conductor Width=0.254mm) (Air Gap=0.254mm) (Entries=4) (InPadClass('PowerPads'))
@@ -60,10 +63,13 @@ Rule Violations :0
 Processing Rule : Board Clearance Constraint (Gap=0mm) (All)
 Rule Violations :0
 
+Processing Rule : Component Clearance Constraint ( Horizontal Gap = 0.102mm, Vertical Gap = 0.102mm ) (All),(All) 
+Rule Violations :0
+
 Processing Rule : Height Constraint (Min=0mm) (Max=1816.048mm) (Prefered=12.7mm) (All)
 Rule Violations :0
 
 
 Violations Detected : 0
 Waived Violations : 0
-Time Elapsed        : 00:00:00
+Time Elapsed        : 00:00:01

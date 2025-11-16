@@ -628,6 +628,23 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=RASRCEAO
 
+[Document35]
+DocumentPath=CRIB.BomDoc
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=
+
 [ProjectVariant1]
 UniqueId=3f9153f4-0ba8-42e0-af48-e72658e2d8ed
 Description=BUILD
@@ -641,7 +658,7 @@ UniqueId=9683b8bf-5766-4667-a613-5c506c80b1bc
 Description=JLC ASSY
 AllowFabrication=0
 ParameterCount=0
-VariationCount=16
+VariationCount=19
 Variation1=Designator=J19|UniqueId=\SOKJIPVQ\CMGNIEUZ|Kind=1|AlternatePart=
 Variation2=Designator=J18|UniqueId=\SOKJIPVQ\AOCMRXYZ|Kind=1|AlternatePart=
 Variation3=Designator=J5|UniqueId=\UCPARETY\MPERAAOT|Kind=1|AlternatePart=
@@ -658,6 +675,9 @@ Variation13=Designator=J13|UniqueId=\AHJPOBJB\RJIWNTOW|Kind=1|AlternatePart=
 Variation14=Designator=J14|UniqueId=\SOKJIPVQ\ONOTEWAL|Kind=1|AlternatePart=
 Variation15=Designator=J15|UniqueId=\SOKJIPVQ\HDHOYTCD|Kind=1|AlternatePart=
 Variation16=Designator=J16|UniqueId=\SOKJIPVQ\PFZYYZOY|Kind=1|AlternatePart=
+Variation17=Designator=L2|UniqueId=\MFODTAAV\HILVXBAL|Kind=1|AlternatePart=
+Variation18=Designator=L3|UniqueId=\JHIUAITT\WQDLOHAH|Kind=1|AlternatePart=
+Variation19=Designator=L1|UniqueId=\MFODTAAV\WJWEYDMF|Kind=1|AlternatePart=
 ParamVariationCount=0
 
 [GeneratedDocument1]
@@ -1629,8 +1649,8 @@ UpdateToLatestRevision=1
 PartTypes=0
 ComponentLibIdentifierKind0=Library Name And Type
 ComponentLibraryIdentifier0=Personal_Schematic_Library_2022.SchLib
-ComponentDesignItemID0=CON_2POS_COIN
-ComponentSymbolReference0=CON_2POS_COIN
+ComponentDesignItemID0=CRYSTAL_8MHZ_8PF
+ComponentSymbolReference0=CRYSTAL_8MHZ_8PF
 ComponentUpdate0=1
 ComponentIsDeviceSheet0=0
 FullReplace=1
@@ -1652,24 +1672,28 @@ ParameterName1=Component Kind
 ParameterUpdate1=1
 ParameterName2=Description
 ParameterUpdate2=1
-ParameterName3=Library Reference
+ParameterName3=Frequency
 ParameterUpdate3=1
-ParameterName4=Manufacturer 1
+ParameterName4=Library Reference
 ParameterUpdate4=1
-ParameterName5=Manufacturer Part Number 1
+ParameterName5=Load Capacitance
 ParameterUpdate5=1
-ParameterName6=Mounting Type
+ParameterName6=Manufacturer 1
 ParameterUpdate6=1
-ParameterName7=Package/Footprint
+ParameterName7=Manufacturer Part Number 1
 ParameterUpdate7=1
-ParameterName8=Supplier 1
+ParameterName8=Mounting Type
 ParameterUpdate8=1
-ParameterName9=Supplier Part Number 1
+ParameterName9=Package/Footprint
 ParameterUpdate9=1
+ParameterName10=Supplier 1
+ParameterUpdate10=1
+ParameterName11=Supplier Part Number 1
+ParameterUpdate11=1
 ModelTypeGroup0=PCBLIB
 ModelTypeUpdate0=1
 ModelType0=PCBLIB
-ModelName0=TE_COIN_20MM
+ModelName0=XTAL_WURTH_830059082
 ModelUpdate0=1
 
 [DatabaseUpdateOptions]
