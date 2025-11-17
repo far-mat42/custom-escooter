@@ -67,6 +67,23 @@ GenerateClassCluster=0
 DocumentUniqueId=MVDQXXAO
 
 [Document2]
+DocumentPath=..\Altium Files\Libraries\ST-Link V2 Dongle.PcbDoc
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=FCABXVFT
+
+[Document3]
 DocumentPath=..\Altium Files\Libraries\Personal_Footprint_Library_2022.PcbLib
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -83,7 +100,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document3]
+[Document4]
 DocumentPath=..\Altium Files\Libraries\Personal_Schematic_Library_2022.SchLib
 AnnotationEnabled=1
 AnnotateStartValue=1
