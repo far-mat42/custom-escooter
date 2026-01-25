@@ -64,7 +64,7 @@ ClassGenCCAutoRoomEnabled=0
 ClassGenNCAutoScope=None
 DItemRevisionGUID=
 GenerateClassCluster=0
-DocumentUniqueId=
+DocumentUniqueId=DPFTEXWW
 
 [Document2]
 DocumentPath=..\..\Altium Files\Libraries\Personal_Schematic_Library_2022.SchLib
@@ -81,7 +81,7 @@ ClassGenCCAutoRoomEnabled=0
 ClassGenNCAutoScope=None
 DItemRevisionGUID=
 GenerateClassCluster=0
-DocumentUniqueId=
+DocumentUniqueId=DTXTIUXS
 
 [Document3]
 DocumentPath=Rose LanteRn.SchDoc
@@ -116,6 +116,10 @@ ClassGenNCAutoScope=None
 DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=HOJBTJAU
+
+[GeneratedDocument1]
+DocumentPath=Project Outputs for Rose LanteRn\Design Rule Check - Rose LanteRn.html
+DItemRevisionGUID=
 
 [Configuration1]
 Name=Sources
