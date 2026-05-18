@@ -487,6 +487,7 @@ SCH_ExpandSheetNumber=0
 SCH_ExpandDocumentNumber=0
 SCH_HasExpandLogicalToPhysicalSheets=-1
 SaveSettingsToOutJob=0
+Esd_PrintColor=0
 
 [OutputGroup1]
 Name=Netlist Outputs
