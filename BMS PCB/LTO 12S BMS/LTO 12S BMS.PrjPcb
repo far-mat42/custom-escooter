@@ -136,6 +136,23 @@ GenerateClassCluster=0
 DocumentUniqueId=DTXTIUXS
 
 [Document6]
+DocumentPath=High_Side_FETs.SchDoc
+AnnotationEnabled=1
+AnnotateStartValue=1
+AnnotationIndexControlEnabled=0
+AnnotateSuffix=
+AnnotateScope=All
+AnnotateOrder=-1
+DoLibraryUpdate=1
+DoDatabaseUpdate=1
+ClassGenCCAutoEnabled=1
+ClassGenCCAutoRoomEnabled=0
+ClassGenNCAutoScope=None
+DItemRevisionGUID=
+GenerateClassCluster=0
+DocumentUniqueId=RZVRKZLH
+
+[Document7]
 DocumentPath=STM32_MCU.SchDoc
 AnnotationEnabled=0
 AnnotateStartValue=1
@@ -152,7 +169,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=PQGZFLMQ
 
-[Document7]
+[Document8]
 DocumentPath=BQ76952_AFE.Harness
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -169,7 +186,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document8]
+[Document9]
 DocumentPath=Temperature_Sense.SchDoc
 AnnotationEnabled=0
 AnnotateStartValue=1
@@ -186,7 +203,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=JCONFACB
 
-[Document9]
+[Document10]
 DocumentPath=STM32_MCU.Harness
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -203,7 +220,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document10]
+[Document11]
 DocumentPath=Pack_Interface.SchDoc
 AnnotationEnabled=0
 AnnotateStartValue=1
@@ -220,7 +237,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=YMCGQEKZ
 
-[Document11]
+[Document12]
 DocumentPath=Pack_Interface.Harness
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -237,7 +254,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document12]
+[Document13]
 DocumentPath=LTO 12S BMS.OutJob
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -254,7 +271,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
 
-[Document13]
+[Document14]
 DocumentPath=LTO 12S BMS.PcbDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -271,7 +288,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=VHDVSWXE
 
-[Document14]
+[Document15]
 DocumentPath=Balancing_FETs.SchDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -288,7 +305,7 @@ DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=VWMEAYVV
 
-[Document15]
+[Document16]
 DocumentPath=LTO 12S BMS.BomDoc
 AnnotationEnabled=1
 AnnotateStartValue=1
@@ -304,23 +321,6 @@ ClassGenNCAutoScope=None
 DItemRevisionGUID=
 GenerateClassCluster=0
 DocumentUniqueId=
-
-[Document16]
-DocumentPath=High_Side_FETs.SchDoc
-AnnotationEnabled=1
-AnnotateStartValue=1
-AnnotationIndexControlEnabled=0
-AnnotateSuffix=
-AnnotateScope=All
-AnnotateOrder=-1
-DoLibraryUpdate=1
-DoDatabaseUpdate=1
-ClassGenCCAutoEnabled=1
-ClassGenCCAutoRoomEnabled=0
-ClassGenNCAutoScope=None
-DItemRevisionGUID=
-GenerateClassCluster=0
-DocumentUniqueId=RZVRKZLH
 
 [Document17]
 DocumentPath=High_Side_FETs.Harness
@@ -344,7 +344,7 @@ UniqueId=AFBFE0E9-C139-4BCE-A2B7-B05FB35DD58C
 Description=BUILD
 AllowFabrication=0
 ParameterCount=0
-VariationCount=9
+VariationCount=13
 Variation1=Designator=U3|UniqueId=\WYBVDNCL\MVOORRWN|Kind=1|AlternatePart=
 Variation2=Designator=C28|UniqueId=\WYBVDNCL\RYRTTXOS|Kind=1|AlternatePart=
 Variation3=Designator=R51|UniqueId=\WYBVDNCL\HHYXKNBG|Kind=1|AlternatePart=
@@ -352,8 +352,12 @@ Variation4=Designator=R66|UniqueId=\WYBVDNCL\XVLGJBCV|Kind=1|AlternatePart=
 Variation5=Designator=R81|UniqueId=\FGPYKIHW\OGSLCAJG|Kind=1|AlternatePart=
 Variation6=Designator=R83|UniqueId=\FGPYKIHW\VMBFDJPC|Kind=1|AlternatePart=
 Variation7=Designator=R82|UniqueId=\FGPYKIHW\GFMLBTNM|Kind=1|AlternatePart=
-Variation8=Designator=R90|UniqueId=\OVWQHXVW\NNEVQFIR|Kind=1|AlternatePart=
-Variation9=Designator=R91|UniqueId=\OVWQHXVW\KVDNWAIR|Kind=1|AlternatePart=
+Variation8=Designator=R57|UniqueId=\OVWQHXVW\LYXQQLVE|Kind=1|AlternatePart=
+Variation9=Designator=R87|UniqueId=\OVWQHXVW\BBYULHDA|Kind=1|AlternatePart=
+Variation10=Designator=R88|UniqueId=\OVWQHXVW\NODNCABI|Kind=1|AlternatePart=
+Variation11=Designator=R47|UniqueId=\FGPYKIHW\PKCKVYZR|Kind=1|AlternatePart=
+Variation12=Designator=R46|UniqueId=\FGPYKIHW\CKTVPMLL|Kind=1|AlternatePart=
+Variation13=Designator=J10|UniqueId=\CJPJBDFH\XHUGJHEE|Kind=1|AlternatePart=
 ParamVariationCount=0
 
 [GeneratedDocument1]
