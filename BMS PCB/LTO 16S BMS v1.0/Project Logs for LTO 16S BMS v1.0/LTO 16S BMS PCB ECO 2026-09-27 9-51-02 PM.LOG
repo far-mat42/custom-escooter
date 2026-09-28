@@ -1,0 +1,91 @@
+Removed Member From Class: ClassName=Balancing FETs Member=Q21
+Removed Member From Class: ClassName=High Side FETs Member=R45
+Removed Member From Class: ClassName=Balancing FETs Member=R69
+Removed Member From Class: ClassName=Balancing FETs Member=R76
+Removed Member From Class: ClassName=Balancing FETs Member=R103
+Removed Member From Class: ClassName=High Side FETs Member=TP31
+Removed Member From Class: ClassName=Balancing FETs Member=TP53
+Added Pin To Net: NetName=VBAT+_F Pin=MH5-0
+Added Pin To Net: NetName=VBAT- Pin=MH6-0
+Added Pin To Net: NetName=VPACK+ Pin=MH7-0
+Added Pin To Net: NetName=VPACK- Pin=MH8-0
+Added Member To Class: ClassName=Balancing FETs Member=Component C4 CAP_0.1uF_16V_0603
+Added Member To Class: ClassName=Balancing FETs Member=Component C7 CAP_0.1uF_16V_0603
+Added Member To Class: ClassName=Balancing FETs Member=Component C10 CAP_0.1uF_16V_0603
+Added Member To Class: ClassName=Balancing FETs Member=Component C12 CAP_0.1uF_16V_0603
+Added Member To Class: ClassName=Balancing FETs Member=Component C13 CAP_0.1uF_16V_0603
+Added Member To Class: ClassName=Balancing FETs Member=Component C14 CAP_0.1uF_16V_0603
+Added Member To Class: ClassName=Balancing FETs Member=Component C15 CAP_0.1uF_16V_0603
+Added Member To Class: ClassName=Balancing FETs Member=Component C16 CAP_0.1uF_16V_0603
+Added Member To Class: ClassName=Balancing FETs Member=Component D10 DIO_ZENER_3V3
+Added Member To Class: ClassName=Balancing FETs Member=Component D12 DIO_ZENER_3V3
+Added Member To Class: ClassName=Balancing FETs Member=Component D13 DIO_ZENER_3V3
+Added Member To Class: ClassName=Balancing FETs Member=Component D15 DIO_ZENER_3V3
+Added Member To Class: ClassName=Balancing FETs Member=Component D16 DIO_ZENER_3V3
+Added Member To Class: ClassName=High Side FETs Member=Component D23 DIO_SCHOTTKY_100V_1A
+Added Member To Class: ClassName=High Side FETs Member=Component D24 DIO_ZENER_16V
+Added Member To Class: ClassName=Balancing FETs Member=Component Q1 NMOS_20V_6A
+Added Member To Class: ClassName=Balancing FETs Member=Component Q3 NMOS_20V_6A
+Added Member To Class: ClassName=Balancing FETs Member=Component Q10 NMOS_20V_6A
+Added Member To Class: ClassName=Balancing FETs Member=Component Q13 NMOS_20V_6A
+Added Member To Class: ClassName=Balancing FETs Member=Component Q14 NMOS_20V_6A
+Added Member To Class: ClassName=Balancing FETs Member=Component Q15 NMOS_20V_6A
+Added Member To Class: ClassName=High Side FETs Member=Component Q27 NMOS_100V_170mA
+Added Member To Class: ClassName=Balancing FETs Member=Component R1 RES_100O_0603_1%
+Added Member To Class: ClassName=Balancing FETs Member=Component R2 RES_100O_0603_1%
+Added Member To Class: ClassName=Balancing FETs Member=Component R3 RES_4.99O_2512_1%
+Added Member To Class: ClassName=Balancing FETs Member=Component R4 RES_4.99O_2512_1%
+Added Member To Class: ClassName=Balancing FETs Member=Component R5 RES_1kO_0603_1%
+Added Member To Class: ClassName=Balancing FETs Member=Component R6 RES_1kO_0603_1%
+Added Member To Class: ClassName=Balancing FETs Member=Component R8 RES_100O_0603_1%
+Added Member To Class: ClassName=Balancing FETs Member=Component R10 RES_4.99O_2512_1%
+Added Member To Class: ClassName=Balancing FETs Member=Component R11 RES_1kO_0603_1%
+Added Member To Class: ClassName=Balancing FETs Member=Component R12 RES_1kO_0603_1%
+Added Member To Class: ClassName=Balancing FETs Member=Component R14 RES_100O_0603_1%
+Added Member To Class: ClassName=Balancing FETs Member=Component R15 RES_100O_0603_1%
+Added Member To Class: ClassName=Balancing FETs Member=Component R17 RES_4.99O_2512_1%
+Added Member To Class: ClassName=Balancing FETs Member=Component R18 RES_4.99O_2512_1%
+Added Member To Class: ClassName=Balancing FETs Member=Component R20 RES_1kO_0603_1%
+Added Member To Class: ClassName=Balancing FETs Member=Component R29 RES_1kO_0603_1%
+Added Member To Class: ClassName=Balancing FETs Member=Component R35 RES_4.99O_2512_1%
+Added Member To Class: ClassName=Balancing FETs Member=Component R36 RES_4.99O_2512_1%
+Added Member To Class: ClassName=Balancing FETs Member=Component R37 RES_1kO_0603_1%
+Added Member To Class: ClassName=Balancing FETs Member=Component R40 RES_100O_0603_1%
+Added Member To Class: ClassName=Balancing FETs Member=Component R43 RES_4.99O_2512_1%
+Added Member To Class: ClassName=Balancing FETs Member=Component R44 RES_4.99O_2512_1%
+Added Member To Class: ClassName=Balancing FETs Member=Component R45 RES_1kO_0603_1%
+Added Member To Class: ClassName=Balancing FETs Member=Component R48 RES_1kO_0603_1%
+Added Member To Class: ClassName=Balancing FETs Member=Component R54 RES_4.99O_2512_1%
+Added Member To Class: ClassName=High Side FETs Member=Component R56 RES_1kO_2512_1%
+Added Member To Class: ClassName=High Side FETs Member=Component R70 RES_10kO_0603_1%
+Added Member To Class: ClassName=High Side FETs Member=Component R71 RES_10kO_0603_1%
+Added Member To Class: ClassName=High Side FETs Member=Component R73 RES_1kO_2512_1%
+Added Member To Class: ClassName=High Side FETs Member=Component R75 RES_5.1kO_0603_1%
+Added Member To Class: ClassName=High Side FETs Member=Component R94 RES_51O_0603_1%
+Added Member To Class: ClassName=High Side FETs Member=Component R96 RES_51O_0603_1%
+Added Member To Class: ClassName=High Side FETs Member=Component R98 RES_10MO_0603_1%
+Added Member To Class: ClassName=High Side FETs Member=Component R100 RES_100O_0603_1%
+Added Member To Class: ClassName=High Side FETs Member=Component R101 RES_10MO_0603_1%
+Added Member To Class: ClassName=High Side FETs Member=Component R102 RES_10kO_0603_1%
+Added Member To Class: ClassName=Balancing FETs Member=Component TP4 TESTPOINT_1MM_SQUARE
+Added Member To Class: ClassName=Balancing FETs Member=Component TP7 TESTPOINT_1MM_SQUARE
+Added Member To Class: ClassName=Balancing FETs Member=Component TP9 TESTPOINT_1MM_SQUARE
+Added Member To Class: ClassName=Balancing FETs Member=Component TP10 TESTPOINT_1MM_SQUARE
+Added Member To Class: ClassName=Balancing FETs Member=Component TP11 TESTPOINT_1MM_SQUARE
+Added Member To Class: ClassName=Balancing FETs Member=Component TP12 TESTPOINT_1MM_SQUARE
+Added Member To Class: ClassName=Balancing FETs Member=Component TP16 TESTPOINT_1MM_SQUARE
+Added Member To Class: ClassName=Balancing FETs Member=Component TP18 TESTPOINT_1MM_SQUARE
+Added Member To Class: ClassName=Balancing FETs Member=Component TP20 TESTPOINT_1MM_SQUARE
+Added Member To Class: ClassName=Balancing FETs Member=Component TP24 TESTPOINT_1MM_SQUARE
+Added Member To Class: ClassName=Balancing FETs Member=Component TP26 TESTPOINT_1MM_SQUARE
+Added Member To Class: ClassName=Balancing FETs Member=Component TP30 TESTPOINT_1MM_SQUARE
+Added Member To Class: ClassName=Balancing FETs Member=Component TP31 TESTPOINT_1MM_SQUARE
+Added Member To Class: ClassName=Balancing FETs Member=Component TP32 TESTPOINT_1MM_SQUARE
+Added Member To Class: ClassName=Balancing FETs Member=Component TP33 TESTPOINT_1MM_SQUARE
+Added Member To Class: ClassName=Balancing FETs Member=Component TP34 TESTPOINT_1MM_SQUARE
+Added Member To Class: ClassName=Balancing FETs Member=Component TP35 TESTPOINT_1MM_SQUARE
+Added Member To Class: ClassName=Balancing FETs Member=Component TP37 TESTPOINT_1MM_SQUARE
+Added Member To Class: ClassName=Balancing FETs Member=Component TP38 TESTPOINT_1MM_SQUARE
+Added Member To Class: ClassName=Balancing FETs Member=Component TP52 TESTPOINT_1MM_SQUARE
+Added Member To Class: ClassName=High Side FETs Member=Component TP54 TESTPOINT_1MM_CIRCLE
+Added Member To Class: ClassName=High Side FETs Member=Component TP62 TESTPOINT_1MM_CIRCLE
